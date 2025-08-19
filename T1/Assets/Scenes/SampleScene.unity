@@ -478,8 +478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 459c8a5de019a5742b42cf3e174dccbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pedestal: {fileID: 1860822208}
-  snapAngle: 30
+  pedestal: {fileID: 1383271312}
+  snapAngle: 36
   holdInterval: 0.2
 --- !u!4 &288615960
 Transform:
@@ -508,8 +508,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 901643a0c7e7b4149bd5bcee9565859f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pedestal: {fileID: 1860822208}
-  snapAngle: 30
+  pedestal: {fileID: 1383271312}
+  snapAngle: 36
   holdInterval: 0.2
 --- !u!114 &288615962
 MonoBehaviour:
@@ -523,8 +523,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b75e6deb3eb5e8a47a5bcae7fa7ca458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pedestal: {fileID: 1860822208}
-  snapAngle: 30
+  pedestal: {fileID: 1383271312}
+  snapAngle: 36
   holdInterval: 0.2
 --- !u!114 &288615963
 MonoBehaviour:
@@ -538,8 +538,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fa2b2e1900c5b4499bba4b88c4b09b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pedestal: {fileID: 1860822208}
-  snapAngle: 30
+  pedestal: {fileID: 1383271312}
+  snapAngle: 36
   holdInterval: 0.2
 --- !u!1 &322920981
 GameObject:
@@ -1890,8 +1890,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 2087990815}
-  pedestal: {fileID: 1860822208}
-  snapPoints: 12
+  pedestal: {fileID: 1383271312}
+  snapPoints: 10
 --- !u!1 &773520285
 GameObject:
   m_ObjectHideFlags: 0
