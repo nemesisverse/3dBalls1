@@ -10,6 +10,13 @@ public class ButtonLeft : MonoBehaviour
     private bool isHolding = false;
     private float holdTimer = 0f;
 
+
+    //duplicate sphere
+    public Transform bigSphere;
+    public Transform smallSphere;     // The small sphere on top of the platform
+    public GameObject spherePrefab;   // Prefab of the small sphere to duplicate
+    public float minDistance = 0.1f;
+
     void Update()
     {
         if (isHolding)
@@ -37,6 +44,21 @@ public class ButtonLeft : MonoBehaviour
 
     public void RotatePedestal()
     {
+        // duplicate sphere 
+        // 1. Save current position of the small sphere in world space
+        Vector3 worldPos = smallSphere.position;
+        Quaternion worldRot = smallSphere.rotation;
+
+       
+
+        // 2. Instantiate duplicate sphere at that world position
+        GameObject newSphere = Instantiate(spherePrefab, worldPos, worldRot);
+
+        // 3. Make the duplicate a child of the big sphere
+        newSphere.transform.SetParent(bigSphere);
+        //////////////////////////////////////////////////////
+
+
         if (pedestal == null) return;
 
         totalYRotation += snapAngle;
