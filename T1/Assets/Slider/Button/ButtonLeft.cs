@@ -44,19 +44,6 @@ public class ButtonLeft : MonoBehaviour
 
     public void RotatePedestal()
     {
-        // duplicate sphere 
-        // 1. Save current position of the small sphere in world space
-        //Vector3 worldPos = smallSphere.position;
-        //Quaternion worldRot = smallSphere.rotation;
-        //
-        //
-        //
-        //// 2. Instantiate duplicate sphere at that world position
-        //GameObject newSphere = Instantiate(spherePrefab, worldPos, worldRot);
-        //
-        //// 3. Make the duplicate a child of the big sphere
-        //newSphere.transform.SetParent(bigSphere);
-        ////////////////////////////////////////////////////////
 
 
         if (pedestal == null) return;
