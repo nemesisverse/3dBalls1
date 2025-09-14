@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class SliderX : MonoBehaviour
 {
+    //comment
     public Slider slider;
     public Transform pedestal;
     public int snapPoints = 12;
