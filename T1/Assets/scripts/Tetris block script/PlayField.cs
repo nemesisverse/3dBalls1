@@ -23,9 +23,9 @@ public class PlayField : MonoBehaviour
     public bool CheckInsideGrid(Vector3 pos)
     {
         return (
-            pos.x >= 0 && pos.x < gridSizeX &&
-            pos.z >= 0 && pos.z < gridSizeZ &&
-            pos.y >= 0
+            pos.x >= -13 && pos.x < gridSizeX &&
+            pos.z >= -13 && pos.z < gridSizeZ &&
+            pos.y >= 2
         );
     }
 }
