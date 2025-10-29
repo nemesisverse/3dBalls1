@@ -15,9 +15,20 @@ public class TetrisBlock : MonoBehaviour
         }
     }
 
-    bool checkValidMove()
+    bool CheckValidMove()
     {
+        foreach (Transform child in transform)
+        {
+            Vector3 pos = PlayField.instance.Round(child.position);
 
+            // ❌ If outside grid boundaries, invalid move
+            if (!PlayField.instance.CheckInsideGrid(pos))
+            {
+                return false;
+            }
+        }
+
+        // ✅ If all children are inside grid
         return true;
     }
 }
