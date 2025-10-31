@@ -5,7 +5,9 @@ public class PlayField : MonoBehaviour
     public static PlayField instance;
 
     public float gridSizeX, gridSizeY, gridSizeZ;
-    public Transform[,,] theGrid;
+
+    //***
+    //public Transform[,,] theGrid;
 
     void Awake()
     {
@@ -34,7 +36,7 @@ public class PlayField : MonoBehaviour
         return (
             pos.x >= -13f && pos.x < gridSizeX &&
             pos.z >= -13f && pos.z < gridSizeZ &&
-            pos.y >= 2f
+            pos.y >= gridSizeY
         );
     }
     //***
