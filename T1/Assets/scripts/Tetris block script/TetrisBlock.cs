@@ -18,6 +18,9 @@ public class TetrisBlock : MonoBehaviour
             else
             {
                 //update the grid
+
+                //***
+                //PlayField.instance.UpdateGrid(this);
             }
         
             // ✅ 'Vector3' must be capitalized
@@ -29,15 +32,26 @@ public class TetrisBlock : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            Vector3 pos = PlayField.instance.Round(child.position);
+            //Vector3 pos = PlayField.instance.Round(child.position);
 
+
+            Vector3 pos = child.position;
             // ❌ If outside grid boundaries, invalid move
             if (!PlayField.instance.CheckInsideGrid(pos))
             {
                 return false;
             }
         }
-
+        //***
+        //foreach(Transform child in transform)
+        //{
+        //    Vector3 pos = PlayField.instance.Round(child.position);
+        //    Transform t = PlayField.instance.GetTransformOnGridPos(pos);
+        //    if(t!=null && t.parent != transform)
+        //    {
+        //        return false;
+        //    }
+        //}
         // ✅ If all children are inside grid
         return true;
     }

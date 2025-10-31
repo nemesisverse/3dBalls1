@@ -716,7 +716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayField
   gridSizeX: 12
-  gridSizeY: 1
+  gridSizeY: 2.5
   gridSizeZ: 12
 --- !u!224 &1249471140 stripped
 RectTransform:
@@ -760,7 +760,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -798,6 +798,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5117700066308340382, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       propertyPath: m_Name
       value: mother
@@ -828,7 +832,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -978658629253372262, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
       propertyPath: moveDistance
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2408323082222898239, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
       propertyPath: m_LocalScale.x
@@ -848,7 +852,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2408323082222898239, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2408323082222898239, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
       propertyPath: m_LocalPosition.z
