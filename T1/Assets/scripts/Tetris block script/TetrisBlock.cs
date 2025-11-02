@@ -14,6 +14,10 @@ public class TetrisBlock : MonoBehaviour
             if (!CheckValidMove()) {
                 transform.position += Vector3.up * moveDistance;
                 enabled = false;
+
+                //create new tetris block
+                //***
+                //PlayField.instance.SpawnNewBlock();
             }
             else
             {
@@ -45,13 +49,14 @@ public class TetrisBlock : MonoBehaviour
         //***
         //foreach(Transform child in transform)
         //{
-        //    Vector3 pos = PlayField.instance.Round(child.position);
+        //    Vector3 pos = child.position;
         //    Transform t = PlayField.instance.GetTransformOnGridPos(pos);
         //    if(t!=null && t.parent != transform)
         //    {
         //        return false;
         //    }
         //}
+
         // ✅ If all children are inside grid
         return true;
     }

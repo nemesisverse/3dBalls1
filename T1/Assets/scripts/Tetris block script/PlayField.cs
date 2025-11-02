@@ -6,9 +6,13 @@ public class PlayField : MonoBehaviour
 
     public float gridSizeX, gridSizeY, gridSizeZ;
 
+    [Header("Blocks List")]
+    public GameObject[] blocks;
+
     //***
     //public Transform[,,] theGrid;
 
+    public float[,,] theGrid;
     void Awake()
     {
         instance = this;
@@ -20,15 +24,6 @@ public class PlayField : MonoBehaviour
         //theGrid = new Transform[gridSizeX, gridSizeY, gridSizeZ];
     }
 
-    // Return integer grid coordinates (safer for array indexing)
-    //public Vector3Int Round(Vector3 vec)
-    //{
-    //    return new Vector3Int(
-    //        Mathf.RoundToInt(vec.x),
-    //        Mathf.RoundToInt(vec.y),
-    //        Mathf.RoundToInt(vec.z)
-    //    );
-    //}
 
     // This method checks world position. Make sure this matches your coordinate system.
     public bool CheckInsideGrid(Vector3 pos)
@@ -50,11 +45,14 @@ public class PlayField : MonoBehaviour
     //        {
     //            for (int z = 0; z < gridSizeZ; z++)
     //            {
+    //                  if(theGrid[x,y,z] != null){
+    //                     if (theGrid[x, y, z] != null && theGrid[x, y, z].parent == block.transform)
+    //                     {
+    //                         theGrid[x, y, z] = null; // assignment, not comparison
+    //                     }
+    //                  }
     //                // null-check before accessing .parent
-    //                if (theGrid[x, y, z] != null && theGrid[x, y, z].parent == block.transform)
-    //                {
-    //                    theGrid[x, y, z] = null; // assignment, not comparison
-    //                }
+
     //            }
     //        }
     //    }
@@ -75,15 +73,32 @@ public class PlayField : MonoBehaviour
     //    }
     //}
     //
+         // to check if that position is taken or not
     //public Transform GetTransformOnGridPos(Vector3 pos)
     //{
     //    if(pos.y > gridSizeY - 1)
     //    {
+                //outside the grid
     //        return null;
     //    }
     //    else
     //    {
+                //inside grid
     //        return theGrid[(int)pos.x, (int)pos.y, (int)pos.z];
     //    }
+    //}
+
+    //public void SpawnNewBlock()
+    //{
+    //    Vector3 spawnPoint = new Vector3(transform.position.x + gridSizeX/2 , 
+    //                                     transform.position.y + gridSizeY,
+    //                                     transform.position.z + gridSizeZ/2);
+    //
+    //    int randomIndex = randomIndex.range(0,blocks.length);
+    //    //spawn the block
+    //    GameObject newBlock = Instantiate(blocks[randomIndex], spawnPoint, Quaternion.identity) as GameObject;
+    //    //ghost
+    //
+    //    //inputs
     //}
 }

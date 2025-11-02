@@ -718,6 +718,12 @@ MonoBehaviour:
   gridSizeX: 12
   gridSizeY: 2.5
   gridSizeZ: 12
+  blocks:
+  - {fileID: 1642180399421770191, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
+  - {fileID: 8324249036605721902, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
+  - {fileID: 4714955080293667203, guid: c4f43ae1525c2a54584128ea53e5237d, type: 3}
+  - {fileID: 5966353376359684260, guid: af6b475f2fa43f54d92f1428076b9e99, type: 3}
+  - {fileID: 7948522844716283527, guid: 4cf618c649b23824ba2608803c0f7b7f, type: 3}
 --- !u!224 &1249471140 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2929252283123773938, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
@@ -893,6 +899,10 @@ PrefabInstance:
     - target: {fileID: 8324249036605721902, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
       propertyPath: m_Name
       value: Z
+      objectReference: {fileID: 0}
+    - target: {fileID: 8324249036605721902, guid: 31c6f20c2967c6941935a951b3082ff0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
