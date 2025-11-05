@@ -27,7 +27,7 @@ public class TetrisBlock : MonoBehaviour
                 //PlayField.instance.UpdateGrid(this);
             }
         
-            // ✅ 'Vector3' must be capitalized
+           
             prevTime = Time.time;
         }
     }

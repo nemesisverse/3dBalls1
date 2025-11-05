@@ -9,10 +9,15 @@ public class PlayField : MonoBehaviour
     [Header("Blocks List")]
     public GameObject[] blocks;
 
+
     //***
     //public Transform[,,] theGrid;
 
-    public float[,,] theGrid;
+    //for moving block to check which point is valid to fit
+    public Transform[,,] leftGrid;
+    public Transform[,,] middleGrid;
+    public Transform[,,] rightGrid;
+
     void Awake()
     {
         instance = this;
@@ -34,6 +39,8 @@ public class PlayField : MonoBehaviour
             pos.y >= gridSizeY
         );
     }
+
+
     //***
     // Update grid cells that belong to 'block'
     //public void UpdateGrid(TetrisBlock block)
@@ -78,7 +85,7 @@ public class PlayField : MonoBehaviour
     //{
     //    if(pos.y > gridSizeY - 1)
     //    {
-                //outside the grid
+              //outside the grid
     //        return null;
     //    }
     //    else
