@@ -25,12 +25,19 @@ public class TouchControll : MonoBehaviour
     [Header("How far (px) outside UI should also block swipe")]
     public float uiIgnorePadding = 20f;
 
-    [Header("Pedestal angle rule")]
+    [Header("Pedestal angle rule (Z axis)")]
     [Tooltip("Permitted angle step (degrees). Swipes allowed only when pedestal.Z is a multiple of this value.")]
-    public float pedestalAngleStep = 10f;
+    public float pedestalAngleStepZ = 10f;
 
     [Tooltip("Tolerance (degrees) when checking if current pedestal.Z is a multiple of pedestalAngleStep.")]
-    public float pedestalAngleTolerance = 0.5f;
+    public float pedestalAngleToleranceZ = 0.5f;
+
+    [Header("Pedestal angle rule (X axis)")]
+    [Tooltip("Permitted angle step (degrees). Swipes allowed only when pedestal.X is a multiple of this value.")]
+    public float pedestalAngleStepX = 10f;
+
+    [Tooltip("Tolerance (degrees) when checking if current pedestal.X is a multiple of pedestalAngleStep.")]
+    public float pedestalAngleToleranceX = 0.5f;
 
     [Header("Debug")]
     [Tooltip("Enables logging to the console to help diagnose ignored swipes.")]
@@ -56,10 +63,10 @@ public class TouchControll : MonoBehaviour
 
     void Update()
     {
-        // If pedestal angle is not a multiple of pedestalAngleStep (within tolerance), block swipe entirely
-        if (!IsPedestalAngleAllowed())
+        // If pedestal angles are not aligned to steps (within tolerance), block swipe entirely
+        if (!IsPedestalAnglesAllowed())
         {
-            if (debugMode) Debug.Log($"Swipe blocked: pedestal Z {GetPedestalZ():F2} is not multiple of {pedestalAngleStep} within ±{pedestalAngleTolerance}°");
+            if (debugMode) Debug.Log($"Swipe blocked: pedestal X {GetPedestalX():F2} (step {pedestalAngleStepX}) or Z {GetPedestalZ():F2} (step {pedestalAngleStepZ}) not aligned within tolerances ±{pedestalAngleToleranceX}/{pedestalAngleToleranceZ}");
             return;
         }
 
@@ -122,10 +129,10 @@ public class TouchControll : MonoBehaviour
 
             if (delta.magnitude > swipeThreshold)
             {
-                // Double-check pedestal angle before starting rotation (extra safeguard)
-                if (!IsPedestalAngleAllowed())
+                // Double-check pedestal angles before starting rotation (extra safeguard)
+                if (!IsPedestalAnglesAllowed())
                 {
-                    if (debugMode) Debug.Log("Blocked rotation at swipe time because pedestal angle is not aligned.");
+                    if (debugMode) Debug.Log("Blocked rotation at swipe time because pedestal angles are not aligned.");
                     return;
                 }
 
@@ -148,9 +155,9 @@ public class TouchControll : MonoBehaviour
     {
         // Before starting rotation, verify pedestal is allowed (again) and not rotating
         if (isRotating) return;
-        if (!IsPedestalAngleAllowed())
+        if (!IsPedestalAnglesAllowed())
         {
-            if (debugMode) Debug.Log("Rotation prevented: pedestal angle not at allowed multiple.");
+            if (debugMode) Debug.Log("Rotation prevented: pedestal angles not at allowed multiples.");
             return;
         }
 
@@ -174,7 +181,7 @@ public class TouchControll : MonoBehaviour
 
         // Snap rotation to exact value to avoid floating point drift (important for modulo checks)
         pedestal.rotation = to;
-        NormalizePedestalZToStep(); // optional snap to nearest step after rotation
+        NormalizePedestalAnglesToStep(); // snap both X and Z to their nearest steps
 
         isRotating = false;
     }
@@ -182,31 +189,57 @@ public class TouchControll : MonoBehaviour
     // ---------- helper methods ----------
 
     /// <summary>
-    /// Returns true if the pedestal's Z angle is within pedestalAngleTolerance of a multiple of pedestalAngleStep.
+    /// Returns true if the pedestal's Z and X angles are within their tolerances of multiples of their steps.
+    /// Both axes must be aligned for swipes to be allowed.
     /// </summary>
-    bool IsPedestalAngleAllowed()
+    bool IsPedestalAnglesAllowed()
     {
         if (pedestal == null) return true; // if no pedestal assigned, don't block
 
-        float z = GetPedestalZ();
-        // nearest multiple of pedestalAngleStep
-        float nearest = Mathf.Round(z / pedestalAngleStep) * pedestalAngleStep;
-        float delta = Mathf.Abs(Mathf.DeltaAngle(z, nearest));
-        return delta <= pedestalAngleTolerance;
+        bool zOk = IsAngleMultipleWithinTolerance(GetPedestalZ(), pedestalAngleStepZ, pedestalAngleToleranceZ);
+        bool xOk = IsAngleMultipleWithinTolerance(GetPedestalX(), pedestalAngleStepX, pedestalAngleToleranceX);
+        if (debugMode && (!zOk || !xOk))
+        {
+            if (!zOk) Debug.Log($"Pedestal Z {GetPedestalZ():F2} fails step {pedestalAngleStepZ} ±{pedestalAngleToleranceZ}");
+            if (!xOk) Debug.Log($"Pedestal X {GetPedestalX():F2} fails step {pedestalAngleStepX} ±{pedestalAngleToleranceX}");
+        }
+        return zOk && xOk;
     }
 
     /// <summary>
-    /// Snaps pedestal Z to the nearest multiple of pedestalAngleStep (preserving X/Y).
+    /// Checks a single axis angle value (0..360) is within tolerance of a multiple of step.
+    /// </summary>
+    bool IsAngleMultipleWithinTolerance(float angle, float step, float tolerance)
+    {
+        if (step <= 0f) return true; // if step invalid, don't block
+        float nearest = Mathf.Round(angle / step) * step;
+        float delta = Mathf.Abs(Mathf.DeltaAngle(angle, nearest));
+        return delta <= tolerance;
+    }
+
+    /// <summary>
+    /// Snaps pedestal X and Z to the nearest multiples of their respective steps (preserving the remaining axis).
     /// Useful to prevent floating-point drift so future checks are accurate.
     /// </summary>
-    void NormalizePedestalZToStep()
+    void NormalizePedestalAnglesToStep()
     {
         if (pedestal == null) return;
         Vector3 e = pedestal.eulerAngles;
-        float nearest = Mathf.Round(e.z / pedestalAngleStep) * pedestalAngleStep;
-        e.z = nearest % 360f;
+
+        if (pedestalAngleStepX > 0f)
+        {
+            float nearestX = Mathf.Round(e.x / pedestalAngleStepX) * pedestalAngleStepX;
+            e.x = Mathf.Repeat(nearestX, 360f);
+        }
+
+        if (pedestalAngleStepZ > 0f)
+        {
+            float nearestZ = Mathf.Round(e.z / pedestalAngleStepZ) * pedestalAngleStepZ;
+            e.z = Mathf.Repeat(nearestZ, 360f);
+        }
+
         pedestal.eulerAngles = e;
-        if (debugMode) Debug.Log($"Pedestal Z snapped to {e.z:F2}");
+        if (debugMode) Debug.Log($"Pedestal snapped to X:{e.x:F2}, Z:{e.z:F2}");
     }
 
     bool IsPointOverIgnoredUI(Vector2 screenPos)
@@ -308,5 +341,14 @@ public class TouchControll : MonoBehaviour
     {
         if (pedestal == null) return 0f;
         return pedestal.eulerAngles.z % 360f;
+    }
+
+    /// <summary>
+    /// Helper: safe pedestal X getter (0..360)
+    /// </summary>
+    float GetPedestalX()
+    {
+        if (pedestal == null) return 0f;
+        return pedestal.eulerAngles.x % 360f;
     }
 }
