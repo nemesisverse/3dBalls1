@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading;
 using UnityEngine;
 
 public class LeftDiagnol : MonoBehaviour
@@ -6,6 +7,7 @@ public class LeftDiagnol : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        countChildren();
         CheckChildrenWorldX();
     }
 
@@ -76,5 +78,44 @@ public class LeftDiagnol : MonoBehaviour
             yield return new WaitForSeconds(2f);
 
         }  
+    }
+
+    void countChildren()
+    {
+        //left diagonal count of children
+        int leftDiagonalCount = 0;
+        foreach (Transform child in transform)
+        {
+            float worldX = child.position.x; // WORLD position  
+            if (worldX < 0f)
+            {
+                leftDiagonalCount++;
+            }
+        }
+        Debug.Log($"Number of children on the left diagonal: {leftDiagonalCount}");
+
+        //right diagonal count of children
+        int rightDiagonalCount = 0;
+        foreach (Transform child in transform)
+        {
+            float worldX = child.position.x; // WORLD position  
+            if (worldX > 0f)
+            {
+                rightDiagonalCount++;
+            }
+        }
+        Debug.Log($"Number of children on the right diagonal: {rightDiagonalCount}");
+
+        //vertical count of children
+        int verticalCount = 0;
+        foreach (Transform child in transform)
+        {
+            float worldX = child.position.x; // WORLD position  
+            if (worldX == 0f)
+            {
+                verticalCount++;
+            }
+        }
+        Debug.Log($"Number of children on the vertical: {verticalCount}");
     }
 }
