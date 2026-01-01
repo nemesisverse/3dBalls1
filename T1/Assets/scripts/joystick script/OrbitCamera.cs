@@ -30,6 +30,7 @@ public class OrbitCamera : MonoBehaviour
 
     void Start()
     {
+
         if (target == null)
         {
             Debug.LogError("Target not assigned!");
