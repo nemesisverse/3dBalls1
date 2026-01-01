@@ -12,11 +12,6 @@ public class PlayField : MonoBehaviour
         instance = this;
     }
 
-    void Start()
-    {
-        
-    }
-
     // This method checks world position. Make sure this matches your coordinate system.
     public bool CheckInsideGrid(Vector3 pos)
     {

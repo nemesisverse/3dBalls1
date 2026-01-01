@@ -20,6 +20,7 @@ void IterateCoordinates()
     for (float v = 8.837f; v >= 1.767f - 0.0001f; v -= 0.707f)
     {
         Debug.Log(new Vector3(-v, v, 0f));
+        
     }
 }
 

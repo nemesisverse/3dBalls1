@@ -8,11 +8,11 @@ public class TetrisBlock : MonoBehaviour
     {
         if (Time.time - prevTime > fallTime)
         {
-            transform.position += Vector3.down * moveDistance;
-            if (!CheckValidMove()) {
-                transform.position += Vector3.up * moveDistance;
-                enabled = false; // this will stop the Update function from being called further on the obejct which is applied
-            }
+            //transform.position += Vector3.down * moveDistance;
+            //if (!CheckValidMove()) {
+            //    transform.position += Vector3.up * moveDistance;
+            //    enabled = false; // this will stop the Update function from being called further on the obejct which is applied
+            //}
             prevTime = Time.time;
         }
     }
