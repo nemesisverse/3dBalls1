@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LeftDiagnol : MonoBehaviour
 {
+    int leftDiagonalCount = 0;
+     int rightDiagonalCount = 0;
+     int verticalCount = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -24,8 +27,8 @@ public class LeftDiagnol : MonoBehaviour
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position
-
-            if (worldX < 0f)
+            ////////////left///////////////
+            if (worldX < 0f && leftDiagonalCount == 1)
             {
                 Debug.Log($"{child.name} is on the LEFT side (world X < 0): {worldX}");
 
@@ -33,12 +36,16 @@ public class LeftDiagnol : MonoBehaviour
                 StartCoroutine(moveLeftDiognal(child));
 
             }
-            else if(worldX == 0f)
+            ////////////center///////////////
+            else if(worldX == 0f && verticalCount == 1)
             {
                 Debug.Log($"{child.name} is at the CENTER (world X == 0): {worldX}");
                 StartCoroutine(moveVertical(child));
             }
-            else
+
+
+            ////////////right///////////////
+            else if(worldX > 0f && rightDiagonalCount == 1)
             {
                 Debug.Log($"{child.name} is on the RIGHT side (world X >= 0): {worldX}");
                 StartCoroutine(moveRightDiognal(child));
@@ -82,8 +89,12 @@ public class LeftDiagnol : MonoBehaviour
 
     void countChildren()
     {
+            // so that counts are reset each time function is called
+            leftDiagonalCount = 0;
+            rightDiagonalCount = 0;
+            verticalCount = 0;
         //left diagonal count of children
-        int leftDiagonalCount = 0;
+        
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
@@ -95,7 +106,7 @@ public class LeftDiagnol : MonoBehaviour
         Debug.Log($"Number of children on the left diagonal: {leftDiagonalCount}");
 
         //right diagonal count of children
-        int rightDiagonalCount = 0;
+       
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
@@ -107,7 +118,7 @@ public class LeftDiagnol : MonoBehaviour
         Debug.Log($"Number of children on the right diagonal: {rightDiagonalCount}");
 
         //vertical count of children
-        int verticalCount = 0;
+        
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
