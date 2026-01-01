@@ -13,7 +13,7 @@ public class LeftDiagnol : MonoBehaviour
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
     List<Vector3> verticalCoordinates = new List<Vector3>();
 
-    //list of predefine coordinates for left diagonal, right diagonal and vertical
+    //list of predefine coordinates for left diagonal, right diagonal and vertical and its working fine
     void Awake()
     {
         // Populate left diagonal coordinates
