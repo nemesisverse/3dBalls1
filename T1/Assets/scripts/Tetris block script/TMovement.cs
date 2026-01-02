@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class LeftDiagnol : MonoBehaviour
+public class TMovement : MonoBehaviour
 {
     int leftDiagonalCount = 0;
      int rightDiagonalCount = 0;
@@ -13,6 +13,10 @@ public class LeftDiagnol : MonoBehaviour
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
     List<Vector3> verticalCoordinates = new List<Vector3>();
 
+
+    List<GameObject> leftChildObject = new List<GameObject>();
+    List<GameObject> rightChildObject = new List<GameObject>();
+    List<GameObject> verticalChildObject = new List<GameObject>();
     //list of predefine coordinates for left diagonal, right diagonal and vertical and its working fine
     void Awake()
     {
@@ -86,32 +90,110 @@ public class LeftDiagnol : MonoBehaviour
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
-        for (int i = 0; i < leftDiagonalCoordinates.Count; i++)
+        if(childCount == 1)
         {
-            child.position = leftDiagonalCoordinates[i];
-            Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-            yield return new WaitForSeconds(2f);
+            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            {
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                yield return new WaitForSeconds(2f);
+            }
+            
         }
+
+        if(childCount == 2)
+        {
+            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            {
+                leftChildObject[0].transform.position  = leftDiagonalCoordinates[i];
+                leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
+                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                yield return new WaitForSeconds(2f);
+            }
+            
+        }
+
+        if(childCount == 3)
+        {
+            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            {
+                leftChildObject[0].transform.position  = leftDiagonalCoordinates[i];
+                leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
+                leftChildObject[2].transform.position  = leftDiagonalCoordinates[i-2];
+                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                yield return new WaitForSeconds(2f);
+            }
+            
+        }
+
     }
 
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
     {
-       for (int i = 0; i < rightDiagonalCoordinates.Count; i++)
-       {
-           child.position = rightDiagonalCoordinates[i];
-           yield return new WaitForSeconds(2f);
-       }
+        if(childCount == 1)
+        {
+            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            {
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                yield return new WaitForSeconds(2f);
+            }
+        }
+        if(childCount == 2)
+        {
+            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            {
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
+                yield return new WaitForSeconds(2f);
+            }
+        }
+        if(childCount == 3)
+        {
+            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            {
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
+                rightChildObject[2].transform.position = rightDiagonalCoordinates[i-2];
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
     } 
 
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
-        for (int i = 0; i < verticalCoordinates.Count; i++)
+        if(childCount == 1)
         {
-            child.position = verticalCoordinates[i];
-            yield return new WaitForSeconds(2f);
+            for (int i = 2; i < verticalCoordinates.Count; i++)
+            {
+                verticalChildObject[0].transform.position = verticalCoordinates[i];
+                yield return new WaitForSeconds(2f);
+            }
         }
+
+        if(childCount == 2)
+        {
+            for (int i = 2; i < verticalCoordinates.Count; i++)
+            {
+                verticalChildObject[0].transform.position = verticalCoordinates[i];
+                verticalChildObject[1].transform.position = verticalCoordinates[i-1];
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
+        if(childCount == 3)
+        {
+            for (int i = 2; i < verticalCoordinates.Count; i++)
+            {
+                verticalChildObject[0].transform.position = verticalCoordinates[i];
+                verticalChildObject[1].transform.position = verticalCoordinates[i-1];
+                verticalChildObject[2].transform.position = verticalCoordinates[i-2];
+                yield return new WaitForSeconds(2f);
+            }
+        }
+ 
     }
 
 
@@ -129,6 +211,8 @@ public class LeftDiagnol : MonoBehaviour
             if (worldX < 0f)
             {
                 leftDiagonalCount++;
+                //add left child object to list
+                leftChildObject.Add(child.gameObject);
             }
         }
         Debug.Log($"Number of children on the left diagonal: {leftDiagonalCount}");
@@ -141,6 +225,8 @@ public class LeftDiagnol : MonoBehaviour
             if (worldX > 0f)
             {
                 rightDiagonalCount++;
+                //add right child object to list
+                rightChildObject.Add(child.gameObject);
             }
         }
         Debug.Log($"Number of children on the right diagonal: {rightDiagonalCount}");
@@ -153,6 +239,8 @@ public class LeftDiagnol : MonoBehaviour
             if (worldX == 0f)
             {
                 verticalCount++;
+                //add vertical child object to list
+                verticalChildObject.Add(child.gameObject);
             }
         }
         Debug.Log($"Number of children on the vertical: {verticalCount}");
