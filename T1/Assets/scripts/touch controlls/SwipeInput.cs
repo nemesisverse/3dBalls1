@@ -1,13 +1,23 @@
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+
 
 public class SwipeInput : MonoBehaviour
 {
+
+[SerializeField] private float rotationDuration = 0.25f;
+private bool isRotating = false;
+
  private TouchControl touchControl;
  Vector2 startPos;
  Vector2 endPos;
  public float minSwipeDistance = 100f;
+
+
+ 
  void Awake()
  {
      touchControl = new TouchControl();
@@ -16,7 +26,7 @@ public class SwipeInput : MonoBehaviour
 
     private void OnEnable()
     {
-         Debug.Log("SwipeInput ENABLED");
+        Debug.Log("SwipeInput ENABLED");
         //GameObject becomes active
         //Component becomes enabled
         //Scene loads and object is active
@@ -58,13 +68,80 @@ public class SwipeInput : MonoBehaviour
 
         if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
         {
-            Debug.Log(swipe.x > 0 ? "Swipe Right" : "Swipe Left");
+            if (swipe.x > 0)
+            {
+                Debug.Log("Swipe Right");
+                RightRotate();
+            }
+            else
+            {
+                LeftRotate();
+            }
         }
         else
         {
-            Debug.Log(swipe.y > 0 ? "Swipe Up" : "Swipe Down");
+            if (swipe.y > 0)
+            {
+                Debug.Log("Swipe Up");
+                UpRotate();
+            }
+            else
+            {
+                Debug.Log("Swipe Down");
+                DownRotate();
+            }
         }
     }
 
+void RightRotate()
+{
+    TryStartRotate(Vector3.up, -90f);
+}
+
+void LeftRotate()
+{
+    TryStartRotate(Vector3.up, 90f);
+}
+
+void UpRotate()
+{
+    TryStartRotate(Vector3.right, 90f);
+}
+
+void DownRotate()
+{
+    TryStartRotate(Vector3.right, -90f);
+}
+
+
+void TryStartRotate(Vector3 axis, float degrees)
+{
+    if (isRotating) return;
+    StartCoroutine(RotateByWorldAxis(axis, degrees));
+}
+
+IEnumerator RotateByWorldAxis(Vector3 axis, float degrees)
+{
+    isRotating = true;
+
+    Quaternion from = transform.rotation;
+    Quaternion to = Quaternion.AngleAxis(degrees, axis) * from;
+
+    float elapsed = 0f;
+    while (elapsed < rotationDuration)
+    {
+        elapsed += Time.deltaTime;
+        float t = Mathf.SmoothStep(0f, 1f, elapsed / rotationDuration);
+        transform.rotation = Quaternion.Slerp(from, to, t);
+        yield return null;
+    }
+
+    // snap exactly (prevents drift)
+    transform.rotation = to;
+
+    isRotating = false;
+}
+
+    
 
 }
