@@ -18,6 +18,9 @@ public class TMovement : MonoBehaviour
     List<GameObject> rightChildObject = new List<GameObject>();
     List<GameObject> verticalChildObject = new List<GameObject>();
     //list of predefine coordinates for left diagonal, right diagonal and vertical and its working fine
+
+
+    public Transform mother;
     void Awake()
     {
         // Populate left diagonal coordinates
@@ -43,7 +46,6 @@ public class TMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
         countChildren();
         CheckChildrenWorldX();
     }
@@ -68,6 +70,7 @@ public class TMovement : MonoBehaviour
 
                 //iterate through some specific provided coordinates for left diognal
                 StartCoroutine(moveLeftDiognal(child, leftDiagonalCount));
+             
 
             }
             ////////////center///////////////
@@ -90,12 +93,23 @@ public class TMovement : MonoBehaviour
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
+        if(leftChildObject == null || leftChildObject.Count == 0)
+        {
+            yield break; // Exit the coroutine if there are no child objects
+        }
+
+
         if(childCount == 1)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1])
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
             
@@ -108,6 +122,12 @@ public class TMovement : MonoBehaviour
                 leftChildObject[0].transform.position  = leftDiagonalCoordinates[i];
                 leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -2]) 
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                    leftChildObject[1].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
             
@@ -121,6 +141,13 @@ public class TMovement : MonoBehaviour
                 leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
                 leftChildObject[2].transform.position  = leftDiagonalCoordinates[i-2];
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -3]) 
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                    leftChildObject[1].transform.SetParent(mother.transform, true);
+                    leftChildObject[2].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
             
@@ -131,11 +158,20 @@ public class TMovement : MonoBehaviour
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
     {
+        if(rightChildObject == null || rightChildObject.Count == 0)
+        {
+            yield break; // Exit the coroutine if there are no child objects
+        }
         if(childCount == 1)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -145,6 +181,12 @@ public class TMovement : MonoBehaviour
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
+                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -2])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+                    rightChildObject[1].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -155,6 +197,13 @@ public class TMovement : MonoBehaviour
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
                 rightChildObject[2].transform.position = rightDiagonalCoordinates[i-2];
+                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -3])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+                    rightChildObject[1].transform.SetParent(mother.transform, true);
+                    rightChildObject[2].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -164,11 +213,20 @@ public class TMovement : MonoBehaviour
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
+        if(verticalChildObject == null || verticalChildObject.Count == 0)
+        {
+            yield break; // Exit the coroutine if there are no child objects
+        }
         if(childCount == 1)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
+                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -179,6 +237,12 @@ public class TMovement : MonoBehaviour
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i-1];
+                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count -2])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+                    verticalChildObject[1].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -190,6 +254,13 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i-1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i-2];
+                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count -2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count -3])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+                    verticalChildObject[1].transform.SetParent(mother.transform, true);
+                    verticalChildObject[2].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }

@@ -2653,7 +2653,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &870627600
 Transform:
   m_ObjectHideFlags: 0
@@ -2809,6 +2809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9281df14d1b254bcbb016d15b2ccbad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TMovement
+  mother: {fileID: 604072867}
 --- !u!1 &920014124
 GameObject:
   m_ObjectHideFlags: 0
@@ -3817,6 +3818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9281df14d1b254bcbb016d15b2ccbad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TMovement
+  mother: {fileID: 0}
 --- !u!1 &1227501322 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
@@ -3847,6 +3849,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fd95a15a62ac430191af943a26fb7e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInput
+  rotationDuration: 0.25
   minSwipeDistance: 100
 --- !u!1 &1237907810
 GameObject:
