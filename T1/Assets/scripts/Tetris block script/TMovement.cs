@@ -17,7 +17,17 @@ public class TMovement : MonoBehaviour
     List<GameObject> leftChildObject = new List<GameObject>();
     List<GameObject> rightChildObject = new List<GameObject>();
     List<GameObject> verticalChildObject = new List<GameObject>();
+
+    
     //list of predefine coordinates for left diagonal, right diagonal and vertical and its working fine
+
+    // void MakeChildrenAttachedToMother()
+    // {
+    //     foreach (Transform child in transform)
+    //     {
+    //         child.SetParent(mother, true);
+    //     }
+    // }
 
 
     public Transform mother;
@@ -56,87 +66,6 @@ public class TMovement : MonoBehaviour
 
     }
 
-    // void CastRaySouthEast3D(Transform raySource, float rayDistance)
-    // {
-    //     // South-East direction on X–Y plane
-    //     Vector3 direction = new Vector3(1f, -1f, 0f).normalized;
-
-    //     // Start ray outside the collider
-    //     //Collider col = raySource.GetComponent<Collider>();
-    //     float offset = 0.501f;
-
-    //     Vector3 origin = raySource.position + direction * offset;
-
-    //     RaycastHit hit;
-    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-    //     if (hasHit)
-    //     {
-    //         // Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-    //         if(hit.distance < 0.6f)
-    //         {
-    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-    //         }
-    //     }
-
-
-    // }
-
-    // void CastRaySouthWest3D(Transform raySource, float rayDistance)
-    // {
-    //     // South-West direction on X–Y plane
-    //     Vector3 direction = new Vector3(-1f, -1f, 0f).normalized;
-
-    //     // Start ray outside the collider
-    //     //Collider col = raySource.GetComponent<Collider>();
-    //     float offset = 0.501f;
-
-    //     Vector3 origin = raySource.position + direction * offset;
-
-    //     RaycastHit hit;
-    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-    //     if (hasHit)
-    //     {
-    //         //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-    //         if(hit.distance < 0.1f)
-    //         {
-    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-    //         }
-    //     }
-
-    // }
-
-    // void CastSouth3D(Transform raySource, float rayDistance)
-    // {
-    //     // South direction on Y axis
-    //     Vector3 direction = new Vector3(0f, -1f, 0f).normalized;
-
-    //     // Start ray outside the collider
-    //     //Collider col = raySource.GetComponent<Collider>();
-    //     float offset = 0.501f;
-
-    //     Vector3 origin = raySource.position + direction * offset;
-
-    //     RaycastHit hit;
-    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-    //     if (hasHit)
-    //     {
-    //         //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-    //         if(hit.distance < 0.1f)
-    //         {
-    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-    //         }
-    //     }
-    // }
-
 
     bool IsBlockAtPosition(Vector3 position)
     {
@@ -152,6 +81,8 @@ public class TMovement : MonoBehaviour
 
         return false;
     }
+
+    
 
 
     void CheckChildrenWorldX()
@@ -189,6 +120,8 @@ public class TMovement : MonoBehaviour
 
     }
 
+     
+
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
         if (leftChildObject == null || leftChildObject.Count == 0)
@@ -209,8 +142,56 @@ public class TMovement : MonoBehaviour
                 if (stopNextIteration)
                 {
                     Debug.Log("Stopping movement after one extra step.");
-                    StopAllCoroutines();   // ⛔ stops ALL coroutines on this script
-                    enabled = false; 
+
+                   
+                    yield break;
+                }
+
+                try
+                {
+                    if (
+                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+
+                        stopNextIteration = true;
+                      
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    
+                    yield break;
+                }
+
+                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
+        if (childCount == 2)
+        {
+            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            {
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
+
+            
+
+                // If previous iteration detected a block → stop now
+                if (stopNextIteration)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
+
+                   
                     yield break;
                 }
 
@@ -230,27 +211,14 @@ public class TMovement : MonoBehaviour
                     yield break;
                 }
 
-                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                yield return new WaitForSeconds(2f);
-            }
-        }
-
-        if (childCount == 2)
-        {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
-            {
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
-
-                //CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
-                // {
-                //     leftChildObject[0].transform.SetParent(mother.transform, true);
-                //     leftChildObject[1].transform.SetParent(mother.transform, true);
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                    leftChildObject[1].transform.SetParent(mother.transform, true);
 
-                // }
+                }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -264,16 +232,40 @@ public class TMovement : MonoBehaviour
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
                 leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
 
-                //CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIteration)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
+
+                    
+                    yield break;
+                }
+
+                try
+                {
+                    if (
+                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIteration = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
-                // {
-                //     leftChildObject[0].transform.SetParent(mother.transform, true);
-                //     leftChildObject[1].transform.SetParent(mother.transform, true);
-                //     leftChildObject[2].transform.SetParent(mother.transform, true);
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
+                {
+                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                    leftChildObject[1].transform.SetParent(mother.transform, true);
+                    leftChildObject[2].transform.SetParent(mother.transform, true);
 
-                // }
+                }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -288,19 +280,44 @@ public class TMovement : MonoBehaviour
         {
             yield break; // Exit the coroutine if there are no child objects
         }
+    
+    bool stopNextIterationR = false;
         if (childCount == 1)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
 
-                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationR)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
-                // {
-                //     rightChildObject[0].transform.SetParent(mother.transform, true);
+                   
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationR = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -311,14 +328,37 @@ public class TMovement : MonoBehaviour
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
 
-                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationR)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
-                // {
-                //     rightChildObject[0].transform.SetParent(mother.transform, true);
-                //     rightChildObject[1].transform.SetParent(mother.transform, true);
+                
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationR = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+                    rightChildObject[1].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -330,15 +370,37 @@ public class TMovement : MonoBehaviour
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
                 rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
 
-                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationR)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
-                // {
-                //     rightChildObject[0].transform.SetParent(mother.transform, true);
-                //     rightChildObject[1].transform.SetParent(mother.transform, true);
-                //     rightChildObject[2].transform.SetParent(mother.transform, true);
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationR = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
+                {
+                    rightChildObject[0].transform.SetParent(mother.transform, true);
+                    rightChildObject[1].transform.SetParent(mother.transform, true);
+                    rightChildObject[2].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -352,19 +414,46 @@ public class TMovement : MonoBehaviour
         {
             yield break; // Exit the coroutine if there are no child objects
         }
+
+        bool stopNextIterationV = false;
+       
         if (childCount == 1)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
 
-                // CastSouth3D(verticalChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationV)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
-                // {
-                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
+                   
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationV = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -376,14 +465,37 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-                // CastSouth3D(verticalChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationV)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
-                // {
-                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
-                //     verticalChildObject[1].transform.SetParent(mother.transform, true);
+                    
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationV = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+                    verticalChildObject[1].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -396,15 +508,39 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
-                // CastRaySouthEast3D(verticalChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIterationV)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
 
-                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
-                // {
-                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
-                //     verticalChildObject[1].transform.SetParent(mother.transform, true);
-                //     verticalChildObject[2].transform.SetParent(mother.transform, true);
+                 
+                    yield break;
+                }
 
-                // }
+                try
+                {
+                    if (
+                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIterationV = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
+                {
+                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+                    verticalChildObject[1].transform.SetParent(mother.transform, true);
+                    verticalChildObject[2].transform.SetParent(mother.transform, true);
+
+                }
                 yield return new WaitForSeconds(2f);
             }
         }
