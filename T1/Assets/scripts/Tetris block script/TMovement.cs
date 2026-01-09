@@ -6,8 +6,8 @@ using UnityEngine;
 public class TMovement : MonoBehaviour
 {
     int leftDiagonalCount = 0;
-     int rightDiagonalCount = 0;
-     int verticalCount = 0;
+    int rightDiagonalCount = 0;
+    int verticalCount = 0;
 
     List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
@@ -53,26 +53,75 @@ public class TMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-void CastRaySouthEast2D(Transform raySource, float rayDistance)
-{
-    // South-East direction
-    Vector2 direction = new Vector2(1f, -1f).normalized;
-
-    // 🔥 IMPORTANT: use raySource.position, NOT transform.position
-    Vector2 origin = (Vector2)raySource.position + direction * 0.5f;
-
-    RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayDistance);
-
-    Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-    if (hit.collider != null)
+    void CastRaySouthEast3D(Transform raySource, float rayDistance)
     {
-        Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+        // South-East direction on X–Y plane
+        Vector3 direction = new Vector3(1f, -1f, 0f).normalized;
+
+        // Start ray outside the collider
+        //Collider col = raySource.GetComponent<Collider>();
+        float offset = 0.5f;
+
+        Vector3 origin = raySource.position + direction * offset;
+
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+        if (hasHit)
+        {
+            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+        }
     }
-}
+
+    void CastRaySouthWest3D(Transform raySource, float rayDistance)
+    {
+        // South-West direction on X–Y plane
+        Vector3 direction = new Vector3(-1f, -1f, 0f).normalized;
+
+        // Start ray outside the collider
+        //Collider col = raySource.GetComponent<Collider>();
+        float offset = 0.5f;
+
+        Vector3 origin = raySource.position + direction * offset;
+
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+        if (hasHit)
+        {
+            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+        }
+    }
+
+    void CastSouth3D(Transform raySource, float rayDistance)
+    {
+        // South direction on Y axis
+        Vector3 direction = new Vector3(0f, -1f, 0f).normalized;
+
+        // Start ray outside the collider
+        //Collider col = raySource.GetComponent<Collider>();
+        float offset = 0.5f;
+
+        Vector3 origin = raySource.position + direction * offset;
+
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+        if (hasHit)
+        {
+            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+        }
+    }
+
 
 
 
@@ -84,17 +133,17 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
         {
             float worldX = child.position.x; // WORLD position
             ////////////left///////////////
-            if (worldX < 0f )
+            if (worldX < 0f)
             {
                 Debug.Log($"{child.name} is on the LEFT side (world X < 0): {worldX}");
 
                 //iterate through some specific provided coordinates for left diognal
                 StartCoroutine(moveLeftDiognal(child, leftDiagonalCount));
-             
+
 
             }
             ////////////center///////////////
-            else if(worldX == 0f)
+            else if (worldX == 0f)
             {
                 Debug.Log($"{child.name} is at the CENTER (world X == 0): {worldX}");
                 StartCoroutine(moveVertical(child, verticalCount));
@@ -102,7 +151,7 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
 
 
             ////////////right///////////////
-            else if(worldX > 0f)
+            else if (worldX > 0f)
             {
                 Debug.Log($"{child.name} is on the RIGHT side (world X >= 0): {worldX}");
                 StartCoroutine(moveRightDiognal(child, rightDiagonalCount));
@@ -113,39 +162,43 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
-        if(leftChildObject == null || leftChildObject.Count == 0)
+        if (leftChildObject == null || leftChildObject.Count == 0)
         {
             yield break; // Exit the coroutine if there are no child objects
         }
 
 
-        if(childCount == 1)
+        if (childCount == 1)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                CastRaySouthEast2D(leftChildObject[0].transform, 5f);
+
+                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
 
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1])
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                 {
                     leftChildObject[0].transform.SetParent(mother.transform, true);
 
                 }
                 yield return new WaitForSeconds(2f);
             }
-            
+
         }
 
-        if(childCount == 2)
+        if (childCount == 2)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                leftChildObject[0].transform.position  = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
+
+                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
+
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -2]) 
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                 {
                     leftChildObject[0].transform.SetParent(mother.transform, true);
                     leftChildObject[1].transform.SetParent(mother.transform, true);
@@ -153,18 +206,21 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
                 }
                 yield return new WaitForSeconds(2f);
             }
-            
+
         }
 
-        if(childCount == 3)
+        if (childCount == 3)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                leftChildObject[0].transform.position  = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position  = leftDiagonalCoordinates[i-1];
-                leftChildObject[2].transform.position  = leftDiagonalCoordinates[i-2];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
+                leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
+
+                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
+
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -3]) 
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
                 {
                     leftChildObject[0].transform.SetParent(mother.transform, true);
                     leftChildObject[1].transform.SetParent(mother.transform, true);
@@ -173,7 +229,7 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
                 }
                 yield return new WaitForSeconds(2f);
             }
-            
+
         }
 
     }
@@ -181,16 +237,19 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
     {
-        if(rightChildObject == null || rightChildObject.Count == 0)
+        if (rightChildObject == null || rightChildObject.Count == 0)
         {
             yield break; // Exit the coroutine if there are no child objects
         }
-        if(childCount == 1)
+        if (childCount == 1)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1])
+
+                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                 {
                     rightChildObject[0].transform.SetParent(mother.transform, true);
 
@@ -198,13 +257,16 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
                 yield return new WaitForSeconds(2f);
             }
         }
-        if(childCount == 2)
+        if (childCount == 2)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-                rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
-                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -2])
+                rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
+
+                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                 {
                     rightChildObject[0].transform.SetParent(mother.transform, true);
                     rightChildObject[1].transform.SetParent(mother.transform, true);
@@ -213,14 +275,17 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
                 yield return new WaitForSeconds(2f);
             }
         }
-        if(childCount == 3)
+        if (childCount == 3)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-                rightChildObject[1].transform.position = rightDiagonalCoordinates[i-1];
-                rightChildObject[2].transform.position = rightDiagonalCoordinates[i-2];
-                if(rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count -3])
+                rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
+                rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
+
+                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+
+                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
                 {
                     rightChildObject[0].transform.SetParent(mother.transform, true);
                     rightChildObject[1].transform.SetParent(mother.transform, true);
@@ -231,21 +296,24 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
             }
         }
 
-    } 
+    }
 
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
-        if(verticalChildObject == null || verticalChildObject.Count == 0)
+        if (verticalChildObject == null || verticalChildObject.Count == 0)
         {
             yield break; // Exit the coroutine if there are no child objects
         }
-        if(childCount == 1)
+        if (childCount == 1)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
-                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1])
+
+                CastSouth3D(verticalChildObject[0].transform, 5f);
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
                 {
                     verticalChildObject[0].transform.SetParent(mother.transform, true);
 
@@ -254,13 +322,16 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
             }
         }
 
-        if(childCount == 2)
+        if (childCount == 2)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
-                verticalChildObject[1].transform.position = verticalCoordinates[i-1];
-                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count -2])
+                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+
+                CastSouth3D(verticalChildObject[0].transform, 5f);
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                 {
                     verticalChildObject[0].transform.SetParent(mother.transform, true);
                     verticalChildObject[1].transform.SetParent(mother.transform, true);
@@ -270,14 +341,17 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
             }
         }
 
-        if(childCount == 3)
+        if (childCount == 3)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
-                verticalChildObject[1].transform.position = verticalCoordinates[i-1];
-                verticalChildObject[2].transform.position = verticalCoordinates[i-2];
-                if(verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count -1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count -2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count -3])
+                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+                verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
+
+                CastRaySouthEast3D(verticalChildObject[0].transform, 5f);
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
                 {
                     verticalChildObject[0].transform.SetParent(mother.transform, true);
                     verticalChildObject[1].transform.SetParent(mother.transform, true);
@@ -287,18 +361,18 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
                 yield return new WaitForSeconds(2f);
             }
         }
- 
+
     }
 
 
     void countChildren()
     {
-            // so that counts are reset each time function is called
-            leftDiagonalCount = 0;
-            rightDiagonalCount = 0;
-            verticalCount = 0;
+        // so that counts are reset each time function is called
+        leftDiagonalCount = 0;
+        rightDiagonalCount = 0;
+        verticalCount = 0;
         //left diagonal count of children
-        
+
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
@@ -312,7 +386,7 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
         Debug.Log($"Number of children on the left diagonal: {leftDiagonalCount}");
 
         //right diagonal count of children
-       
+
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
@@ -326,7 +400,7 @@ void CastRaySouthEast2D(Transform raySource, float rayDistance)
         Debug.Log($"Number of children on the right diagonal: {rightDiagonalCount}");
 
         //vertical count of children
-        
+
         foreach (Transform child in transform)
         {
             float worldX = child.position.x; // WORLD position  
