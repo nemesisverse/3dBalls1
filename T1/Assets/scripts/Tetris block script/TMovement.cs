@@ -63,7 +63,7 @@ public class TMovement : MonoBehaviour
 
         // Start ray outside the collider
         //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.5f;
+        float offset = 0.501f;
 
         Vector3 origin = raySource.position + direction * offset;
 
@@ -74,8 +74,14 @@ public class TMovement : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+            // Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+            if(hit.distance < 0.6f)
+            {
+                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+            }
         }
+
+
     }
 
     void CastRaySouthWest3D(Transform raySource, float rayDistance)
@@ -85,7 +91,7 @@ public class TMovement : MonoBehaviour
 
         // Start ray outside the collider
         //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.5f;
+        float offset = 0.501f;
 
         Vector3 origin = raySource.position + direction * offset;
 
@@ -96,8 +102,13 @@ public class TMovement : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+            //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+            if(hit.distance < 0.1f)
+            {
+                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+            }
         }
+        
     }
 
     void CastSouth3D(Transform raySource, float rayDistance)
@@ -107,7 +118,7 @@ public class TMovement : MonoBehaviour
 
         // Start ray outside the collider
         //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.5f;
+        float offset = 0.501f;
 
         Vector3 origin = raySource.position + direction * offset;
 
@@ -118,7 +129,11 @@ public class TMovement : MonoBehaviour
 
         if (hasHit)
         {
-            Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+            //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+            if(hit.distance < 0.1f)
+            {
+                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+            }
         }
     }
 
@@ -172,17 +187,18 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
+                
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
+                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
+                // {
+                //     leftChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -195,15 +211,15 @@ public class TMovement : MonoBehaviour
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
+                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
-                    leftChildObject[1].transform.SetParent(mother.transform, true);
+                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
+                // {
+                //     leftChildObject[0].transform.SetParent(mother.transform, true);
+                //     leftChildObject[1].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -217,16 +233,16 @@ public class TMovement : MonoBehaviour
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
                 leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 5f);
+                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
-                    leftChildObject[1].transform.SetParent(mother.transform, true);
-                    leftChildObject[2].transform.SetParent(mother.transform, true);
+                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
+                // {
+                //     leftChildObject[0].transform.SetParent(mother.transform, true);
+                //     leftChildObject[1].transform.SetParent(mother.transform, true);
+                //     leftChildObject[2].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -247,13 +263,13 @@ public class TMovement : MonoBehaviour
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
+                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
+                // {
+                //     rightChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -264,14 +280,14 @@ public class TMovement : MonoBehaviour
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
-                    rightChildObject[1].transform.SetParent(mother.transform, true);
+                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
+                // {
+                //     rightChildObject[0].transform.SetParent(mother.transform, true);
+                //     rightChildObject[1].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -283,15 +299,15 @@ public class TMovement : MonoBehaviour
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
                 rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 5f);
+                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
-                    rightChildObject[1].transform.SetParent(mother.transform, true);
-                    rightChildObject[2].transform.SetParent(mother.transform, true);
+                // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
+                // {
+                //     rightChildObject[0].transform.SetParent(mother.transform, true);
+                //     rightChildObject[1].transform.SetParent(mother.transform, true);
+                //     rightChildObject[2].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -311,13 +327,13 @@ public class TMovement : MonoBehaviour
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
 
-                CastSouth3D(verticalChildObject[0].transform, 5f);
+                CastSouth3D(verticalChildObject[0].transform, 0.4f);
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
+                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
+                // {
+                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -329,14 +345,14 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-                CastSouth3D(verticalChildObject[0].transform, 5f);
+                CastSouth3D(verticalChildObject[0].transform, 0.4f);
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
-                    verticalChildObject[1].transform.SetParent(mother.transform, true);
+                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                // {
+                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
+                //     verticalChildObject[1].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -349,15 +365,15 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
-                CastRaySouthEast3D(verticalChildObject[0].transform, 5f);
+                CastRaySouthEast3D(verticalChildObject[0].transform, 0.4f);
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
-                    verticalChildObject[1].transform.SetParent(mother.transform, true);
-                    verticalChildObject[2].transform.SetParent(mother.transform, true);
+                // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
+                // {
+                //     verticalChildObject[0].transform.SetParent(mother.transform, true);
+                //     verticalChildObject[1].transform.SetParent(mother.transform, true);
+                //     verticalChildObject[2].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
