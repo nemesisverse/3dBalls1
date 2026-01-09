@@ -56,6 +56,26 @@ public class TMovement : MonoBehaviour
         
     }
 
+void CastRaySouthEast2D(Transform raySource, float rayDistance)
+{
+    // South-East direction
+    Vector2 direction = new Vector2(1f, -1f).normalized;
+
+    // 🔥 IMPORTANT: use raySource.position, NOT transform.position
+    Vector2 origin = (Vector2)raySource.position + direction * 0.5f;
+
+    RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayDistance);
+
+    Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+    if (hit.collider != null)
+    {
+        Debug.Log($"Ray from {raySource.name} hit {hit.collider.name}");
+    }
+}
+
+
+
     void CheckChildrenWorldX()
     {
         //this for loop is iterationg through every child of the current game object's world position
@@ -104,6 +124,9 @@ public class TMovement : MonoBehaviour
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                CastRaySouthEast2D(leftChildObject[0].transform, 5f);
+
+
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
                 if(leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count -1])
                 {
