@@ -56,88 +56,102 @@ public class TMovement : MonoBehaviour
 
     }
 
-    void CastRaySouthEast3D(Transform raySource, float rayDistance)
+    // void CastRaySouthEast3D(Transform raySource, float rayDistance)
+    // {
+    //     // South-East direction on X–Y plane
+    //     Vector3 direction = new Vector3(1f, -1f, 0f).normalized;
+
+    //     // Start ray outside the collider
+    //     //Collider col = raySource.GetComponent<Collider>();
+    //     float offset = 0.501f;
+
+    //     Vector3 origin = raySource.position + direction * offset;
+
+    //     RaycastHit hit;
+    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+    //     if (hasHit)
+    //     {
+    //         // Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+    //         if(hit.distance < 0.6f)
+    //         {
+    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+    //         }
+    //     }
+
+
+    // }
+
+    // void CastRaySouthWest3D(Transform raySource, float rayDistance)
+    // {
+    //     // South-West direction on X–Y plane
+    //     Vector3 direction = new Vector3(-1f, -1f, 0f).normalized;
+
+    //     // Start ray outside the collider
+    //     //Collider col = raySource.GetComponent<Collider>();
+    //     float offset = 0.501f;
+
+    //     Vector3 origin = raySource.position + direction * offset;
+
+    //     RaycastHit hit;
+    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+    //     if (hasHit)
+    //     {
+    //         //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+    //         if(hit.distance < 0.1f)
+    //         {
+    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+    //         }
+    //     }
+
+    // }
+
+    // void CastSouth3D(Transform raySource, float rayDistance)
+    // {
+    //     // South direction on Y axis
+    //     Vector3 direction = new Vector3(0f, -1f, 0f).normalized;
+
+    //     // Start ray outside the collider
+    //     //Collider col = raySource.GetComponent<Collider>();
+    //     float offset = 0.501f;
+
+    //     Vector3 origin = raySource.position + direction * offset;
+
+    //     RaycastHit hit;
+    //     bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
+
+    //     Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
+
+    //     if (hasHit)
+    //     {
+    //         //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
+    //         if(hit.distance < 0.1f)
+    //         {
+    //             Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
+    //         }
+    //     }
+    // }
+
+
+    bool IsBlockAtPosition(Vector3 position)
     {
-        // South-East direction on X–Y plane
-        Vector3 direction = new Vector3(1f, -1f, 0f).normalized;
+        float pointRadius = 0.51f;
 
-        // Start ray outside the collider
-        //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.501f;
+        Collider[] hits = Physics.OverlapSphere(position, pointRadius);
 
-        Vector3 origin = raySource.position + direction * offset;
-
-        RaycastHit hit;
-        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-        if (hasHit)
+        foreach (Collider hit in hits)
         {
-            // Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-            if(hit.distance < 0.6f)
-            {
-                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-            }
+            if (hit.CompareTag("block"))
+                return true;
         }
 
-
+        return false;
     }
-
-    void CastRaySouthWest3D(Transform raySource, float rayDistance)
-    {
-        // South-West direction on X–Y plane
-        Vector3 direction = new Vector3(-1f, -1f, 0f).normalized;
-
-        // Start ray outside the collider
-        //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.501f;
-
-        Vector3 origin = raySource.position + direction * offset;
-
-        RaycastHit hit;
-        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-        if (hasHit)
-        {
-            //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-            if(hit.distance < 0.1f)
-            {
-                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-            }
-        }
-        
-    }
-
-    void CastSouth3D(Transform raySource, float rayDistance)
-    {
-        // South direction on Y axis
-        Vector3 direction = new Vector3(0f, -1f, 0f).normalized;
-
-        // Start ray outside the collider
-        //Collider col = raySource.GetComponent<Collider>();
-        float offset = 0.501f;
-
-        Vector3 origin = raySource.position + direction * offset;
-
-        RaycastHit hit;
-        bool hasHit = Physics.Raycast(origin, direction, out hit, rayDistance);
-
-        Debug.DrawRay(origin, direction * rayDistance, Color.red, 0.1f);
-
-        if (hasHit)
-        {
-            //Debug.Log($"Ray from {raySource.name} hit {hit.collider.name} distance {hit.distance}");
-            if(hit.distance < 0.1f)
-            {
-                Debug.Log($"Ray from {raySource.name} is very close to {hit.collider.name} distance {hit.distance} please stop this platform to move");
-            }
-        }
-    }
-
-
 
 
     void CheckChildrenWorldX()
@@ -183,25 +197,42 @@ public class TMovement : MonoBehaviour
         }
 
 
+        bool stopNextIteration = false;
+
         if (childCount == 1)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
+                // If previous iteration detected a block → stop now
+                if (stopNextIteration)
+                {
+                    Debug.Log("Stopping movement after one extra step.");
+                    StopAllCoroutines();   // ⛔ stops ALL coroutines on this script
+                    enabled = false; 
+                    yield break;
+                }
 
+                try
+                {
+                    if (
+                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    {
+                        Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
+
+                        // Do NOT stop immediately
+                        stopNextIteration = true;
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
-                // {
-                //     leftChildObject[0].transform.SetParent(mother.transform, true);
-
-                // }
                 yield return new WaitForSeconds(2f);
             }
-
         }
 
         if (childCount == 2)
@@ -211,7 +242,7 @@ public class TMovement : MonoBehaviour
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
+                //CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
                 // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
@@ -233,7 +264,7 @@ public class TMovement : MonoBehaviour
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
                 leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
 
-                CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
+                //CastRaySouthEast3D(leftChildObject[0].transform, 0.4f);
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
                 // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
@@ -263,7 +294,7 @@ public class TMovement : MonoBehaviour
             {
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
                 // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                 // {
@@ -280,7 +311,7 @@ public class TMovement : MonoBehaviour
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
                 // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                 // {
@@ -299,7 +330,7 @@ public class TMovement : MonoBehaviour
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
                 rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
 
-                CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
+                // CastRaySouthWest3D(rightChildObject[0].transform, 0.4f);
 
                 // if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
                 // {
@@ -327,7 +358,7 @@ public class TMovement : MonoBehaviour
             {
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
 
-                CastSouth3D(verticalChildObject[0].transform, 0.4f);
+                // CastSouth3D(verticalChildObject[0].transform, 0.4f);
 
                 // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
                 // {
@@ -345,7 +376,7 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-                CastSouth3D(verticalChildObject[0].transform, 0.4f);
+                // CastSouth3D(verticalChildObject[0].transform, 0.4f);
 
                 // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                 // {
@@ -365,7 +396,7 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
-                CastRaySouthEast3D(verticalChildObject[0].transform, 0.4f);
+                // CastRaySouthEast3D(verticalChildObject[0].transform, 0.4f);
 
                 // if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
                 // {
