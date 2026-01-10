@@ -19,9 +19,14 @@ public class TMovement : MonoBehaviour
     List<GameObject> verticalChildObject = new List<GameObject>();
 
 
-    public Transform mother;
+    public GameManager gameManager;
     void Awake()
     {
+        if (gameManager == null)
+    {
+        gameManager = FindFirstObjectByType<GameManager>(); 
+        // Note: use FindObjectOfType<GameManager>() if on older Unity versions
+    }
         // Populate left diagonal coordinates
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
         {
@@ -45,6 +50,7 @@ public class TMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         countChildren();
         CheckChildrenWorldX();
     }
@@ -133,7 +139,7 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -157,7 +163,7 @@ public class TMovement : MonoBehaviour
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
-                        leftChildObject[0].transform.SetParent(mother.transform, true);
+                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                     }
 
@@ -186,7 +192,8 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -211,17 +218,18 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                    Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
+                {
+                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
 
-                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
-                    leftChildObject[1].transform.SetParent(mother.transform, true);
 
-                }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -238,7 +246,9 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -263,18 +273,19 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                    Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
+                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
+                {
+                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
 
-                Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
-                    leftChildObject[1].transform.SetParent(mother.transform, true);
-                    leftChildObject[2].transform.SetParent(mother.transform, true);
 
-                }
                 yield return new WaitForSeconds(2f);
             }
 
@@ -301,7 +312,7 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -326,14 +337,15 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                    if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
+                {
+                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -348,7 +360,8 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -373,15 +386,16 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                  if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
+                {
+                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
-                    rightChildObject[1].transform.SetParent(mother.transform, true);
-
-                }
+  
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -396,7 +410,9 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -421,16 +437,17 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                    if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
+                {
+                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    rightChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
-                {
-                    rightChildObject[0].transform.SetParent(mother.transform, true);
-                    rightChildObject[1].transform.SetParent(mother.transform, true);
-                    rightChildObject[2].transform.SetParent(mother.transform, true);
 
-                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -457,7 +474,7 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                     verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -482,15 +499,16 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
+                {
+                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -506,7 +524,8 @@ public class TMovement : MonoBehaviour
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
                     Debug.Log("Stopping movement synchronously.");
-
+                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                     enabled = false;
                     yield break;
                 }
@@ -531,15 +550,16 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+                                  if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                {
+                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
-                    verticalChildObject[1].transform.SetParent(mother.transform, true);
-
-                }
+  
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -569,7 +589,9 @@ public class TMovement : MonoBehaviour
                     if (IsBlockAtPosition(verticalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
-
+                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                         // RECORD THE STOP STEP
                         // If this is the first detection, lock the stop at the current index 'i'.
                         // This allows the move to 'i+1' to happen (the landing), then stops everyone.
@@ -581,17 +603,18 @@ public class TMovement : MonoBehaviour
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
+
+                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
+                {
+                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                    verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                }
                     yield break;
                 }
 
 
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
-                {
-                    verticalChildObject[0].transform.SetParent(mother.transform, true);
-                    verticalChildObject[1].transform.SetParent(mother.transform, true);
-                    verticalChildObject[2].transform.SetParent(mother.transform, true);
-
-                }
                 yield return new WaitForSeconds(2f);
             }
         }
