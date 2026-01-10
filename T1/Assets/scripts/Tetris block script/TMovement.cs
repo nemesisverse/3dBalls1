@@ -18,17 +18,6 @@ public class TMovement : MonoBehaviour
     List<GameObject> rightChildObject = new List<GameObject>();
     List<GameObject> verticalChildObject = new List<GameObject>();
 
-    
-    //list of predefine coordinates for left diagonal, right diagonal and vertical and its working fine
-
-    // void MakeChildrenAttachedToMother()
-    // {
-    //     foreach (Transform child in transform)
-    //     {
-    //         child.SetParent(mother, true);
-    //     }
-    // }
-
 
     public Transform mother;
     void Awake()
@@ -82,7 +71,7 @@ public class TMovement : MonoBehaviour
         return false;
     }
 
-    
+
 
 
     void CheckChildrenWorldX()
@@ -120,7 +109,9 @@ public class TMovement : MonoBehaviour
 
     }
 
-     
+    //bool stopNextIteration = false;
+
+    int stopAfterStep = -1; // -1 means "don't stop yet"
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
@@ -130,7 +121,7 @@ public class TMovement : MonoBehaviour
         }
 
 
-        bool stopNextIteration = false;
+
 
         if (childCount == 1)
         {
@@ -139,40 +130,47 @@ public class TMovement : MonoBehaviour
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIteration)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                   
+                    enabled = false;
                     yield break;
                 }
-
                 try
                 {
-                    if (
-                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-
-                        stopNextIteration = true;
-                      
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
-                    
+                    if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
+                    {
+                        leftChildObject[0].transform.SetParent(mother.transform, true);
+
+                    }
+
                     yield break;
                 }
 
                 Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
 
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
-                {
-                    leftChildObject[0].transform.SetParent(mother.transform, true);
+                // if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
+                // {
+                //     leftChildObject[0].transform.SetParent(mother.transform, true);
 
-                }
+                // }
                 yield return new WaitForSeconds(2f);
             }
         }
@@ -184,26 +182,31 @@ public class TMovement : MonoBehaviour
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
 
-            
 
-                // If previous iteration detected a block → stop now
-                if (stopNextIteration)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                   
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIteration = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -232,24 +235,30 @@ public class TMovement : MonoBehaviour
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
                 leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
 
-                // If previous iteration detected a block → stop now
-                if (stopNextIteration)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                    
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(leftDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {leftDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIteration = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -280,8 +289,8 @@ public class TMovement : MonoBehaviour
         {
             yield break; // Exit the coroutine if there are no child objects
         }
-    
-    bool stopNextIterationR = false;
+
+
         if (childCount == 1)
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
@@ -289,23 +298,30 @@ public class TMovement : MonoBehaviour
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIterationR)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                   
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationR = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -329,23 +345,30 @@ public class TMovement : MonoBehaviour
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIterationR)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationR = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -370,23 +393,30 @@ public class TMovement : MonoBehaviour
                 rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
                 rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
 
-                // If previous iteration detected a block → stop now
-                if (stopNextIterationR)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {rightDiagonalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationR = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -415,8 +445,8 @@ public class TMovement : MonoBehaviour
             yield break; // Exit the coroutine if there are no child objects
         }
 
-        bool stopNextIterationV = false;
-       
+
+
         if (childCount == 1)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
@@ -424,23 +454,30 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIterationV)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                   
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(verticalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationV = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -466,23 +503,30 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIterationV)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                    
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(verticalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationV = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -509,23 +553,30 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
                 // If previous iteration detected a block → stop now
-                if (stopNextIterationV)
+                if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement after one extra step.");
+                    Debug.Log("Stopping movement synchronously.");
 
-                 
+                    enabled = false;
                     yield break;
                 }
 
+
+                // 3. CHECK FOR COLLISIONS
                 try
                 {
-                    if (
-                        IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    // Check if the NEXT position has a block
+                    if (IsBlockAtPosition(verticalCoordinates[i + 1]))
                     {
                         Debug.Log($"Block detected near position {verticalCoordinates[i + 1]}.");
 
-                        // Do NOT stop immediately
-                        stopNextIterationV = true;
+                        // RECORD THE STOP STEP
+                        // If this is the first detection, lock the stop at the current index 'i'.
+                        // This allows the move to 'i+1' to happen (the landing), then stops everyone.
+                        if (stopAfterStep == -1)
+                        {
+                            stopAfterStep = i;
+                        }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
