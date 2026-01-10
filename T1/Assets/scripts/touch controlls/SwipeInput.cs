@@ -1,48 +1,28 @@
-using System.Security.Cryptography;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
-
 
 public class SwipeInput : MonoBehaviour
 {
-
-    [SerializeField] private float rotationDuration = 0.25f;
-    private bool isRotating = false;
-
     private TouchControl touchControl;
-    Vector2 startPos;
-    Vector2 endPos;
+    private Vector2 startPos;
+    private Vector2 endPos;
+    
     public float minSwipeDistance = 100f;
-
-
 
     void Awake()
     {
         touchControl = new TouchControl();
-
     }
 
     private void OnEnable()
     {
-        Debug.Log("SwipeInput ENABLED");
-        //GameObject becomes active
-        //Component becomes enabled
-        //Scene loads and object is active
         touchControl.Enable();
-        touchControl.Touch.Press.performed += StartTouch; //initial touch ke time position read karna hai
-        touchControl.Touch.Press.canceled += EndTouch;  //touch chodne ke time position read karna hai
-
+        touchControl.Touch.Press.performed += StartTouch;
+        touchControl.Touch.Press.canceled += EndTouch;
     }
+
     private void OnDisable()
     {
-        // UNSUBSCRIBE
-        //GameObject is disabled
-        //Component is disabled
-        //Scene unloads
-        //Object is destroyed
-
         touchControl.Touch.Press.performed -= StartTouch;
         touchControl.Touch.Press.canceled -= EndTouch;
         touchControl.Disable();
@@ -70,76 +50,41 @@ public class SwipeInput : MonoBehaviour
         {
             if (swipe.x > 0)
             {
-                Debug.Log("Swipe Right");
-                RightRotate();
+                // Swipe Right
+                ApplyRotationInstant(Vector3.up, -90f);
             }
             else
             {
-                LeftRotate();
+                // Swipe Left
+                ApplyRotationInstant(Vector3.up, 90f);
             }
         }
         else
         {
             if (swipe.y > 0)
             {
-                Debug.Log("Swipe Up");
-                UpRotate();
+                // Swipe Up
+                ApplyRotationInstant(Vector3.right, 90f);
             }
             else
             {
-                Debug.Log("Swipe Down");
-                DownRotate();
+                // Swipe Down
+                ApplyRotationInstant(Vector3.right, -90f);
             }
         }
     }
 
-    void RightRotate()
+    // Replaces the Coroutine and TryStartRotate
+    void ApplyRotationInstant(Vector3 axis, float degrees)
     {
-        TryStartRotate(Vector3.up, -90f);
+        // 1. Calculate the new rotation
+        // Multiplying on the LEFT applies the rotation in World Space (which matches your previous logic)
+        Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
+
+        // 2. Snap instantly
+        transform.rotation = targetRotation;
+
+        // 3. (Optional) If you need to trigger Game Manager updates, do it here
+        // GameManager.Instance.CheckGrid(); 
     }
-
-    void LeftRotate()
-    {
-        TryStartRotate(Vector3.up, 90f);
-    }
-
-    void UpRotate()
-    {
-        TryStartRotate(Vector3.right, 90f);
-    }
-
-    void DownRotate()
-    {
-        TryStartRotate(Vector3.right, -90f);
-    }
-
-
-    void TryStartRotate(Vector3 axis, float degrees)
-    {
-        if (isRotating) return;
-        StartCoroutine(RotateByWorldAxis(axis, degrees));
-    }
-    //This code rotates the object around a world axis over time
-    IEnumerator RotateByWorldAxis(Vector3 axis, float degrees)
-    {
-        isRotating = true;
-
-        Quaternion from = transform.rotation;
-        Quaternion to = Quaternion.AngleAxis(degrees, axis) * from;
-
-        float elapsed = 0f;
-        while (elapsed < rotationDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / rotationDuration);
-            transform.rotation = Quaternion.Slerp(from, to, t);
-            yield return null;
-        }
-
-        // snap exactly (prevents drift)
-        transform.rotation = to;
-
-        isRotating = false;
-    }
-
 }
