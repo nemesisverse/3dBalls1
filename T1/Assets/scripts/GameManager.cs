@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 
     // The reference your prefabs need
     public GameObject motherPlatform;
-    public TMovement currentMovementScript;
+  
 
 
     void Awake()
