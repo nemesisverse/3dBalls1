@@ -730,7 +730,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   motherPlatform: {fileID: 1227501322}
-  currentMovementScript: {fileID: 1597435979}
 --- !u!4 &197269483
 Transform:
   m_ObjectHideFlags: 0
@@ -2499,6 +2498,10 @@ PrefabInstance:
       propertyPath: mother
       value: 
       objectReference: {fileID: 604072867}
+    - target: {fileID: 6603598461293980922, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 197269482}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4298,17 +4301,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1597435979 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6603598461293980922, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
-  m_PrefabInstance: {fileID: 860046439}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9281df14d1b254bcbb016d15b2ccbad7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TMovement
 --- !u!1001 &1607246683
 PrefabInstance:
   m_ObjectHideFlags: 0

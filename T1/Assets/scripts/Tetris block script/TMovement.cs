@@ -139,10 +139,19 @@ public class TMovement : MonoBehaviour
                 // If previous iteration detected a block → stop now
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    Debug.Log("Stopping movement synchronously.");
-                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
+                    if (IsBlockAtPosition(leftDiagonalCoordinates[i]))
+                    {
+                        Debug.Log("Stopping movement synchronously.");
+                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        enabled = false;
+                        yield break;
+                    }
+                    else
+                    {
+                        stopAfterStep = -1; // reset stop condition if no block is detected
+
+                    }
+
                 }
                 try
                 {
@@ -329,7 +338,7 @@ public class TMovement : MonoBehaviour
                 // If previous iteration detected a block → stop now
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    if (IsBlockAtPosition(rightDiagonalCoordinates[i + 1]))
+                    if (IsBlockAtPosition(rightDiagonalCoordinates[i]))
                     {
                         Debug.Log("Stopping movement synchronously.");
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -574,7 +583,7 @@ public class TMovement : MonoBehaviour
                 // If previous iteration detected a block → stop now
                 if (stopAfterStep != -1 && i > stopAfterStep)
                 {
-                    if (IsBlockAtPosition(verticalCoordinates[i + 1]))
+                    if (IsBlockAtPosition(verticalCoordinates[i]))
                     {
                         Debug.Log("Stopping movement synchronously.");
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
