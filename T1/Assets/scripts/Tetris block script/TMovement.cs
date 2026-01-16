@@ -151,6 +151,7 @@ public class TMovement : MonoBehaviour
                         {
                             // My path cleared! I can reset the global stop.
                             Debug.Log("Left block cleared. Resuming.");
+
                             stop = -1;
                             stopperID = 0;
                         }
@@ -158,12 +159,19 @@ public class TMovement : MonoBehaviour
                     // CASE B: Someone ELSE stopped the movement (Right or Vertical)
                     else
                     {
-                        // I am not allowed to clear the flag because I don't know if *their* path is clear.
-                        // I must stop synchronously.
-                        Debug.Log("Stopping synchronously (Waiting for another path).");
-                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        enabled = false;
-                        yield break;
+                        Debug.Log("Left Waiting synchronously for path to clear...");
+
+                        // --- WAITING LOGIC ---
+                        while (stop != -1 && stopperID != 1)
+                        {
+                            if (!enabled)
+                            {
+                                leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                yield break;
+                            }
+                            yield return null; // Wait frame by frame
+                        }
+                        // Resume automatically when loop breaks
                     }
                 }
 
@@ -342,10 +350,22 @@ public class TMovement : MonoBehaviour
                     // CASE B: Someone ELSE stopped the movement (Left or Vertical)
                     else
                     {
-                        Debug.Log("Stopping synchronously (Waiting for another path).");
-                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        enabled = false;
-                        yield break;
+                        Debug.Log("Waiting synchronously for path to clear...");
+
+                        // --- THE FIX STARTS HERE ---
+                        // Do NOT yield break. Instead, wait in a loop.
+                        while (stop != -1 && stopperID != 2)
+                        {
+                            // Safety check: If the script gets disabled (permanent stop by owner), quit.
+                            if (!enabled)
+                            {
+                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                yield break;
+                            }
+                            yield return null; // Wait for next frame
+                        }
+                        // If we exit this loop, it means stop became -1. We automatically resume!
+                        // --- THE FIX ENDS HERE ---
                     }
                 }
 
@@ -561,12 +581,20 @@ public class TMovement : MonoBehaviour
                     // CASE B: Someone else stopped it
                     else
                     {
-                        Debug.Log("Stopping synchronously (Waiting for another path).");
-                        // PARENT BOTH OBJECTS
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        enabled = false;
-                        yield break;
+                        Debug.Log("Vertical Waiting synchronously for path to clear...");
+
+                        // --- WAITING LOGIC ---
+                        while (stop != -1 && stopperID != 3)
+                        {
+                            if (!enabled)
+                            {
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                yield break;
+                            }
+                            yield return null; // Wait frame by frame
+                        }
+                        // Resume automatically
                     }
                 }
 
