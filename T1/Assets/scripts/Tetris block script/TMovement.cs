@@ -24,6 +24,7 @@ public class TMovement : MonoBehaviour
 
 
     public GameManager gameManager;
+    
     void Awake()
     {
         if (gameManager == null)
@@ -124,6 +125,8 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
+                 
+                
                 // -------------------------------------------------------------
                 // DOUBLE CHECK LOGIC (With Identity Check)
                 // -------------------------------------------------------------
@@ -178,7 +181,7 @@ public class TMovement : MonoBehaviour
                 // -------------------------------------------------------------
                 // MOVE
                 // -------------------------------------------------------------
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];  
 
                 // -------------------------------------------------------------
                 // DETECTION
