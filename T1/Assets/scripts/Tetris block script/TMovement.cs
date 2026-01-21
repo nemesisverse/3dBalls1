@@ -146,6 +146,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Left confirmed blocked. Stopping all.");
+                            
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             enabled = false;
                             yield break;
@@ -169,6 +170,7 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
+                          
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;
                             }
@@ -201,6 +203,7 @@ public class TMovement : MonoBehaviour
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
+      
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     }
                     yield break;
@@ -338,6 +341,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Right confirmed blocked. Stopping all.");
+                           
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             enabled = false;
                             yield break;
@@ -362,6 +366,7 @@ public class TMovement : MonoBehaviour
                             // Safety check: If the script gets disabled (permanent stop by owner), quit.
                             if (!enabled)
                             {
+                              
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;
                             }
@@ -392,6 +397,7 @@ public class TMovement : MonoBehaviour
                     // Check if object reached final position (End of List)
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
+                       
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     }
                     yield break;
@@ -567,6 +573,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Vertical confirmed blocked. Stopping all.");
+              
                             // PARENT BOTH OBJECTS
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -591,6 +598,8 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
+                                
+                                // PARENT BOTH OBJECTS
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;
@@ -627,6 +636,8 @@ public class TMovement : MonoBehaviour
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
+                  
+                        // PARENT BOTH OBJECTS
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                     }

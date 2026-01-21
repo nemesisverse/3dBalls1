@@ -6,12 +6,19 @@ public class SwipeInput : MonoBehaviour
     private TouchControl touchControl;
     private Vector2 startPos;
     private Vector2 endPos;
-    
+   
     public float minSwipeDistance = 100f;
+    public GameManager gameManager;
 
     void Awake()
     {
         touchControl = new TouchControl();
+        if (gameManager == null)
+        {
+            gameManager = FindFirstObjectByType<GameManager>();
+            // Note: use FindObjectOfType<GameManager>() if on older Unity versions
+        }
+        
     }
 
     private void OnEnable()
@@ -52,11 +59,15 @@ public class SwipeInput : MonoBehaviour
             {
                 // Swipe Right
                 ApplyRotationInstant(Vector3.up, -90f);
+                
+                
+
             }
             else
             {
                 // Swipe Left
                 ApplyRotationInstant(Vector3.up, 90f);
+                
             }
         }
         else
@@ -65,14 +76,21 @@ public class SwipeInput : MonoBehaviour
             {
                 // Swipe Up
                 ApplyRotationInstant(Vector3.right, 90f);
+                
             }
             else
             {
                 // Swipe Down
                 ApplyRotationInstant(Vector3.right, -90f);
+                
             }
         }
     }
+
+
+
+
+
 
     // Replaces the Coroutine and TryStartRotate
     void ApplyRotationInstant(Vector3 axis, float degrees)
@@ -87,4 +105,6 @@ public class SwipeInput : MonoBehaviour
         // 3. (Optional) If you need to trigger Game Manager updates, do it here
         // GameManager.Instance.CheckGrid(); 
     }
+
+   
 }
