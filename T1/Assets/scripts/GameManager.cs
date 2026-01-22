@@ -11,12 +11,141 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance; // Static reference
     // The reference your prefabs need
     public GameObject motherPlatform;
+   List<Vector3> minusZYCoordinates = new List<Vector3>();
+   List<Vector3> plusZYCoordinates = new List<Vector3>();
+
+   List<Vector3> plusYCoordinate = new List<Vector3>();
+
+   List<Vector3> minusYCoordinate = new List<Vector3>();
+
+   List<Vector3> minusXminusZCoordinate = new List<Vector3>();
+
+   List<Vector3> miusXplusZCoordinate = new List<Vector3>();
+   List<Vector3> plusXminusZCoordinate   = new List<Vector3>();
    
+   List<Vector3> plusXplusZCoordinate   = new List<Vector3>();
+
+   List<Vector3> minusYminusZCoordinate = new List<Vector3>();
+
+   List<Vector3> minusYplusZCoordinate   = new List<Vector3>();
+
+   List<Vector3> minusX = new List<Vector3>();
+
+   List<Vector3> plusX = new List<Vector3>();
+   List<Vector3> plusZ = new List<Vector3>();
+
+   List<Vector3> minusZ = new List<Vector3>();
+
+   List<Vector3> minusY = new List<Vector3>();
+
+   List<Vector3> minusXplusY  = new List<Vector3>();
+
+   List<Vector3> plusXplusY  = new List<Vector3>();
+
+   List<Vector3> minusXminusY  = new List<Vector3>();
+
+   List<Vector3> plusXminusY  = new List<Vector3>();
 
     [System.Obsolete]
     void Awake()
     {
         Instance = this;
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusZYCoordinates.Add(new Vector3(0, v, -v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            plusZYCoordinates.Add(new Vector3(0, v, v));
+
+        }
+        
+        for (float y = 12.5f; y >= 2.5f; y -= 1f)
+        {
+            minusYCoordinate.Add(new Vector3(0f, -y, 0f));
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusXminusZCoordinate.Add(new Vector3(-v, 0, -v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            miusXplusZCoordinate.Add(new Vector3(-v, 0, v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            plusXminusZCoordinate.Add(new Vector3(v, 0, -v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            plusXplusZCoordinate.Add(new Vector3(v, 0, v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusYminusZCoordinate.Add(new Vector3(0, -v, -v));
+
+        }
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusYplusZCoordinate.Add(new Vector3(0, -v, v));
+
+        }
+
+        // single axis coordinates
+        for (float y = 14.5f; y >= 2.5f; y -= 1f)
+        {
+            plusYCoordinate.Add(new Vector3(0f, y, 0f));
+        }
+        for(float y = 14.5f; y >= 2.5f; y -= 1f)
+        {
+            minusY.Add(new Vector3(0f, -y, 0f));
+        }
+        for(float x = 14.5f ; x >= 2.5f; x -= 1f)
+        {
+            minusX.Add(new Vector3(-x, 0, 0));
+        }
+        for(float x = 14.5f ; x >= 2.5f; x -= 1f)
+        {
+            plusX.Add(new Vector3(x, 0, 0));
+        }
+        for(float z = 14.5f ; z >= 2.5f; z -= 1f)
+        {
+            plusZ.Add(new Vector3(0, 0, z));
+        }
+        for(float z = 14.5f ; z >= 2.5f; z -= 1f)
+        {
+            minusZ.Add(new Vector3(0, 0, -z));
+        }
+        
+
+
+        for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusXplusY.Add(new Vector3(-v, v, 0));
+        }
+        for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            plusXplusY.Add(new Vector3(v, v, 0));
+        }
+
+        for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            minusXminusY.Add(new Vector3(-v, -v, 0));
+        }
+
+        for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            plusXminusY.Add(new Vector3(v, -v, 0));
+        }
+
+
+
+
         
         // Try to find the component and assign it
         // Search the ENTIRE scene for the TMovement script

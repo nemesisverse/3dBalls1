@@ -3809,6 +3809,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInput
   minSwipeDistance: 100
+  gameManager: {fileID: 0}
 --- !u!1 &1237907810
 GameObject:
   m_ObjectHideFlags: 0
