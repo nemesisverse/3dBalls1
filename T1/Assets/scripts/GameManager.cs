@@ -10,13 +10,13 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance; // Static reference
     // The reference your prefabs need
-    public GameObject motherPlatform;
+    public GameObject motherPlatform;//
    List<Vector3> minusZYCoordinates = new List<Vector3>();
    List<Vector3> plusZYCoordinates = new List<Vector3>();
 
-   List<Vector3> plusYCoordinate = new List<Vector3>();
+   List<Vector3> plusY = new List<Vector3>();
 
-   List<Vector3> minusYCoordinate = new List<Vector3>();
+   //List<Vector3> minusYCoordinate = new List<Vector3>();
 
    List<Vector3> minusXminusZCoordinate = new List<Vector3>();
 
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     // Single axis directions (Up, Down, Left, Right, Forward, Back)
     for (float v = 14.5f; v >= 2.5f; v -= 1f)
     {
-        plusYCoordinate.Add(new Vector3(0, v, 0));  // Up
+        plusY.Add(new Vector3(0, v, 0));  // Up
         minusY.Add(new Vector3(0, -v, 0));          // Down
         
         minusX.Add(new Vector3(-v, 0, 0));          // Left
