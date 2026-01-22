@@ -46,7 +46,8 @@ public class GameManager : MonoBehaviour
 
    List<Vector3> plusXminusY  = new List<Vector3>();
 
-    [System.Obsolete]
+   
+
     void Awake()
     {
         Instance = this;
@@ -61,10 +62,7 @@ public class GameManager : MonoBehaviour
 
         }
         
-        for (float y = 12.5f; y >= 2.5f; y -= 1f)
-        {
-            minusYCoordinate.Add(new Vector3(0f, -y, 0f));
-        }
+       
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
         {
             minusXminusZCoordinate.Add(new Vector3(-v, 0, -v));
