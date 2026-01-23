@@ -147,6 +147,12 @@ public class TMovement : MonoBehaviour
                         {
                             Debug.Log("Left confirmed blocked. Stopping all.");
 
+                            if(gameManager.plusXDimension[i-1] == null)
+                            {
+                                gameManager.plusXDimension[i-1] = leftChildObject[0];
+                                Debug.Log("Left block added to plusXDimension at index " + (i-1));
+                            }
+
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             enabled = false;
                             yield break;
@@ -170,6 +176,11 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
+                                if(gameManager.plusXDimension[i-1] == null)
+                            {
+                                gameManager.plusXDimension[i-1] = leftChildObject[0];
+                                Debug.Log("Left block added to plusXDimension at index " + (i-1));
+                            }
 
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;

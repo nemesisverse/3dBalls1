@@ -11,116 +11,150 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance; // Static reference
     // The reference your prefabs need
     public GameObject motherPlatform;//
-   List<Vector3> minusZYCoordinates = new List<Vector3>();
-   List<Vector3> plusZYCoordinates = new List<Vector3>();
+    List<Vector3> minusZYCoordinates = new List<Vector3>();
+    List<Vector3> plusZYCoordinates = new List<Vector3>();
 
-   List<Vector3> plusY = new List<Vector3>();
+    List<Vector3> plusY = new List<Vector3>();
 
-   //List<Vector3> minusYCoordinate = new List<Vector3>();
+    //List<Vector3> minusYCoordinate = new List<Vector3>();
 
-   List<Vector3> minusXminusZCoordinate = new List<Vector3>();
+    List<Vector3> minusXminusZCoordinate = new List<Vector3>();
 
-   List<Vector3> miusXplusZCoordinate = new List<Vector3>();
-   List<Vector3> plusXminusZCoordinate   = new List<Vector3>();
-   
-   List<Vector3> plusXplusZCoordinate   = new List<Vector3>();
+    List<Vector3> miusXplusZCoordinate = new List<Vector3>();
+    List<Vector3> plusXminusZCoordinate = new List<Vector3>();
 
-   List<Vector3> minusYminusZCoordinate = new List<Vector3>();
+    List<Vector3> plusXplusZCoordinate = new List<Vector3>();
 
-   List<Vector3> minusYplusZCoordinate   = new List<Vector3>();
+    List<Vector3> minusYminusZCoordinate = new List<Vector3>();
 
-   List<Vector3> minusX = new List<Vector3>();
+    List<Vector3> minusYplusZCoordinate = new List<Vector3>();
 
-   List<Vector3> plusX = new List<Vector3>();
-   List<Vector3> plusZ = new List<Vector3>();
+    List<Vector3> minusX = new List<Vector3>();
 
-   List<Vector3> minusZ = new List<Vector3>();
+    List<Vector3> plusX = new List<Vector3>();
+    List<Vector3> plusZ = new List<Vector3>();
 
-   List<Vector3> minusY = new List<Vector3>();
+    List<Vector3> minusZ = new List<Vector3>();
 
-   List<Vector3> minusXplusY  = new List<Vector3>();
+    List<Vector3> minusY = new List<Vector3>();
 
-   List<Vector3> plusXplusY  = new List<Vector3>();
+    List<Vector3> minusXplusY = new List<Vector3>();
 
-   List<Vector3> minusXminusY  = new List<Vector3>();
+    List<Vector3> plusXplusY = new List<Vector3>();
 
-   List<Vector3> plusXminusY  = new List<Vector3>();
+    List<Vector3> minusXminusY = new List<Vector3>();
 
-
-   /// /////////////////////////////////////////////////
-   
+    List<Vector3> plusXminusY = new List<Vector3>();
 
 
+    /// /////////////////////////////////////////////////
 
-   // --- 1. Cardinals (Single Axis) ---
-    List<GameObject> plusYDimension = new List<GameObject>();  // Up
-    List<GameObject> minusYDimension = new List<GameObject>(); // Down
-    List<GameObject> minusXDimension = new List<GameObject>(); // Left
-    List<GameObject> plusXDimension = new List<GameObject>();  // Right
-    List<GameObject> plusZDimension = new List<GameObject>();  // Forward
-    List<GameObject> minusZDimension = new List<GameObject>(); // Back
+
+
+
+    // --- 1. Cardinals (Single Axis) ---
+    public List<GameObject> plusYDimension = new List<GameObject>();  // Up
+    public List<GameObject> minusYDimension = new List<GameObject>(); // Down
+    public List<GameObject> minusXDimension = new List<GameObject>(); // Left
+    public List<GameObject> plusXDimension = new List<GameObject>();  // Right
+    public List<GameObject> plusZDimension = new List<GameObject>();  // Forward
+    public List<GameObject> minusZDimension = new List<GameObject>(); // Back
 
     // --- 2. Y-Z Plane (Up/Down + Fwd/Back) ---
-    List<GameObject> plusYplusZDimension = new List<GameObject>();  // Up-Forward
-    List<GameObject> plusYminusZDimension = new List<GameObject>(); // Up-Back (This matches your minusZplusY example)
-    List<GameObject> minusYplusZDimension = new List<GameObject>(); // Down-Forward
-    List<GameObject> minusYminusZDimension = new List<GameObject>();// Down-Back
+    public List<GameObject> plusYplusZDimension = new List<GameObject>();  // Up-Forward
+    public List<GameObject> plusYminusZDimension = new List<GameObject>(); // Up-Back (This matches your minusZplusY example)
+    public List<GameObject> minusYplusZDimension = new List<GameObject>(); // Down-Forward
+    public List<GameObject> minusYminusZDimension = new List<GameObject>();// Down-Back
 
     // --- 3. X-Z Plane (Left/Right + Fwd/Back) ---
-    List<GameObject> minusXminusZDimension = new List<GameObject>(); // Left-Back
-    List<GameObject> minusXplusZDimension = new List<GameObject>();  // Left-Forward
-    List<GameObject> plusXminusZDimension = new List<GameObject>();  // Right-Back
-    List<GameObject> plusXplusZDimension = new List<GameObject>();   // Right-Forward
+    public List<GameObject> minusXminusZDimension = new List<GameObject>(); // Left-Back
+    public List<GameObject> minusXplusZDimension = new List<GameObject>();  // Left-Forward
+    public List<GameObject> plusXminusZDimension = new List<GameObject>();  // Right-Back
+    public List<GameObject> plusXplusZDimension = new List<GameObject>();   // Right-Forward
 
     // --- 4. X-Y Plane (Left/Right + Up/Down) ---
-    List<GameObject> minusXplusYDimension = new List<GameObject>();  // Left-Up
-    List<GameObject> plusXplusYDimension = new List<GameObject>();   // Right-Up
-    List<GameObject> minusXminusYDimension = new List<GameObject>(); // Left-Down
-    List<GameObject> plusXminusYDimension = new List<GameObject>();  // Right-Down
-   
-   
+    public List<GameObject> minusXplusYDimension = new List<GameObject>();  // Left-Up
+    public List<GameObject> plusXplusYDimension = new List<GameObject>();   // Right-Up
+    public List<GameObject> minusXminusYDimension = new List<GameObject>(); // Left-Down
+    public List<GameObject> plusXminusYDimension = new List<GameObject>();  // Right-Down
 
-   
+
+
+
 
     void Awake()
     {
         Instance = this;
 
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-    {
-        // Y-Z Plane
-        minusZYCoordinates.Add(new Vector3(0, v, -v));      // Up-Back
-        plusZYCoordinates.Add(new Vector3(0, v, v));        // Up-Forward
-        minusYminusZCoordinate.Add(new Vector3(0, -v, -v)); // Down-Back
-        minusYplusZCoordinate.Add(new Vector3(0, -v, v));   // Down-Forward
+        {
+            // Y-Z Plane
+            minusZYCoordinates.Add(new Vector3(0, v, -v));      // Up-Back
+            plusYminusZDimension.Add(null);
 
-        // X-Z Plane
-        minusXminusZCoordinate.Add(new Vector3(-v, 0, -v)); // Left-Back
-        miusXplusZCoordinate.Add(new Vector3(-v, 0, v));    // Left-Forward
-        plusXminusZCoordinate.Add(new Vector3(v, 0, -v));   // Right-Back
-        plusXplusZCoordinate.Add(new Vector3(v, 0, v));     // Right-Forward
 
-        // X-Y Plane
-        minusXplusY.Add(new Vector3(-v, v, 0));             // Left-Up
-        plusXplusY.Add(new Vector3(v, v, 0));               // Right-Up
-        minusXminusY.Add(new Vector3(-v, -v, 0));           // Left-Down
-        plusXminusY.Add(new Vector3(v, -v, 0));             // Right-Down
-    }
+            plusZYCoordinates.Add(new Vector3(0, v, v));        // Up-Forward
+            plusYplusZDimension.Add(null);
 
-    // --- LOOP 2: CARDINALS (Step 1.0) ---
-    // Single axis directions (Up, Down, Left, Right, Forward, Back)
-    for (float v = 14.5f; v >= 2.5f; v -= 1f)
-    {
-        plusY.Add(new Vector3(0, v, 0));  // Up
-        minusY.Add(new Vector3(0, -v, 0));          // Down
-        
-        minusX.Add(new Vector3(-v, 0, 0));          // Left
-        plusX.Add(new Vector3(v, 0, 0));            // Right
-        
-        plusZ.Add(new Vector3(0, 0, v));            // Forward
-        minusZ.Add(new Vector3(0, 0, -v));          // Back
-    }
-       
+            minusYminusZCoordinate.Add(new Vector3(0, -v, -v)); // Down-Back
+            minusYminusZDimension.Add(null);
+
+            minusYplusZCoordinate.Add(new Vector3(0, -v, v));   // Down-Forward
+            minusYplusZDimension.Add(null);
+
+            // X-Z Plane
+            minusXminusZCoordinate.Add(new Vector3(-v, 0, -v)); // Left-Back
+            minusXminusZDimension.Add(null);
+
+            miusXplusZCoordinate.Add(new Vector3(-v, 0, v));    // Left-Forward
+            minusXplusZDimension.Add(null);
+
+            plusXminusZCoordinate.Add(new Vector3(v, 0, -v));   // Right-Back
+            plusXminusZDimension.Add(null);
+
+
+            plusXplusZCoordinate.Add(new Vector3(v, 0, v));     // Right-Forward
+            plusXplusZDimension.Add(null);
+
+            // X-Y Plane
+            minusXplusY.Add(new Vector3(-v, v, 0));             // Left-Up
+            minusXplusYDimension.Add(null);
+
+            plusXplusY.Add(new Vector3(v, v, 0));               // Right-Up
+            plusXplusYDimension.Add(null);
+
+
+            minusXminusY.Add(new Vector3(-v, -v, 0));           // Left-Down
+            minusXminusYDimension.Add(null);
+
+            plusXminusY.Add(new Vector3(v, -v, 0));             // Right-Down
+            plusXminusYDimension.Add(null);
+
+        }
+
+        // --- LOOP 2: CARDINALS (Step 1.0) ---
+        // Single axis directions (Up, Down, Left, Right, Forward, Back)
+        for (float v = 14.5f; v >= 2.5f; v -= 1f)
+        {
+            plusY.Add(new Vector3(0, v, 0));  // Up
+            plusYDimension.Add(null);
+
+            minusY.Add(new Vector3(0, -v, 0));          // Down
+            minusYDimension.Add(null);
+
+            minusX.Add(new Vector3(-v, 0, 0));          // Left
+            minusXDimension.Add(null);
+
+            plusX.Add(new Vector3(v, 0, 0));            // Right
+            plusXDimension.Add(null);
+
+            plusZ.Add(new Vector3(0, 0, v));            // Forward
+            plusZDimension.Add(null);
+
+            minusZ.Add(new Vector3(0, 0, -v));          // Back
+            minusZDimension.Add(null);
+        }
+
     }
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     {
@@ -157,7 +191,7 @@ public class GameManager : MonoBehaviour
     //     return false;
     // }
 
- 
+
 
 
 }
