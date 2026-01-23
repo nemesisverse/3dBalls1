@@ -46,6 +46,40 @@ public class GameManager : MonoBehaviour
 
    List<Vector3> plusXminusY  = new List<Vector3>();
 
+
+   /// /////////////////////////////////////////////////
+   
+
+
+
+   // --- 1. Cardinals (Single Axis) ---
+    List<GameObject> plusYDimension = new List<GameObject>();  // Up
+    List<GameObject> minusYDimension = new List<GameObject>(); // Down
+    List<GameObject> minusXDimension = new List<GameObject>(); // Left
+    List<GameObject> plusXDimension = new List<GameObject>();  // Right
+    List<GameObject> plusZDimension = new List<GameObject>();  // Forward
+    List<GameObject> minusZDimension = new List<GameObject>(); // Back
+
+    // --- 2. Y-Z Plane (Up/Down + Fwd/Back) ---
+    List<GameObject> plusYplusZDimension = new List<GameObject>();  // Up-Forward
+    List<GameObject> plusYminusZDimension = new List<GameObject>(); // Up-Back (This matches your minusZplusY example)
+    List<GameObject> minusYplusZDimension = new List<GameObject>(); // Down-Forward
+    List<GameObject> minusYminusZDimension = new List<GameObject>();// Down-Back
+
+    // --- 3. X-Z Plane (Left/Right + Fwd/Back) ---
+    List<GameObject> minusXminusZDimension = new List<GameObject>(); // Left-Back
+    List<GameObject> minusXplusZDimension = new List<GameObject>();  // Left-Forward
+    List<GameObject> plusXminusZDimension = new List<GameObject>();  // Right-Back
+    List<GameObject> plusXplusZDimension = new List<GameObject>();   // Right-Forward
+
+    // --- 4. X-Y Plane (Left/Right + Up/Down) ---
+    List<GameObject> minusXplusYDimension = new List<GameObject>();  // Left-Up
+    List<GameObject> plusXplusYDimension = new List<GameObject>();   // Right-Up
+    List<GameObject> minusXminusYDimension = new List<GameObject>(); // Left-Down
+    List<GameObject> plusXminusYDimension = new List<GameObject>();  // Right-Down
+   
+   
+
    
 
     void Awake()
@@ -86,102 +120,7 @@ public class GameManager : MonoBehaviour
         plusZ.Add(new Vector3(0, 0, v));            // Forward
         minusZ.Add(new Vector3(0, 0, -v));          // Back
     }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusZYCoordinates.Add(new Vector3(0, v, -v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     plusZYCoordinates.Add(new Vector3(0, v, v));
-
-        // }
-        
        
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusXminusZCoordinate.Add(new Vector3(-v, 0, -v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     miusXplusZCoordinate.Add(new Vector3(-v, 0, v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     plusXminusZCoordinate.Add(new Vector3(v, 0, -v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     plusXplusZCoordinate.Add(new Vector3(v, 0, v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusYminusZCoordinate.Add(new Vector3(0, -v, -v));
-
-        // }
-        // for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusYplusZCoordinate.Add(new Vector3(0, -v, v));
-
-        // }
-
-        // // single axis coordinates
-        // for (float y = 14.5f; y >= 2.5f; y -= 1f)
-        // {
-        //     plusYCoordinate.Add(new Vector3(0f, y, 0f));
-        // }
-        // for(float y = 14.5f; y >= 2.5f; y -= 1f)
-        // {
-        //     minusY.Add(new Vector3(0f, -y, 0f));
-        // }
-        // for(float x = 14.5f ; x >= 2.5f; x -= 1f)
-        // {
-        //     minusX.Add(new Vector3(-x, 0, 0));
-        // }
-        // for(float x = 14.5f ; x >= 2.5f; x -= 1f)
-        // {
-        //     plusX.Add(new Vector3(x, 0, 0));
-        // }
-        // for(float z = 14.5f ; z >= 2.5f; z -= 1f)
-        // {
-        //     plusZ.Add(new Vector3(0, 0, z));
-        // }
-        // for(float z = 14.5f ; z >= 2.5f; z -= 1f)
-        // {
-        //     minusZ.Add(new Vector3(0, 0, -z));
-        // }
-        
-
-
-        // for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusXplusY.Add(new Vector3(-v, v, 0));
-        // }
-        // for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     plusXplusY.Add(new Vector3(v, v, 0));
-        // }
-
-        // for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     minusXminusY.Add(new Vector3(-v, -v, 0));
-        // }
-
-        // for(float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
-        // {
-        //     plusXminusY.Add(new Vector3(v, -v, 0));
-        // }
-
-
-
-
-        
-        // Try to find the component and assign it
-        // Search the ENTIRE scene for the TMovement script
     }
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     {

@@ -24,7 +24,7 @@ public class TMovement : MonoBehaviour
 
 
     public GameManager gameManager;
-    
+
     void Awake()
     {
         if (gameManager == null)
@@ -125,8 +125,8 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                 
-                
+
+
                 // -------------------------------------------------------------
                 // DOUBLE CHECK LOGIC (With Identity Check)
                 // -------------------------------------------------------------
@@ -146,7 +146,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Left confirmed blocked. Stopping all.");
-                            
+
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             enabled = false;
                             yield break;
@@ -170,7 +170,7 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
-                          
+
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;
                             }
@@ -183,7 +183,7 @@ public class TMovement : MonoBehaviour
                 // -------------------------------------------------------------
                 // MOVE
                 // -------------------------------------------------------------
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];  
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
 
                 // -------------------------------------------------------------
                 // DETECTION
@@ -203,7 +203,7 @@ public class TMovement : MonoBehaviour
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
-      
+
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     }
                     yield break;
@@ -213,101 +213,9 @@ public class TMovement : MonoBehaviour
             }
         }
 
-        if (childCount == 2)
-        {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
-            {
-
-                // 1. SYNC CHECK
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
 
 
 
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                    if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
-                    {
-                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-
-        }
-
-        if (childCount == 3)
-        {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
-            {
-                // 1. SYNC CHECK
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
-                leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
-
-
-
-
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    // Check if the NEXT position has a block
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    Debug.Log($"child {child.position} list {leftDiagonalCoordinates[i]}");
-                    if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] && leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2] && leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
-                    {
-                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-
-        }
 
     }
 
@@ -341,7 +249,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Right confirmed blocked. Stopping all.");
-                           
+
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             enabled = false;
                             yield break;
@@ -366,7 +274,7 @@ public class TMovement : MonoBehaviour
                             // Safety check: If the script gets disabled (permanent stop by owner), quit.
                             if (!enabled)
                             {
-                              
+
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 yield break;
                             }
@@ -397,7 +305,7 @@ public class TMovement : MonoBehaviour
                     // Check if object reached final position (End of List)
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
-                       
+
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                     }
                     yield break;
@@ -406,95 +314,9 @@ public class TMovement : MonoBehaviour
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
-        if (childCount == 2)
-        {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
-            {
-
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-                rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
-
-                // If previous iteration detected a block → stop now
 
 
 
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
-                    {
-                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-        }
-        if (childCount == 3)
-        {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
-            {
-
-
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    rightChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-                rightChildObject[1].transform.position = rightDiagonalCoordinates[i - 1];
-                rightChildObject[2].transform.position = rightDiagonalCoordinates[i - 2];
-
-
-
-
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] && rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2] && rightChildObject[2].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 3])
-                    {
-                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        rightChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-        }
 
     }
 
@@ -508,47 +330,6 @@ public class TMovement : MonoBehaviour
 
 
 
-        if (childCount == 1)
-        {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
-            {
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-
-                verticalChildObject[0].transform.position = verticalCoordinates[i];
-
-                // If previous iteration detected a block → stop now
-
-
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    // Check if the NEXT position has a block
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
-                    {
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-        }
 
         if (childCount == 2)
         {
@@ -573,7 +354,7 @@ public class TMovement : MonoBehaviour
                         if (isStillBlocked)
                         {
                             Debug.Log("Vertical confirmed blocked. Stopping all.");
-              
+
                             // PARENT BOTH OBJECTS
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -598,7 +379,7 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
-                                
+
                                 // PARENT BOTH OBJECTS
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -636,7 +417,7 @@ public class TMovement : MonoBehaviour
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                  
+
                         // PARENT BOTH OBJECTS
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -647,53 +428,6 @@ public class TMovement : MonoBehaviour
             }
         }
 
-        if (childCount == 3)
-        {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
-            {
-                if (stop != -1 && i > stop)
-                {
-                    Debug.Log("Stopping movement synchronously.");
-                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    enabled = false;
-                    yield break;
-                }
-                verticalChildObject[0].transform.position = verticalCoordinates[i];
-                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
-                verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
-
-                // If previous iteration detected a block → stop now
-
-
-
-                // 3. CHECK FOR COLLISIONS
-                try
-                {
-                    // Check if the NEXT position has a block
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
-                    {
-                        if (stop == -1) stop = i;
-                    }
-                }
-                catch (System.ArgumentOutOfRangeException)
-                {
-
-                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] && verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] && verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
-                    {
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-                    }
-                    yield break;
-                }
-
-
-                yield return new WaitForSeconds(moveSpeed);
-            }
-        }
 
     }
 
