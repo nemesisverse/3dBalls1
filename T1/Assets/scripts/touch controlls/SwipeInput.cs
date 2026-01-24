@@ -6,6 +6,8 @@ public class SwipeInput : MonoBehaviour
     private TouchControl touchControl;
     private Vector2 startPos;
     private Vector2 endPos;
+
+   public bool canSwipeDown = true;
    
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
@@ -65,8 +67,10 @@ public class SwipeInput : MonoBehaviour
             }
             else
             {
-                // Swipe Left
+                
                 ApplyRotationInstant(Vector3.up, 90f);
+                
+                
                 
             }
         }
@@ -80,8 +84,13 @@ public class SwipeInput : MonoBehaviour
             }
             else
             {
+                if(canSwipeDown)ApplyRotationInstant(Vector3.right, -90f);
+                else
+                {
+                    Debug.Log("Swipe Down Disabled");
+                }
                 // Swipe Down
-                ApplyRotationInstant(Vector3.right, -90f);
+                
                 
             }
         }
