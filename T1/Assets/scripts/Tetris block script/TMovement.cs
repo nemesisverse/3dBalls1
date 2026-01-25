@@ -595,7 +595,7 @@ public class TMovement : MonoBehaviour
                             }
                             yield return null; // Wait frame by frame
                         }
-                        
+
                         // Resume automatically when loop breaks
                     }
                 }
@@ -775,16 +775,17 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-               
+
 
                 if (swipeInput != null)
                 {
                     swipeInput.canSwipeDown = true;
                     swipeInput.canSwipeUp = true;
                     swipeInput.canSwipeLeft = true;
+                    swipeInput.canSwipeRight = true;
                 }
 
-                 if (stop == -1)
+                if (stop == -1)
                 {
                     bool pathBlockedNow = false;
                     try
@@ -837,6 +838,7 @@ public class TMovement : MonoBehaviour
                             if (swipeInput != null) swipeInput.canSwipeDown = true;
                             if (swipeInput != null) swipeInput.canSwipeUp = true;
                             if (swipeInput != null) swipeInput.canSwipeLeft = true;
+                            if (swipeInput != null) swipeInput.canSwipeRight = true;
                             enabled = false;
                             yield break;
                         }
@@ -865,6 +867,7 @@ public class TMovement : MonoBehaviour
                                 if (swipeInput != null) swipeInput.canSwipeDown = true;
                                 if (swipeInput != null) swipeInput.canSwipeUp = true;
                                 if (swipeInput != null) swipeInput.canSwipeLeft = true;
+                                if (swipeInput != null) swipeInput.canSwipeRight = true;
                                 yield break;
                             }
                             yield return null; // Wait frame by frame
@@ -902,6 +905,14 @@ public class TMovement : MonoBehaviour
                     }
                 }
 
+                if(swipeRightCheckAndAssignDimension(i))
+                {
+                    if (swipeInput != null)
+                    {
+                        swipeInput.canSwipeRight = false;
+                    }
+                }
+
 
                 // -------------------------------------------------------------
                 // 3. DETECTION (Look Ahead i+1)
@@ -930,6 +941,7 @@ public class TMovement : MonoBehaviour
                         if (swipeInput != null) swipeInput.canSwipeDown = true;
                         if (swipeInput != null) swipeInput.canSwipeUp = true;
                         if (swipeInput != null) swipeInput.canSwipeLeft = true;
+                        if (swipeInput != null) swipeInput.canSwipeRight = true;
 
 
 
@@ -944,172 +956,6 @@ public class TMovement : MonoBehaviour
     }
 
 
-
-    //     IEnumerator moveVertical(Transform child, int childCount)
-    // {
-    //     if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
-
-    //     if (childCount == 2)
-    //     {
-    //         for (int i = 2; i < verticalCoordinates.Count; i++)
-    //         {
-    //             // Reset at start of frame
-    //             if (swipeInput != null)
-    //             {
-    //                 swipeInput.canSwipeDown = true;
-    //                 swipeInput.canSwipeUp = true;
-    //                 swipeInput.canSwipeLeft = true;
-    //             }
-
-    //             // -----------------------------------------------------------
-    //             // 1. IMMEDIATE OBSTACLE CHECK (Your new code)
-    //             // -----------------------------------------------------------
-    //             if (stop == -1)
-    //             {
-    //                 bool pathBlockedNow = false;
-    //                 try
-    //                 {
-    //                     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]))
-    //                     {
-    //                         // Distance check to avoid detecting ourselves
-    //                         float dist = Vector3.Distance(verticalChildObject[0].transform.position, verticalCoordinates[i]);
-    //                         if (dist > 0.1f) pathBlockedNow = true;
-    //                     }
-    //                 }
-    //                 catch { }
-
-    //                 if (pathBlockedNow)
-    //                 {
-    //                     Debug.Log("Sudden obstacle detected at Vertical index " + i);
-    //                     stop = i - 1;
-    //                     stopperID = 3;
-    //                 }
-    //             }
-
-    //             // -----------------------------------------------------------
-    //             // 2. STOP LOGIC (The Fix is Here)
-    //             // -----------------------------------------------------------
-    //             if (stop != -1 && i > stop)
-    //             {
-    //                 if (stopperID == 3)
-    //                 {
-    //                     bool isStillBlocked = false;
-    //                     try { isStillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); }
-    //                     catch { isStillBlocked = false; }
-
-    //                     if (isStillBlocked)
-    //                     {
-    //                         Debug.Log("Vertical confirmed blocked. Stopping all.");
-    //                         verticalflagRadius(i); // This registers us in the grid
-
-    //                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-    //                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-    //                         // --- FIX STARTS HERE ---
-    //                         // Don't just set them to TRUE. Check if they should be FALSE.
-
-    //                         if (swipeInput != null) 
-    //                         {
-    //                             // 1. Reset to true (Default)
-    //                             swipeInput.canSwipeDown = true;
-    //                             swipeInput.canSwipeUp = true;
-    //                             swipeInput.canSwipeLeft = true;
-
-    //                             // 2. Check if we need to DISABLE them based on where we stopped
-    //                             if (swipeDownCheckAndAssignDimension(i)) swipeInput.canSwipeDown = false;
-    //                             if (swipeUpCheckAndAssignDimension(i)) swipeInput.canSwipeUp = false;
-    //                             if (swipeLeftCheckAndAssignDimension(i)) swipeInput.canSwipeLeft = false;
-    //                         }
-    //                         // --- FIX ENDS HERE ---
-
-    //                         enabled = false;
-    //                         yield break;
-    //                     }
-    //                     else
-    //                     {
-    //                         Debug.Log("Vertical block cleared. Resuming.");
-    //                         stop = -1;
-    //                         stopperID = 0;
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     while (stop != -1 && stopperID != 3)
-    //                     {
-    //                         if (!enabled)
-    //                         {
-    //                             verticalflagRadius(i);
-    //                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-    //                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-    //                             yield break;
-    //                         }
-    //                         yield return null;
-    //                     }
-    //                 }
-    //             }
-
-    //             // -----------------------------------------------------------
-    //             // 3. MOVEMENT & STANDARD CHECKS
-    //             // -----------------------------------------------------------
-    //             verticalChildObject[0].transform.position = verticalCoordinates[i];
-    //             verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
-
-    //             // Standard loop checks
-    //             if (swipeDownCheckAndAssignDimension(i))
-    //             {
-    //                 if (swipeInput != null) swipeInput.canSwipeDown = false;
-    //             }
-    //             if (swipeUpCheckAndAssignDimension(i))
-    //             {
-    //                 if (swipeInput != null) swipeInput.canSwipeUp = false;
-    //             }
-    //             if (swipeLeftCheckAndAssignDimension(i))
-    //             {
-    //                 if (swipeInput != null) swipeInput.canSwipeLeft = false;
-    //             }
-
-    //             // -----------------------------------------------------------
-    //             // 4. PREDICTIVE DETECTION
-    //             // -----------------------------------------------------------
-    //             try
-    //             {
-    //                 if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
-    //                 {
-    //                     if (stop == -1)
-    //                     {
-    //                         stop = i;
-    //                         stopperID = 3;
-    //                     }
-    //                 }
-    //             }
-    //             catch (System.ArgumentOutOfRangeException)
-    //             {
-    //                 if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
-    //                     verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
-    //                 {
-    //                     verticalflagRadius(i + 1);
-    //                     verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-    //                     verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-
-    //                     // Same fix here for the final position (End of List)
-    //                     if (swipeInput != null)
-    //                     {
-    //                         swipeInput.canSwipeDown = true;
-    //                         swipeInput.canSwipeUp = true;
-    //                         swipeInput.canSwipeLeft = true;
-
-    //                         // Check one last time at the final position
-    //                         if (swipeDownCheckAndAssignDimension(i+1)) swipeInput.canSwipeDown = false;
-    //                         if (swipeUpCheckAndAssignDimension(i+1)) swipeInput.canSwipeUp = false;
-    //                         if (swipeLeftCheckAndAssignDimension(i+1)) swipeInput.canSwipeLeft = false;
-    //                     }
-    //                 }
-    //                 yield break;
-    //             }
-    //             yield return new WaitForSeconds(moveSpeed);
-    //         }
-    //     }
-    // }
 
     void countChildren()
     {
@@ -1235,7 +1081,7 @@ public class TMovement : MonoBehaviour
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.z > 0f) ||
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.z > 0f))
                 {
-                    Debug.Log(allDimensions[d][i].transform.position);
+                    Debug.Log(allDimensions[d][i].transform.position + "   dont allow down swipe");
                     return true;
 
                 }
@@ -1308,7 +1154,7 @@ public class TMovement : MonoBehaviour
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.z < 0f) ||
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.z < 0f))
                 {
-                    Debug.Log(allDimensions[d][i].transform.position);
+                    Debug.Log(allDimensions[d][i].transform.position + "   dont allow up swipe");
                     return true;
 
                 }
@@ -1379,7 +1225,78 @@ public class TMovement : MonoBehaviour
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z < 0f) ||
            (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z > 0f))
                 {
-                    Debug.Log(allDimensions[d][i].transform.position);
+                    Debug.Log(allDimensions[d][i].transform.position + "   dont allow left swipe");
+                    return true;
+
+                }
+
+
+            }
+        }
+
+        return false;
+    }
+
+
+    bool swipeRightCheckAndAssignDimension(int i)
+    {
+             // Safety Checks
+        // Safety Checks
+        if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+
+
+        if (i < 0) return false;
+
+
+
+        // FIX: Change 'GameObject[][]' to 'List<List<GameObject>>'
+        List<List<GameObject>> allDimensions = new List<List<GameObject>>
+    {
+        gameManager.plusXDimension,
+        gameManager.plusYDimension,
+        gameManager.plusZDimension,
+        gameManager.minusXDimension,
+        gameManager.minusYDimension,
+        gameManager.minusZDimension,
+
+        gameManager.plusYplusZDimension,
+        gameManager.plusYminusZDimension,
+        gameManager.minusYplusZDimension,
+        gameManager.minusYminusZDimension,
+
+        gameManager.minusXminusZDimension,
+        gameManager.minusXplusZDimension,
+        gameManager.plusXminusZDimension,
+        gameManager.plusXplusZDimension,
+
+        gameManager.minusXplusYDimension,
+        gameManager.plusXplusYDimension,
+        gameManager.minusXminusYDimension,
+        gameManager.plusXminusYDimension
+    };
+
+        // Optional: Matching names for Debugging
+        string[] dimNames = {
+        "plusX", "plusY", "plusZ", "minusX", "minusY", "minusZ",
+        "plusYplusZ", "plusYminusZ", "minusYplusZ", "minusYminusZ",
+        "minusXminusZ", "minusXplusZ", "plusXminusZ", "plusXplusZ",
+        "minusXplusY", "plusXplusY", "minusXminusY", "plusXminusY"
+    };
+
+        // Iterate through the lists
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            // Safety: Ensure the specific List is actually big enough to have this index
+            if (i < allDimensions[d].Count)
+            {
+
+                if (
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z < 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z > 0f))
+                {
+                    Debug.Log(allDimensions[d][i].transform.position + "   dont allow right swipe");
                     return true;
 
                 }
