@@ -8,6 +8,7 @@ public class SwipeInput : MonoBehaviour
     private Vector2 endPos;
 
    public bool canSwipeDown = true;
+   public bool canSwipeUp = true;
    
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
@@ -79,7 +80,15 @@ public class SwipeInput : MonoBehaviour
             if (swipe.y > 0)
             {
                 // Swipe Up
-                ApplyRotationInstant(Vector3.right, 90f);
+                if(canSwipeUp)
+                {
+                    ApplyRotationInstant(Vector3.right, 90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Up Disabled"); 
+                }
+                //ApplyRotationInstant(Vector3.right, 90f);
                 
             }
             else

@@ -585,7 +585,7 @@ public class TMovement : MonoBehaviour
                 // MOVE
                 // -------------------------------------------------------------
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                
+
 
                 // -------------------------------------------------------------
                 // DETECTION
@@ -742,6 +742,8 @@ public class TMovement : MonoBehaviour
                 {
                     swipeInput.canSwipeDown = true;
                 }
+                if(swipeInput != null)swipeInput.canSwipeUp = true;
+                
                 // -------------------------------------------------------------
                 // 1. DOUBLE CHECK LOGIC (With Identity Check ID = 2)
                 // -------------------------------------------------------------
@@ -766,6 +768,7 @@ public class TMovement : MonoBehaviour
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             if (swipeInput != null) swipeInput.canSwipeDown = true;
+                             if(swipeInput != null)swipeInput.canSwipeUp = true;
                             enabled = false;
                             yield break;
                         }
@@ -792,6 +795,7 @@ public class TMovement : MonoBehaviour
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 if (swipeInput != null) swipeInput.canSwipeDown = true;
+                                 if(swipeInput != null)swipeInput.canSwipeUp = true;
                                 yield break;
                             }
                             yield return null; // Wait frame by frame
@@ -806,11 +810,18 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-                if (CheckAndAssignDimension(i))
+                if (swipeDownCheckAndAssignDimension(i))
                 {
                     if (swipeInput != null)
                     {
                         swipeInput.canSwipeDown = false;
+                    }
+                }
+                if(swipeUpCheckAndAssignDimension(i))
+                {
+                    if (swipeInput != null)
+                    {
+                        swipeInput.canSwipeUp = false;
                     }
                 }
 
@@ -839,9 +850,10 @@ public class TMovement : MonoBehaviour
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         if (swipeInput != null) swipeInput.canSwipeDown = true;
+                         if(swipeInput != null)swipeInput.canSwipeUp = true;
 
-                        
-                            
+
+
                     }
                     yield break;
                 }
@@ -917,10 +929,12 @@ public class TMovement : MonoBehaviour
 
 
 
-    bool CheckAndAssignDimension(int i)
+    bool swipeDownCheckAndAssignDimension(int i)
     {
         // Safety Checks
         if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
 
 
         if (i < 0) return false;
@@ -970,19 +984,97 @@ public class TMovement : MonoBehaviour
             // Safety: Ensure the specific List is actually big enough to have this index
             if (i < allDimensions[d].Count)
             {
-                if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.z > 0f && allDimensions[d][i].transform.position.z > 0f)
+
+                if ((allDimensions[d][i] != null && allDimensions[d][i].transform.position.z > 0f && allDimensions[d][i].transform.position.z > 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.z > 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.z > 0f))
                 {
                     Debug.Log(allDimensions[d][i].transform.position);
                     return true;
 
-
-
                 }
+
+
             }
         }
 
         return false;
     }
+
+    bool swipeUpCheckAndAssignDimension(int i)
+    {
+        // Safety Checks
+        // Safety Checks
+        if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+
+
+        if (i < 0) return false;
+
+        if (swipeInput != null)
+        {
+            swipeInput.canSwipeDown = true;
+        }
+
+        // FIX: Change 'GameObject[][]' to 'List<List<GameObject>>'
+        List<List<GameObject>> allDimensions = new List<List<GameObject>>
+    {
+        gameManager.plusXDimension,
+        gameManager.plusYDimension,
+        gameManager.plusZDimension,
+        gameManager.minusXDimension,
+        gameManager.minusYDimension,
+        gameManager.minusZDimension,
+
+        gameManager.plusYplusZDimension,
+        gameManager.plusYminusZDimension,
+        gameManager.minusYplusZDimension,
+        gameManager.minusYminusZDimension,
+
+        gameManager.minusXminusZDimension,
+        gameManager.minusXplusZDimension,
+        gameManager.plusXminusZDimension,
+        gameManager.plusXplusZDimension,
+
+        gameManager.minusXplusYDimension,
+        gameManager.plusXplusYDimension,
+        gameManager.minusXminusYDimension,
+        gameManager.plusXminusYDimension
+    };
+
+        // Optional: Matching names for Debugging
+        string[] dimNames = {
+        "plusX", "plusY", "plusZ", "minusX", "minusY", "minusZ",
+        "plusYplusZ", "plusYminusZ", "minusYplusZ", "minusYminusZ",
+        "minusXminusZ", "minusXplusZ", "plusXminusZ", "plusXplusZ",
+        "minusXplusY", "plusXplusY", "minusXminusY", "plusXminusY"
+    };
+
+        // Iterate through the lists
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            // Safety: Ensure the specific List is actually big enough to have this index
+            if (i < allDimensions[d].Count)
+            {
+
+                if ((allDimensions[d][i] != null && allDimensions[d][i].transform.position.z < 0f && allDimensions[d][i].transform.position.z < 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.z < 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.z < 0f))
+                {
+                    Debug.Log(allDimensions[d][i].transform.position);
+                    return true;
+
+                }
+
+
+            }
+        }
+
+        return false;
+    }
+
+
 
 
 }
