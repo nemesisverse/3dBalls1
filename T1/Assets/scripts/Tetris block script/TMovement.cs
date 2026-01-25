@@ -539,6 +539,7 @@ public class TMovement : MonoBehaviour
                         stopperID = 1; // ID 1 = Left
                     }
                 }
+                yield return null; // Ensure we wait a frame before proceeding
 
                 // -------------------------------------------------------------
                 // DOUBLE CHECK LOGIC (With Identity Check)
@@ -594,6 +595,7 @@ public class TMovement : MonoBehaviour
                             }
                             yield return null; // Wait frame by frame
                         }
+                        
                         // Resume automatically when loop breaks
                     }
                 }
@@ -669,6 +671,7 @@ public class TMovement : MonoBehaviour
                         stopperID = 2; // ID 2 = Right
                     }
                 }
+                yield return null; // Ensure we wait a frame before proceeding
                 // 1. SYNC CHECK (Stop Logic)
                 if (stop != -1 && i > stop)
                 {
@@ -772,7 +775,16 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                if (stop == -1)
+               
+
+                if (swipeInput != null)
+                {
+                    swipeInput.canSwipeDown = true;
+                    swipeInput.canSwipeUp = true;
+                    swipeInput.canSwipeLeft = true;
+                }
+
+                 if (stop == -1)
                 {
                     bool pathBlockedNow = false;
                     try
@@ -788,14 +800,8 @@ public class TMovement : MonoBehaviour
                         stopperID = 3; // ID 3 = Vertical
                     }
                 }
+                yield return null; // Ensure we wait a frame before proceeding
 
-
-                if (swipeInput != null)
-                {
-                    swipeInput.canSwipeDown = true;
-                    swipeInput.canSwipeUp = true;
-                    swipeInput.canSwipeLeft = true;
-                }
 
 
 
