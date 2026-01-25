@@ -18,9 +18,9 @@ public class TMovement : MonoBehaviour
     List<Vector3> verticalCoordinates = new List<Vector3>();
 
 
-   public List<GameObject> leftChildObject = new List<GameObject>();
-   public List<GameObject> rightChildObject = new List<GameObject>();
-   public List<GameObject> verticalChildObject = new List<GameObject>();
+ List<GameObject> leftChildObject = new List<GameObject>();
+   List<GameObject> rightChildObject = new List<GameObject>();
+   List<GameObject> verticalChildObject = new List<GameObject>();
 
 
     public GameManager gameManager;
@@ -921,27 +921,27 @@ public class TMovement : MonoBehaviour
                 // slider bar controll
 
                 // --- SLIDER CONTROL LOGIC ---
-                // if (sliderController != null)
-                // {
-                //     // 1. Reset permissions to TRUE at the start of every step
-                //     // This ensures the slider isn't permanently locked if the condition clears
-                //     sliderController.allowDecrease = true;
-                //     sliderController.allowIncrease = true;
+                if (sliderController != null)
+                {
+                    // 1. Reset permissions to TRUE at the start of every step
+                    // This ensures the slider isn't permanently locked if the condition clears
+                    sliderController.allowDecrease = true;
+                    sliderController.allowIncrease = true;
 
-                //     // 2. Check Decrease Condition
-                //     if (preventDecreasingValueSlider(i))
-                //     {
-                //         // Slider cannot go down (decrease value)
-                //         sliderController.allowDecrease = false;
-                //     }
+                    // 2. Check Decrease Condition
+                    if (preventDecreasingValueSlider(i))
+                    {
+                        // Slider cannot go down (decrease value)
+                        sliderController.allowDecrease = false;
+                    }
 
-                //     // 3. Check Increase Condition
-                //     if (preventIncreasingValueSlider(i))
-                //     {
-                //         // Slider cannot go up (increase value)
-                //         sliderController.allowIncrease = false;
-                //     }
-                // }
+                    // 3. Check Increase Condition
+                    if (preventIncreasingValueSlider(i))
+                    {
+                        // Slider cannot go up (increase value)
+                        sliderController.allowIncrease = false;
+                    }
+                }
 
                 // -------------------------------------------------------------
                 // 3. DETECTION (Look Ahead i+1)
