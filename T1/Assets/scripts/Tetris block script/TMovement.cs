@@ -11,7 +11,7 @@ public class TMovement : MonoBehaviour
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
-    float moveSpeed = 1f;
+    float moveSpeed = 2f;
 
     List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
@@ -523,22 +523,22 @@ public class TMovement : MonoBehaviour
 
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                // if (stop == -1) // If not already stopped
-                // {
-                //     bool pathBlockedNow = false;
-                //     try
-                //     {
-                //         pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]);
-                //     }
-                //     catch { }
+                if (stop == -1) // If not already stopped
+                {
+                    bool pathBlockedNow = false;
+                    try
+                    {
+                        pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]);
+                    }
+                    catch { }
 
-                //     if (pathBlockedNow)
-                //     {
-                //         Debug.Log("Sudden obstacle detected at Left index " + i);
-                //         stop = i - 1; // Force a stop relative to where we actually are
-                //         stopperID = 1; // ID 1 = Left
-                //     }
-                // }
+                    if (pathBlockedNow)
+                    {
+                        Debug.Log("Sudden obstacle detected at Left index " + i);
+                        stop = i - 1; // Force a stop relative to where we actually are
+                        stopperID = 1; // ID 1 = Left
+                    }
+                }
 
                 // -------------------------------------------------------------
                 // DOUBLE CHECK LOGIC (With Identity Check)
@@ -653,22 +653,22 @@ public class TMovement : MonoBehaviour
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
 
-                // if (stop == -1)
-                // {
-                //     bool pathBlockedNow = false;
-                //     try
-                //     {
-                //         pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]);
-                //     }
-                //     catch { }
+                if (stop == -1)
+                {
+                    bool pathBlockedNow = false;
+                    try
+                    {
+                        pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]);
+                    }
+                    catch { }
 
-                //     if (pathBlockedNow)
-                //     {
-                //         Debug.Log("Sudden obstacle detected at Right index " + i);
-                //         stop = i - 1;
-                //         stopperID = 2; // ID 2 = Right
-                //     }
-                // }
+                    if (pathBlockedNow)
+                    {
+                        Debug.Log("Sudden obstacle detected at Right index " + i);
+                        stop = i - 1;
+                        stopperID = 2; // ID 2 = Right
+                    }
+                }
                 // 1. SYNC CHECK (Stop Logic)
                 if (stop != -1 && i > stop)
                 {
@@ -772,22 +772,22 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                // if (stop == -1)
-                // {
-                //     bool pathBlockedNow = false;
-                //     try
-                //     {
-                //         pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]);
-                //     }
-                //     catch { }
+                if (stop == -1)
+                {
+                    bool pathBlockedNow = false;
+                    try
+                    {
+                        pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]);
+                    }
+                    catch { }
 
-                //     if (pathBlockedNow)
-                //     {
-                //         Debug.Log("Sudden obstacle detected at Vertical index " + i);
-                //         stop = i - 1;
-                //         stopperID = 3; // ID 3 = Vertical
-                //     }
-                // }
+                    if (pathBlockedNow)
+                    {
+                        Debug.Log("Sudden obstacle detected at Vertical index " + i);
+                        stop = i - 1;
+                        stopperID = 3; // ID 3 = Vertical
+                    }
+                }
 
 
                 if (swipeInput != null)
