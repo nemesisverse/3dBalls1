@@ -523,13 +523,30 @@ public class TMovement : MonoBehaviour
 
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
+                if (stop == -1) // If not already stopped
+                {
+                    bool pathBlockedNow = false;
+                    try
+                    {
+                        pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]);
+                    }
+                    catch { }
 
+                    if (pathBlockedNow)
+                    {
+                        Debug.Log("Sudden obstacle detected at Left index " + i);
+                        stop = i - 1; // Force a stop relative to where we actually are
+                        stopperID = 1; // ID 1 = Left
+                    }
+                }
 
                 // -------------------------------------------------------------
                 // DOUBLE CHECK LOGIC (With Identity Check)
                 // -------------------------------------------------------------
                 if (stop != -1 && i > stop)
                 {
+
+
                     // CASE A: I was the one who stopped the movement (stopperID == 1)
                     if (stopperID == 1)
                     {
@@ -635,6 +652,23 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
+
+                if (stop == -1)
+                {
+                    bool pathBlockedNow = false;
+                    try
+                    {
+                        pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]);
+                    }
+                    catch { }
+
+                    if (pathBlockedNow)
+                    {
+                        Debug.Log("Sudden obstacle detected at Right index " + i);
+                        stop = i - 1;
+                        stopperID = 2; // ID 2 = Right
+                    }
+                }
                 // 1. SYNC CHECK (Stop Logic)
                 if (stop != -1 && i > stop)
                 {
@@ -738,12 +772,36 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                if (swipeInput != null)
-                {
-                    swipeInput.canSwipeDown = true;
-                }
-                if(swipeInput != null)swipeInput.canSwipeUp = true;
+               
+                    if (swipeInput != null)
+                    {
+                        swipeInput.canSwipeDown = true;
+                    }
+                    if (swipeInput != null) swipeInput.canSwipeUp = true;
+                    if (swipeInput != null) swipeInput.canSwipeLeft = true;
+
                 
+
+                // -------------------------------------------------------------
+                // UPDATED SAFETY CHECK
+                // if (stop == -1)
+                // {
+                //     bool pathBlockedNow = false;
+                //     try
+                //     {
+                //         pathBlockedNow = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]);
+                //     }
+                //     catch { }
+
+                //     if (pathBlockedNow)
+                //     {
+                //         Debug.Log("Sudden obstacle detected at Vertical index " + i);
+                //         stop = i - 1;
+                //         stopperID = 3; // ID 3 = Vertical
+                //     }
+                // }
+
+
                 // -------------------------------------------------------------
                 // 1. DOUBLE CHECK LOGIC (With Identity Check ID = 2)
                 // -------------------------------------------------------------
@@ -768,7 +826,8 @@ public class TMovement : MonoBehaviour
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             if (swipeInput != null) swipeInput.canSwipeDown = true;
-                             if(swipeInput != null)swipeInput.canSwipeUp = true;
+                            if (swipeInput != null) swipeInput.canSwipeUp = true;
+                            if (swipeInput != null) swipeInput.canSwipeLeft = true;
                             enabled = false;
                             yield break;
                         }
@@ -795,7 +854,8 @@ public class TMovement : MonoBehaviour
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 if (swipeInput != null) swipeInput.canSwipeDown = true;
-                                 if(swipeInput != null)swipeInput.canSwipeUp = true;
+                                if (swipeInput != null) swipeInput.canSwipeUp = true;
+                                if (swipeInput != null) swipeInput.canSwipeLeft = true;
                                 yield break;
                             }
                             yield return null; // Wait frame by frame
@@ -817,13 +877,22 @@ public class TMovement : MonoBehaviour
                         swipeInput.canSwipeDown = false;
                     }
                 }
-                if(swipeUpCheckAndAssignDimension(i))
+                if (swipeUpCheckAndAssignDimension(i))
                 {
                     if (swipeInput != null)
                     {
                         swipeInput.canSwipeUp = false;
                     }
                 }
+
+                if (swipeLeftCheckAndAssignDimension(i))
+                {
+                    if (swipeInput != null)
+                    {
+                        swipeInput.canSwipeLeft = false;
+                    }
+                }
+
 
                 // -------------------------------------------------------------
                 // 3. DETECTION (Look Ahead i+1)
@@ -850,7 +919,8 @@ public class TMovement : MonoBehaviour
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         if (swipeInput != null) swipeInput.canSwipeDown = true;
-                         if(swipeInput != null)swipeInput.canSwipeUp = true;
+                        if (swipeInput != null) swipeInput.canSwipeUp = true;
+                        if (swipeInput != null) swipeInput.canSwipeLeft = true;
 
 
 
@@ -863,6 +933,7 @@ public class TMovement : MonoBehaviour
 
 
     }
+
 
 
     void countChildren()
@@ -1073,6 +1144,83 @@ public class TMovement : MonoBehaviour
 
         return false;
     }
+
+
+    bool swipeLeftCheckAndAssignDimension(int i)
+    {
+        // Safety Checks
+        // Safety Checks
+        if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+
+
+        if (i < 0) return false;
+
+        if (swipeInput != null)
+        {
+            swipeInput.canSwipeDown = true;
+        }
+
+        // FIX: Change 'GameObject[][]' to 'List<List<GameObject>>'
+        List<List<GameObject>> allDimensions = new List<List<GameObject>>
+    {
+        gameManager.plusXDimension,
+        gameManager.plusYDimension,
+        gameManager.plusZDimension,
+        gameManager.minusXDimension,
+        gameManager.minusYDimension,
+        gameManager.minusZDimension,
+
+        gameManager.plusYplusZDimension,
+        gameManager.plusYminusZDimension,
+        gameManager.minusYplusZDimension,
+        gameManager.minusYminusZDimension,
+
+        gameManager.minusXminusZDimension,
+        gameManager.minusXplusZDimension,
+        gameManager.plusXminusZDimension,
+        gameManager.plusXplusZDimension,
+
+        gameManager.minusXplusYDimension,
+        gameManager.plusXplusYDimension,
+        gameManager.minusXminusYDimension,
+        gameManager.plusXminusYDimension
+    };
+
+        // Optional: Matching names for Debugging
+        string[] dimNames = {
+        "plusX", "plusY", "plusZ", "minusX", "minusY", "minusZ",
+        "plusYplusZ", "plusYminusZ", "minusYplusZ", "minusYminusZ",
+        "minusXminusZ", "minusXplusZ", "plusXminusZ", "plusXplusZ",
+        "minusXplusY", "plusXplusY", "minusXminusY", "plusXminusY"
+    };
+
+        // Iterate through the lists
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            // Safety: Ensure the specific List is actually big enough to have this index
+            if (i < allDimensions[d].Count)
+            {
+
+                if (
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z < 0f) ||
+           (allDimensions[d][i] != null && allDimensions[d][i].transform.position.y > 0f && allDimensions[d][i].transform.position.z > 0f))
+                {
+                    Debug.Log(allDimensions[d][i].transform.position);
+                    return true;
+
+                }
+
+
+            }
+        }
+
+        return false;
+    }
+
+
+
 
 
 

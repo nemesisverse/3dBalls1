@@ -9,6 +9,9 @@ public class SwipeInput : MonoBehaviour
 
    public bool canSwipeDown = true;
    public bool canSwipeUp = true;
+
+   public bool canSwipeLeft = true;
+   public bool canSwipeRight = true;
    
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
@@ -60,16 +63,34 @@ public class SwipeInput : MonoBehaviour
         {
             if (swipe.x > 0)
             {
+                if(canSwipeRight)
+                {
+                    // Swipe Right
+                    ApplyRotationInstant(Vector3.up, -90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Right Disabled");
+                }
                 // Swipe Right
-                ApplyRotationInstant(Vector3.up, -90f);
+                //ApplyRotationInstant(Vector3.up, -90f);
                 
                 
 
             }
             else
             {
+                if(canSwipeLeft)
+                {
+                    // Swipe Left
+                    ApplyRotationInstant(Vector3.up, 90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Left Disabled");
+                }
                 
-                ApplyRotationInstant(Vector3.up, 90f);
+              //  ApplyRotationInstant(Vector3.up, 90f);
                 
                 
                 
