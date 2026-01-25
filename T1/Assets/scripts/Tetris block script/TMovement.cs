@@ -18,13 +18,14 @@ public class TMovement : MonoBehaviour
     List<Vector3> verticalCoordinates = new List<Vector3>();
 
 
-    List<GameObject> leftChildObject = new List<GameObject>();
-    List<GameObject> rightChildObject = new List<GameObject>();
-    List<GameObject> verticalChildObject = new List<GameObject>();
+   public List<GameObject> leftChildObject = new List<GameObject>();
+   public List<GameObject> rightChildObject = new List<GameObject>();
+   public List<GameObject> verticalChildObject = new List<GameObject>();
 
 
     public GameManager gameManager;
     public SwipeInput swipeInput;
+    public SliderPedestalController1 sliderController;
 
     void Awake()
     {
@@ -37,6 +38,10 @@ public class TMovement : MonoBehaviour
         {
             swipeInput = FindFirstObjectByType<SwipeInput>();
             // Note: use FindObjectOfType<SwipeInput>() if on older Unity versions
+        }
+        if (sliderController == null)
+        {
+            sliderController = FindFirstObjectByType<SliderPedestalController1>();
         }
         // Populate left diagonal coordinates
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
@@ -905,7 +910,7 @@ public class TMovement : MonoBehaviour
                     }
                 }
 
-                if(swipeRightCheckAndAssignDimension(i))
+                if (swipeRightCheckAndAssignDimension(i))
                 {
                     if (swipeInput != null)
                     {
@@ -913,6 +918,30 @@ public class TMovement : MonoBehaviour
                     }
                 }
 
+                // slider bar controll
+
+                // --- SLIDER CONTROL LOGIC ---
+                // if (sliderController != null)
+                // {
+                //     // 1. Reset permissions to TRUE at the start of every step
+                //     // This ensures the slider isn't permanently locked if the condition clears
+                //     sliderController.allowDecrease = true;
+                //     sliderController.allowIncrease = true;
+
+                //     // 2. Check Decrease Condition
+                //     if (preventDecreasingValueSlider(i))
+                //     {
+                //         // Slider cannot go down (decrease value)
+                //         sliderController.allowDecrease = false;
+                //     }
+
+                //     // 3. Check Increase Condition
+                //     if (preventIncreasingValueSlider(i))
+                //     {
+                //         // Slider cannot go up (increase value)
+                //         sliderController.allowIncrease = false;
+                //     }
+                // }
 
                 // -------------------------------------------------------------
                 // 3. DETECTION (Look Ahead i+1)
@@ -1240,7 +1269,7 @@ public class TMovement : MonoBehaviour
 
     bool swipeRightCheckAndAssignDimension(int i)
     {
-             // Safety Checks
+        // Safety Checks
         // Safety Checks
         if (leftChildObject == null || leftChildObject.Count == 0) return false;
         if (rightChildObject == null || rightChildObject.Count == 0) return false;
@@ -1307,6 +1336,147 @@ public class TMovement : MonoBehaviour
 
         return false;
     }
+
+
+
+    bool preventDecreasingValueSlider(int i)
+    {
+        // Safety Checks
+        // Safety Checks
+        if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+
+
+        if (i < 0) return false;
+
+
+
+        // FIX: Change 'GameObject[][]' to 'List<List<GameObject>>'
+        List<List<GameObject>> allDimensions = new List<List<GameObject>>
+    {
+        gameManager.plusXDimension,
+        gameManager.plusYDimension,
+        gameManager.plusZDimension,
+        gameManager.minusXDimension,
+        gameManager.minusYDimension,
+        gameManager.minusZDimension,
+
+        gameManager.plusYplusZDimension,
+        gameManager.plusYminusZDimension,
+        gameManager.minusYplusZDimension,
+        gameManager.minusYminusZDimension,
+
+        gameManager.minusXminusZDimension,
+        gameManager.minusXplusZDimension,
+        gameManager.plusXminusZDimension,
+        gameManager.plusXplusZDimension,
+
+        gameManager.minusXplusYDimension,
+        gameManager.plusXplusYDimension,
+        gameManager.minusXminusYDimension,
+        gameManager.plusXminusYDimension
+    };
+
+        // Optional: Matching names for Debugging
+        string[] dimNames = {
+        "plusX", "plusY", "plusZ", "minusX", "minusY", "minusZ",
+        "plusYplusZ", "plusYminusZ", "minusYplusZ", "minusYminusZ",
+        "minusXminusZ", "minusXplusZ", "plusXminusZ", "plusXplusZ",
+        "minusXplusY", "plusXplusY", "minusXminusY", "plusXminusY"
+    };
+
+        // Iterate through the lists
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            // Safety: Ensure the specific List is actually big enough to have this index
+            if (i < allDimensions[d].Count)
+            {
+
+                if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.y >= 0f)
+                {
+                    Debug.Log("prevent decreasing the value");
+                    return true;
+
+                }
+
+
+            }
+        }
+
+        return false;
+    }
+
+
+
+    bool preventIncreasingValueSlider(int i)
+    {
+        // Safety Checks
+        // Safety Checks
+        if (leftChildObject == null || leftChildObject.Count == 0) return false;
+        if (rightChildObject == null || rightChildObject.Count == 0) return false;
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+
+
+        if (i < 0) return false;
+
+
+
+        // FIX: Change 'GameObject[][]' to 'List<List<GameObject>>'
+        List<List<GameObject>> allDimensions = new List<List<GameObject>>
+    {
+        gameManager.plusXDimension,
+        gameManager.plusYDimension,
+        gameManager.plusZDimension,
+        gameManager.minusXDimension,
+        gameManager.minusYDimension,
+        gameManager.minusZDimension,
+
+        gameManager.plusYplusZDimension,
+        gameManager.plusYminusZDimension,
+        gameManager.minusYplusZDimension,
+        gameManager.minusYminusZDimension,
+
+        gameManager.minusXminusZDimension,
+        gameManager.minusXplusZDimension,
+        gameManager.plusXminusZDimension,
+        gameManager.plusXplusZDimension,
+
+        gameManager.minusXplusYDimension,
+        gameManager.plusXplusYDimension,
+        gameManager.minusXminusYDimension,
+        gameManager.plusXminusYDimension
+    };
+
+        // Optional: Matching names for Debugging
+        string[] dimNames = {
+        "plusX", "plusY", "plusZ", "minusX", "minusY", "minusZ",
+        "plusYplusZ", "plusYminusZ", "minusYplusZ", "minusYminusZ",
+        "minusXminusZ", "minusXplusZ", "plusXminusZ", "plusXplusZ",
+        "minusXplusY", "plusXplusY", "minusXminusY", "plusXminusY"
+    };
+
+        // Iterate through the lists
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            // Safety: Ensure the specific List is actually big enough to have this index
+            if (i < allDimensions[d].Count)
+            {
+
+                if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.y >= 0f)
+                {
+                    Debug.Log("prevent decreasing the value");
+                    return true;
+
+                }
+
+
+            }
+        }
+
+        return false;
+    }
+
 
 
 
