@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+
 using System.Collections;
 using System.Threading;
 using NUnit.Framework;
@@ -9,6 +10,10 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance; // Static reference
+
+    [Header("Spawn Settings")]
+    public List<GameObject> objectsToSpawn; // Drag your prefabs here in Inspector
+    public Transform spawnPoint;            // Optional: Drag a transform here to set spawn location
     // The reference your prefabs need
     public GameObject motherPlatform;//
     List<Vector3> minusZYCoordinates = new List<Vector3>();
@@ -84,7 +89,9 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        //Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
         {
@@ -191,6 +198,21 @@ public class GameManager : MonoBehaviour
     //     return false;
     // }
 
+   public void SpawnRandomObject()
+    {
+        if (objectsToSpawn.Count == 0) return;
+
+        // 1. Pick a random index
+        // explicit 'UnityEngine.Random' to avoid ambiguity
+        int randomIndex = UnityEngine.Random.Range(0, objectsToSpawn.Count);
+        GameObject prefab = objectsToSpawn[randomIndex];
+
+        // 2. Define the specific position
+        Vector3 spawnPos = new Vector3(0f, 16.5f, 0f);
+
+        // 3. Instantiate at (0, 16.5, 0) with default rotation
+        Instantiate(prefab, spawnPos, Quaternion.identity);
+    }
 
 
 
