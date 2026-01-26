@@ -6,13 +6,14 @@ public class SliderPedestalController1 : MonoBehaviour
 {
     public Slider slider;
     public Transform pedestal;
-    public int snapPoints = 9; // Creates 45-degree intervals
+    public int snapPoints = 9; 
 
     private float currentZAngle = 0f;
-    private float previousValue;
-    private int previousStepIndex;
     
-    private bool isReverting = false; // Prevents infinite loops
+    // This is our "Safety Anchor". It tracks the index of the last valid step.
+    private int safeStepIndex; 
+    
+    private bool isReverting = false; 
 
     public SwipeInput swipeInput;
     public TMovement tMovement; 
@@ -27,11 +28,10 @@ public class SliderPedestalController1 : MonoBehaviour
     {
         slider.onValueChanged.AddListener(OnSliderValueChanged);
         
-        // Initialize State
-        previousValue = slider.value;
+        // Initialize Safety Anchor
         float snapInterval = 1f / (snapPoints - 1);
-        previousStepIndex = Mathf.RoundToInt(previousValue / snapInterval);
-
+        safeStepIndex = Mathf.RoundToInt(slider.value / snapInterval);
+        
         // Initial setup
         SnapAndRotate(slider.value, false); 
     }
@@ -44,44 +44,48 @@ public class SliderPedestalController1 : MonoBehaviour
         int currentStepIndex = Mathf.RoundToInt(value / snapInterval);
 
         // --- 1. ONE-STEP CONSTRAINT ---
-        // If we jump more than 1 step, clamp it to the neighbor
-        int stepJump = Mathf.Abs(currentStepIndex - previousStepIndex);
+        // If we jump more than 1 step away from our SAFE anchor...
+        int stepJump = Mathf.Abs(currentStepIndex - safeStepIndex);
+        
         if (stepJump > 1)
         {
-            int direction = currentStepIndex > previousStepIndex ? 1 : -1;
-            currentStepIndex = previousStepIndex + direction;
+            // Determine valid neighbor
+            int direction = currentStepIndex > safeStepIndex ? 1 : -1;
+            int allowedStepIndex = safeStepIndex + direction;
+            float allowedValue = allowedStepIndex * snapInterval;
+
+            // Force visual slider back to the limit
+            StartCoroutine(ForceSliderVisual(allowedValue));
+            return; 
         }
 
-        // --- 2. CALCULATE SNAPPED VALUE ---
-        float snappedValue = currentStepIndex * snapInterval;
-
-        // --- 3. VISUAL SNAP (The "No Smooth Moving" Logic) ---
-        // Even if the user is dragging between steps, FORCE the handle to the snap point.
-        // This makes the slider feel like it "pops" or "jumps" to the next tick.
-        if (Mathf.Abs(slider.value - snappedValue) > 0.001f)
+        // --- 2. PROCESS ROTATION ---
+        // Only attempt rotation if we have crossed into a new step index
+        if (currentStepIndex != safeStepIndex)
         {
-            StartCoroutine(ForceSliderVisual(snappedValue));
-        }
-
-        // --- 4. PROCESS ROTATION ---
-        // Only run rotation logic if we have actually changed steps
-        if (currentStepIndex != previousStepIndex)
-        {
-            SnapAndRotate(snappedValue, true);
+            // Calculate the target value for this new step
+            float targetSnapValue = currentStepIndex * snapInterval;
+            SnapAndRotate(targetSnapValue, true);
         }
     }
 
-    void SnapAndRotate(float snappedValue, bool checkForCollisions)
+    void SnapAndRotate(float targetSnapValue, bool checkForCollisions)
     {
-        // Calculate Target Angle
-        float targetAngleZ = snappedValue * 360f;
+        float snapInterval = 1f / (snapPoints - 1);
+        int targetStepIndex = Mathf.RoundToInt(targetSnapValue / snapInterval);
+
+        float targetAngleZ = targetSnapValue * 360f;
         float deltaZ = targetAngleZ - currentZAngle;
 
-        // --- PREPARE ---
+        if (Mathf.Abs(deltaZ) < 0.01f) return;
+
+        // --- PREPARE REVERT DATA ---
         Quaternion originalRotation = pedestal.rotation;
         float originalZAngle = currentZAngle;
-        float originalSliderValue = previousValue;
         
+        // Calculate the safe value based on our anchor
+        float safeSliderValue = safeStepIndex * snapInterval; 
+
         // --- ACTION: ROTATE INSTANTLY ---
         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
         currentZAngle = targetAngleZ;
@@ -93,33 +97,30 @@ public class SliderPedestalController1 : MonoBehaviour
 
             if (tMovement.IsRotationColliding())
             {
-                Debug.Log("Collision! Reverting Slider...");
+                Debug.Log("Collision Detected! Reverting to safe step: " + safeStepIndex);
 
                 // A. Revert Rotation
                 pedestal.rotation = originalRotation;
                 currentZAngle = originalZAngle;
 
-                // B. Revert Slider UI (Force back to previous step)
-                StartCoroutine(ForceSliderVisual(originalSliderValue));
+                // B. Revert Slider UI -> HARD FORCE back to safeStepIndex
+                StartCoroutine(ForceSliderVisual(safeSliderValue));
 
-                return; // Stop here. State is not updated.
+                return; // STOP! Do not update safeStepIndex.
             }
         }
 
         // --- SUCCESS ---
-        // Commit the new state
-        previousValue = snappedValue;
-        float snapInterval = 1f / (snapPoints - 1);
-        previousStepIndex = Mathf.RoundToInt(snappedValue / snapInterval);
+        // We only update the anchor when the move is successful and collision-free
+        safeStepIndex = targetStepIndex;
 
-        // Handle Swipe Input rules
         HandleSwipeInputState(targetAngleZ);
     }
 
     IEnumerator ForceSliderVisual(float targetValue)
     {
         isReverting = true; 
-        yield return new WaitForEndOfFrame(); // Wait for Unity to finish processing Drag
+        yield return new WaitForEndOfFrame(); 
         slider.value = targetValue;
         isReverting = false; 
     }
