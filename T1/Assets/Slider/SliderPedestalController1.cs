@@ -9,11 +9,14 @@ public class SliderPedestalController1 : MonoBehaviour
     public int snapPoints = 9; 
 
     private float currentZAngle = 0f;
-    
-    // This is our "Safety Anchor". It tracks the index of the last valid step.
-    private int safeStepIndex; 
+    private float previousValue;
+    private int previousStepIndex;
     
     private bool isReverting = false; 
+
+    // --- Control Flags ---
+    [HideInInspector] public bool allowIncrease = true;
+    [HideInInspector] public bool allowDecrease = true;
 
     public SwipeInput swipeInput;
     public TMovement tMovement; 
@@ -27,12 +30,9 @@ public class SliderPedestalController1 : MonoBehaviour
     void Start()
     {
         slider.onValueChanged.AddListener(OnSliderValueChanged);
-        
-        // Initialize Safety Anchor
+        previousValue = slider.value;
         float snapInterval = 1f / (snapPoints - 1);
-        safeStepIndex = Mathf.RoundToInt(slider.value / snapInterval);
-        
-        // Initial setup
+        previousStepIndex = Mathf.RoundToInt(previousValue / snapInterval);
         SnapAndRotate(slider.value, false); 
     }
 
@@ -43,77 +43,88 @@ public class SliderPedestalController1 : MonoBehaviour
         float snapInterval = 1f / (snapPoints - 1);
         int currentStepIndex = Mathf.RoundToInt(value / snapInterval);
 
-        // --- 1. ONE-STEP CONSTRAINT ---
-        // If we jump more than 1 step away from our SAFE anchor...
-        int stepJump = Mathf.Abs(currentStepIndex - safeStepIndex);
-        
+        // --- 1. SNAPPY THRESHOLD CHECK ---
+        if (currentStepIndex == previousStepIndex) return; 
+
+        // --- 2. RESTRICTION LOGIC (Increase/Decrease) ---
+        // Calculate direction: +1 is Increasing, -1 is Decreasing
+        int direction = currentStepIndex > previousStepIndex ? 1 : -1;
+
+        // Check if movement is allowed
+        if (direction > 0 && !allowIncrease)
+        {
+            Debug.Log("Slider Increase Blocked by TMovement logic.");
+            float safeValue = previousStepIndex * snapInterval;
+            StartCoroutine(ForceSliderVisual(safeValue));
+            return;
+        }
+        if (direction < 0 && !allowDecrease)
+        {
+            Debug.Log("Slider Decrease Blocked by TMovement logic.");
+            float safeValue = previousStepIndex * snapInterval;
+            StartCoroutine(ForceSliderVisual(safeValue));
+            return;
+        }
+
+        // --- 3. ONE-STEP CONSTRAINT ---
+        int stepJump = Mathf.Abs(currentStepIndex - previousStepIndex);
         if (stepJump > 1)
         {
-            // Determine valid neighbor
-            int direction = currentStepIndex > safeStepIndex ? 1 : -1;
-            int allowedStepIndex = safeStepIndex + direction;
+            int allowedStepIndex = previousStepIndex + direction;
             float allowedValue = allowedStepIndex * snapInterval;
-
-            // Force visual slider back to the limit
             StartCoroutine(ForceSliderVisual(allowedValue));
-            return; 
+            value = allowedValue; 
+        }
+        else
+        {
+            // Valid jump: Snap value exactly
+            float snappedValue = currentStepIndex * snapInterval;
+            if (Mathf.Abs(value - snappedValue) > 0.001f)
+            {
+                StartCoroutine(ForceSliderVisual(snappedValue));
+            }
         }
 
-        // --- 2. PROCESS ROTATION ---
-        // Only attempt rotation if we have crossed into a new step index
-        if (currentStepIndex != safeStepIndex)
-        {
-            // Calculate the target value for this new step
-            float targetSnapValue = currentStepIndex * snapInterval;
-            SnapAndRotate(targetSnapValue, true);
-        }
+        // --- 4. PROCESS ROTATION ---
+        SnapAndRotate(value, true);
     }
 
-    void SnapAndRotate(float targetSnapValue, bool checkForCollisions)
+    void SnapAndRotate(float rawValue, bool checkForCollisions)
     {
         float snapInterval = 1f / (snapPoints - 1);
-        int targetStepIndex = Mathf.RoundToInt(targetSnapValue / snapInterval);
+        int nearestStep = Mathf.RoundToInt(rawValue / snapInterval);
+        float snappedValue = nearestStep * snapInterval;
 
-        float targetAngleZ = targetSnapValue * 360f;
+        float targetAngleZ = snappedValue * 360f;
         float deltaZ = targetAngleZ - currentZAngle;
 
         if (Mathf.Abs(deltaZ) < 0.01f) return;
 
-        // --- PREPARE REVERT DATA ---
         Quaternion originalRotation = pedestal.rotation;
         float originalZAngle = currentZAngle;
-        
-        // Calculate the safe value based on our anchor
-        float safeSliderValue = safeStepIndex * snapInterval; 
+        float originalSliderValue = previousValue;
 
-        // --- ACTION: ROTATE INSTANTLY ---
         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
         currentZAngle = targetAngleZ;
 
-        // --- CHECK COLLISION ---
+        // Collision Check
         if (checkForCollisions && tMovement != null)
         {
             Physics.SyncTransforms(); 
 
             if (tMovement.IsRotationColliding())
             {
-                Debug.Log("Collision Detected! Reverting to safe step: " + safeStepIndex);
-
-                // A. Revert Rotation
+                Debug.Log("Collision! Reverting Slider...");
                 pedestal.rotation = originalRotation;
                 currentZAngle = originalZAngle;
-
-                // B. Revert Slider UI -> HARD FORCE back to safeStepIndex
-                StartCoroutine(ForceSliderVisual(safeSliderValue));
-
-                return; // STOP! Do not update safeStepIndex.
+                StartCoroutine(ForceSliderVisual(originalSliderValue));
+                return; 
             }
         }
 
-        // --- SUCCESS ---
-        // We only update the anchor when the move is successful and collision-free
-        safeStepIndex = targetStepIndex;
-
+        // Success
+        previousValue = snappedValue;
+        previousStepIndex = nearestStep;
         HandleSwipeInputState(targetAngleZ);
     }
 

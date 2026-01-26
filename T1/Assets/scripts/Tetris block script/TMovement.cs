@@ -41,7 +41,7 @@ public class TMovement : MonoBehaviour
         countChildren();
         CheckChildrenWorldX();
 
-        // Initialize the Grid List ONCE
+        // Initialize the Grid List ONCE to save performance
         allDimensions = new List<List<GameObject>>
         {
             gameManager.plusXDimension, gameManager.plusYDimension, gameManager.plusZDimension,
@@ -56,11 +56,10 @@ public class TMovement : MonoBehaviour
     }
 
     // ------------------------------------------------------------------------
-    // COLLISION LOGIC (Called by Slider & SwipeInput)
+    // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
     // ------------------------------------------------------------------------
     public bool IsRotationColliding()
     {
-        // 1. Get Moving Objects
         List<GameObject> activeMovingChildren = new List<GameObject>();
         if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
         if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
@@ -68,7 +67,8 @@ public class TMovement : MonoBehaviour
 
         if (activeMovingChildren.Count == 0) return false;
 
-        // 2. Check against All Dimensions
+        if (allDimensions == null) return false;
+
         foreach (var dimensionList in allDimensions)
         {
             if (dimensionList == null) continue;
@@ -80,11 +80,8 @@ public class TMovement : MonoBehaviour
                 foreach (var movingBlock in activeMovingChildren)
                 {
                     if (movingBlock == null) continue;
+                    if (placedBlock == movingBlock) continue; // Ignore self
 
-                    // A. Self-Collision Check (Ignore collision with itself)
-                    if (placedBlock == movingBlock) continue;
-
-                    // B. Position Overlap Check (Rounded to 2 decimals)
                     if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
                     {
                         Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
@@ -115,6 +112,16 @@ public class TMovement : MonoBehaviour
     int stop = -1;
     int stopperID = 0;
 
+    // Helper to re-enable slider when block is placed (Finished)
+    void ResetSliderPermissions()
+    {
+        if (sliderController != null)
+        {
+            sliderController.allowDecrease = true;
+            sliderController.allowIncrease = true;
+        }
+    }
+
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
@@ -136,10 +143,27 @@ public class TMovement : MonoBehaviour
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) { leftflagRadius(i); leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); enabled = false; yield break; }
+                        if (stillBlocked) 
+                        { 
+                            leftflagRadius(i); 
+                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                            ResetSliderPermissions(); // Enable slider when done
+                            enabled = false; 
+                            yield break; 
+                        }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { while (stop != -1 && stopperID != 1) { if (!enabled) { leftflagRadius(i); leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); yield break; } yield return null; } }
+                    else { 
+                        while (stop != -1 && stopperID != 1) { 
+                            if (!enabled) { 
+                                leftflagRadius(i); 
+                                leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                                ResetSliderPermissions(); 
+                                yield break; 
+                            } 
+                            yield return null; 
+                        } 
+                    }
                 }
 
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
@@ -151,6 +175,7 @@ public class TMovement : MonoBehaviour
                     {
                         leftflagRadius(i + 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
                     }
                     yield break;
@@ -181,10 +206,27 @@ public class TMovement : MonoBehaviour
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) { rightflagRadius(i); rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); enabled = false; yield break; }
+                        if (stillBlocked) 
+                        { 
+                            rightflagRadius(i); 
+                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                            ResetSliderPermissions(); // Enable slider when done
+                            enabled = false; 
+                            yield break; 
+                        }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { while (stop != -1 && stopperID != 2) { if (!enabled) { rightflagRadius(i); rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); yield break; } yield return null; } }
+                    else { 
+                        while (stop != -1 && stopperID != 2) { 
+                            if (!enabled) { 
+                                rightflagRadius(i); 
+                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                                ResetSliderPermissions(); 
+                                yield break; 
+                            } 
+                            yield return null; 
+                        } 
+                    }
                 }
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
@@ -196,6 +238,7 @@ public class TMovement : MonoBehaviour
                     {
                         rightflagRadius(i + 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
                     }
                     yield break;
@@ -226,14 +269,52 @@ public class TMovement : MonoBehaviour
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) { verticalflagRadius(i); verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); enabled = false; yield break; }
+                        if (stillBlocked) { 
+                            verticalflagRadius(i); 
+                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                            ResetSliderPermissions(); // Enable slider when done
+                            enabled = false; 
+                            yield break; 
+                        }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { while (stop != -1 && stopperID != 3) { if (!enabled) { verticalflagRadius(i); verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); yield break; } yield return null; } }
+                    else { 
+                        while (stop != -1 && stopperID != 3) { 
+                            if (!enabled) { 
+                                verticalflagRadius(i); 
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                                ResetSliderPermissions();
+                                yield break; 
+                            } yield return null; 
+                        } 
+                    }
                 }
 
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+
+                // --- YOUR LOGIC: Check & Lock Slider Directions ---
+                if (sliderController != null)
+                {
+                    // 1. Reset permissions to TRUE at the start of every step
+                    sliderController.allowDecrease = true;
+                    sliderController.allowIncrease = true;
+
+                    // 2. Check Decrease Condition
+                    if (preventDecreasingValueSlider(i))
+                    {
+                        sliderController.allowDecrease = false;
+                    }
+
+                    // 3. Check Increase Condition
+                    if (preventIncreasingValueSlider(i))
+                    {
+                        sliderController.allowIncrease = false;
+                    }
+                }
+                // --------------------------------------------------
 
                 try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 3; } } }
                 catch (System.ArgumentOutOfRangeException)
@@ -244,6 +325,7 @@ public class TMovement : MonoBehaviour
                         verticalflagRadius(i + 1);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSliderPermissions(); // Enable slider when done
                         enabled = false; 
                     }
                     yield break;
@@ -254,7 +336,7 @@ public class TMovement : MonoBehaviour
     }
 
     // ------------------------------------------------------------------------
-    // HELPERS
+    // HELPER FUNCTIONS 
     // ------------------------------------------------------------------------
 
     void countChildren()
@@ -277,6 +359,52 @@ public class TMovement : MonoBehaviour
         }
     }
 
+    // --- LOGIC TO PREVENT SLIDER MOVEMENT ---
+    bool preventDecreasingValueSlider(int i)
+    {
+        if (allDimensions == null) return false;
+        
+        // Safety checks for vertical count
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+        if (i < 0) return false;
+
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            if (i < allDimensions[d].Count)
+            {
+                if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.y >= 0f)
+                {
+                    Debug.Log("prevent decreasing the value");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool preventIncreasingValueSlider(int i)
+    {
+        if (allDimensions == null) return false;
+
+        // Safety checks for vertical count
+        if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
+        if (i < 0) return false;
+
+        for (int d = 0; d < allDimensions.Count; d++)
+        {
+            if (i < allDimensions[d].Count)
+            {
+                if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.y >= 0f)
+                {
+                    Debug.Log("prevent increasing the value");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // --- RADIUS FLAG FUNCTIONS ---
     void leftflagRadius(int i)
     {
         if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
