@@ -10,10 +10,12 @@ public class SliderPedestalController1 : MonoBehaviour
 
     private float currentZAngle = 0f;
     private float previousValue;
-    private bool isReverting = false; // Flag to prevent infinite loops
+    private int previousStepIndex;
+    
+    private bool isReverting = false; // Prevents infinite loops
 
     public SwipeInput swipeInput;
-    public TMovement tMovement; // Reference to the collision checker
+    public TMovement tMovement; 
 
     void Awake()
     {
@@ -24,115 +26,102 @@ public class SliderPedestalController1 : MonoBehaviour
     void Start()
     {
         slider.onValueChanged.AddListener(OnSliderValueChanged);
+        
+        // Initialize State
         previousValue = slider.value;
-        // Initial setup (false = don't check collision on game start)
+        float snapInterval = 1f / (snapPoints - 1);
+        previousStepIndex = Mathf.RoundToInt(previousValue / snapInterval);
+
+        // Initial setup
         SnapAndRotate(slider.value, false); 
     }
 
     void OnSliderValueChanged(float value)
     {
-        // If we are currently reverting via code, ignore this event
         if (isReverting) return;
 
-        // --- 1. STEP RESTRICTION LOGIC ---
-        // Calculate snap interval
         float snapInterval = 1f / (snapPoints - 1);
-        
-        // Determine which "Index" (0 to 8) the slider was at vs where it is now
-        int previousStep = Mathf.RoundToInt(previousValue / snapInterval);
-        int currentStep = Mathf.RoundToInt(value / snapInterval);
+        int currentStepIndex = Mathf.RoundToInt(value / snapInterval);
 
-        // Calculate how many steps the user tried to jump
-        int stepDifference = Mathf.Abs(currentStep - previousStep);
-
-        // If the jump is greater than 1, we restrict it
-        if (stepDifference > 1)
+        // --- 1. ONE-STEP CONSTRAINT ---
+        // If we jump more than 1 step, clamp it to the neighbor
+        int stepJump = Mathf.Abs(currentStepIndex - previousStepIndex);
+        if (stepJump > 1)
         {
-            // Determine direction: +1 (Right) or -1 (Left)
-            int direction = currentStep > previousStep ? 1 : -1;
-
-            // Calculate the allowed index (Neighbor of previous)
-            int allowedStep = previousStep + direction;
-            
-            // Convert back to slider float value (0.0 to 1.0)
-            float restrictedValue = allowedStep * snapInterval;
-
-            // Override the value to process
-            value = restrictedValue;
-
-            // Visually force the slider UI to stick to the 1-step limit
-            // We use the Coroutine to override the user's mouse drag input
-            StartCoroutine(RevertSliderVisual(restrictedValue));
+            int direction = currentStepIndex > previousStepIndex ? 1 : -1;
+            currentStepIndex = previousStepIndex + direction;
         }
 
-        // --- 2. ROTATION & COLLISION LOGIC ---
-        // Attempt to rotate to the (possibly restricted) value
-        SnapAndRotate(value, true);
+        // --- 2. CALCULATE SNAPPED VALUE ---
+        float snappedValue = currentStepIndex * snapInterval;
+
+        // --- 3. VISUAL SNAP (The "No Smooth Moving" Logic) ---
+        // Even if the user is dragging between steps, FORCE the handle to the snap point.
+        // This makes the slider feel like it "pops" or "jumps" to the next tick.
+        if (Mathf.Abs(slider.value - snappedValue) > 0.001f)
+        {
+            StartCoroutine(ForceSliderVisual(snappedValue));
+        }
+
+        // --- 4. PROCESS ROTATION ---
+        // Only run rotation logic if we have actually changed steps
+        if (currentStepIndex != previousStepIndex)
+        {
+            SnapAndRotate(snappedValue, true);
+        }
     }
 
-    void SnapAndRotate(float rawValue, bool checkForCollisions)
+    void SnapAndRotate(float snappedValue, bool checkForCollisions)
     {
-        float snapInterval = 1f / (snapPoints - 1);
-        int nearestStep = Mathf.RoundToInt(rawValue / snapInterval);
-        float snappedValue = nearestStep * snapInterval;
-
-        // Calculate the Target Angle
+        // Calculate Target Angle
         float targetAngleZ = snappedValue * 360f;
         float deltaZ = targetAngleZ - currentZAngle;
 
-        // Optimization: If the angle hasn't changed significantly, do nothing
-        if (Mathf.Abs(deltaZ) < 0.01f) return;
-
-        // STORE PREVIOUS STATE
+        // --- PREPARE ---
         Quaternion originalRotation = pedestal.rotation;
         float originalZAngle = currentZAngle;
-
-        // APPLY ROTATION
+        float originalSliderValue = previousValue;
+        
+        // --- ACTION: ROTATE INSTANTLY ---
         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
         currentZAngle = targetAngleZ;
 
-        // CHECK FOR COLLISION
+        // --- CHECK COLLISION ---
         if (checkForCollisions && tMovement != null)
         {
             Physics.SyncTransforms(); 
 
             if (tMovement.IsRotationColliding())
             {
-                Debug.Log("Slider Collision Detected! Reverting...");
+                Debug.Log("Collision! Reverting Slider...");
 
-                // A. Revert Physical Rotation immediately
+                // A. Revert Rotation
                 pedestal.rotation = originalRotation;
                 currentZAngle = originalZAngle;
 
-                // B. Revert Slider UI to PREVIOUS valid value
-                StartCoroutine(RevertSliderVisual(previousValue));
+                // B. Revert Slider UI (Force back to previous step)
+                StartCoroutine(ForceSliderVisual(originalSliderValue));
 
-                return; // Stop here.
+                return; // Stop here. State is not updated.
             }
         }
 
-        // SUCCESS (No Collision)
-        
-        // Update previous value to this new valid position
+        // --- SUCCESS ---
+        // Commit the new state
         previousValue = snappedValue;
-        
-        // Visually snap the slider handle to the exact step
-        if (slider.value != snappedValue)
-        {
-            StartCoroutine(RevertSliderVisual(snappedValue));
-        }
+        float snapInterval = 1f / (snapPoints - 1);
+        previousStepIndex = Mathf.RoundToInt(snappedValue / snapInterval);
 
-        // Handle Swipe Input (Enable at 90s, Disable at 45s)
+        // Handle Swipe Input rules
         HandleSwipeInputState(targetAngleZ);
     }
 
-    // Helper Coroutine to force the slider value to change without triggering logic loops
-    IEnumerator RevertSliderVisual(float targetValue)
+    IEnumerator ForceSliderVisual(float targetValue)
     {
-        isReverting = true;
-        yield return new WaitForEndOfFrame(); 
+        isReverting = true; 
+        yield return new WaitForEndOfFrame(); // Wait for Unity to finish processing Drag
         slider.value = targetValue;
-        isReverting = false;
+        isReverting = false; 
     }
 
     void HandleSwipeInputState(float angleZ)
