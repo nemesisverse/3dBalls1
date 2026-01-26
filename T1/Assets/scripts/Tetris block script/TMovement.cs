@@ -11,7 +11,7 @@ public class TMovement : MonoBehaviour
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
-    float moveSpeed = 2f;
+    float moveSpeed = 1f;
 
     List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
