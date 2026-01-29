@@ -28,20 +28,30 @@ public class RowShifter : MonoBehaviour
     }
 
     // This method runs automatically whenever SwipeInput fires "OnSwipe"
-    void CheckPlaneAngles()
+void CheckPlaneAngles()
 {
-    // --- 1. YZ Plane Check (Normal is X Axis) ---
-    // Compares Global Right vs Local Right
-    float angleYZ = Vector3.Angle(Vector3.right, transform.right);
+    // The Normal of the Global XY Plane is Global Forward (Z)
+    Vector3 globalNormal = Vector3.forward;
 
-    // --- 2. ZX Plane Check (Normal is Y Axis) ---
-    // Compares Global Up vs Local Up
-    float angleZX = Vector3.Angle(Vector3.up, transform.up);
+    // 1. Check if Local XY Plane is the one aligned
+    // The Normal of Local XY is Local Forward (Z)
+    if (Mathf.Abs(Vector3.Dot(transform.forward, globalNormal)) > 0.99f)
+    {
+        Debug.Log("Aligned Plane: Local XY (Axes: Right & Up)");
+    }
 
-    // --- 3. XY Plane Check (Normal is Z Axis) ---
-    // Compares Global Forward vs Local Forward
-    float angleXY = Vector3.Angle(Vector3.forward, transform.forward);
+    // 2. Check if Local YZ Plane is the one aligned
+    // The Normal of Local YZ is Local Right (X)
+    else if (Mathf.Abs(Vector3.Dot(transform.right, globalNormal)) > 0.99f)
+    {
+        Debug.Log("Aligned Plane: Local YZ (Axes: Up & Forward)");
+    }
 
-    Debug.Log($"Plane Angles -> YZ: {angleYZ}° | ZX: {angleZX}° | XY: {angleXY}°");
+    // 3. Check if Local ZX Plane is the one aligned
+    // The Normal of Local ZX is Local Up (Y)
+    else if (Mathf.Abs(Vector3.Dot(transform.up, globalNormal)) > 0.99f)
+    {
+        Debug.Log("Aligned Plane: Local ZX (Axes: Right & Forward)");
+    }
 }
 }
