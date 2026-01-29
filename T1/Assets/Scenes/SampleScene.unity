@@ -1105,6 +1105,7 @@ MonoBehaviour:
   allowIncrease: 1
   allowDecrease: 1
   swipeInput: {fileID: 0}
+  tMovement: {fileID: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2479,7 +2480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1642180399421770191, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4624529452111292290, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3837,12 +3838,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fd95a15a62ac430191af943a26fb7e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInput
-  canSwipeDown: 1
-  canSwipeUp: 1
-  canSwipeLeft: 1
-  canSwipeRight: 1
   minSwipeDistance: 100
   gameManager: {fileID: 0}
+--- !u!114 &1227501325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227501322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2c8041743b9b4eaa8b31a8e6656e321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RowShifter
+  swipeInput: {fileID: 0}
 --- !u!1 &1237907810
 GameObject:
   m_ObjectHideFlags: 0
@@ -4179,6 +4189,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1227501324}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1227501325}
     - targetCorrespondingSourceObject: {fileID: -5117700066308340382, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1669975231}

@@ -151,6 +151,7 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System; 
 
 public class SwipeInput : MonoBehaviour
 {
@@ -163,6 +164,7 @@ public class SwipeInput : MonoBehaviour
    
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
+    public event Action OnSwipe;
 
     void Awake()
     {
@@ -205,6 +207,8 @@ public class SwipeInput : MonoBehaviour
         if (swipe.magnitude < minSwipeDistance)
             return;
 
+       
+
         // Logic simplified: We just try to rotate. The checking happens inside ApplyRotationInstant.
         if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
         {
@@ -232,6 +236,7 @@ public class SwipeInput : MonoBehaviour
                 ApplyRotationInstant(Vector3.right, -90f);
             }
         }
+         OnSwipe?.Invoke(); //invoke ke liye check
     }
 
     // UPDATED: Logic to Try Rotate -> Check Collision -> Revert if needed
