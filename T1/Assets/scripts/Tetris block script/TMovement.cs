@@ -23,6 +23,8 @@ public class TMovement : MonoBehaviour
 
     // Optimized list for collision checking
     private List<List<GameObject>> allDimensions;
+    Vector3 globalNormalX = Vector3.right;
+    Vector3 globalNormalZ = Vector3.forward;
 
     void Awake()
     {
@@ -85,12 +87,12 @@ public class TMovement : MonoBehaviour
                     if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
                     {
                         Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
-                        return true; 
+                        return true;
                     }
                 }
             }
         }
-        return false; 
+        return false;
     }
 
     bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
@@ -129,13 +131,13 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                if (stop == -1) 
+                if (stop == -1)
                 {
                     bool blocked = false;
                     try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { }
                     if (blocked) { stop = i - 1; stopperID = 1; }
                 }
-                yield return null; 
+                yield return null;
 
                 if (stop != -1 && i > stop)
                 {
@@ -143,26 +145,29 @@ public class TMovement : MonoBehaviour
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) 
-                        { 
-                            leftflagRadius(i); 
-                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                        if (stillBlocked)
+                        {
+                            leftflagRadius(i);
+                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSliderPermissions(); // Enable slider when done
-                            enabled = false; 
-                            yield break; 
+                            enabled = false;
+                            yield break;
                         }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { 
-                        while (stop != -1 && stopperID != 1) { 
-                            if (!enabled) { 
-                                leftflagRadius(i); 
-                                leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
-                                ResetSliderPermissions(); 
-                                yield break; 
-                            } 
-                            yield return null; 
-                        } 
+                    else
+                    {
+                        while (stop != -1 && stopperID != 1)
+                        {
+                            if (!enabled)
+                            {
+                                leftflagRadius(i);
+                                leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                ResetSliderPermissions();
+                                yield break;
+                            }
+                            yield return null;
+                        }
                     }
                 }
 
@@ -198,34 +203,37 @@ public class TMovement : MonoBehaviour
                     try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { }
                     if (blocked) { stop = i - 1; stopperID = 2; }
                 }
-                yield return null; 
-                
+                yield return null;
+
                 if (stop != -1 && i > stop)
                 {
                     if (stopperID == 2)
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) 
-                        { 
-                            rightflagRadius(i); 
-                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                        if (stillBlocked)
+                        {
+                            rightflagRadius(i);
+                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSliderPermissions(); // Enable slider when done
-                            enabled = false; 
-                            yield break; 
+                            enabled = false;
+                            yield break;
                         }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { 
-                        while (stop != -1 && stopperID != 2) { 
-                            if (!enabled) { 
-                                rightflagRadius(i); 
-                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
-                                ResetSliderPermissions(); 
-                                yield break; 
-                            } 
-                            yield return null; 
-                        } 
+                    else
+                    {
+                        while (stop != -1 && stopperID != 2)
+                        {
+                            if (!enabled)
+                            {
+                                rightflagRadius(i);
+                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                ResetSliderPermissions();
+                                yield break;
+                            }
+                            yield return null;
+                        }
                     }
                 }
 
@@ -250,7 +258,7 @@ public class TMovement : MonoBehaviour
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
-        if (verticalChildObject == null || verticalChildObject.Count == 0) yield break; 
+        if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
@@ -261,7 +269,7 @@ public class TMovement : MonoBehaviour
                     try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
                     if (blocked) { stop = i - 1; stopperID = 3; }
                 }
-                yield return null; 
+                yield return null;
 
                 if (stop != -1 && i > stop)
                 {
@@ -269,26 +277,31 @@ public class TMovement : MonoBehaviour
                     {
                         bool stillBlocked = false;
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
-                        if (stillBlocked) { 
-                            verticalflagRadius(i); 
-                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
-                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                        if (stillBlocked)
+                        {
+                            verticalflagRadius(i);
+                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSliderPermissions(); // Enable slider when done
-                            enabled = false; 
-                            yield break; 
+                            enabled = false;
+                            yield break;
                         }
                         else { stop = -1; stopperID = 0; }
                     }
-                    else { 
-                        while (stop != -1 && stopperID != 3) { 
-                            if (!enabled) { 
-                                verticalflagRadius(i); 
-                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true); 
-                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true); 
+                    else
+                    {
+                        while (stop != -1 && stopperID != 3)
+                        {
+                            if (!enabled)
+                            {
+                                verticalflagRadius(i);
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSliderPermissions();
-                                yield break; 
-                            } yield return null; 
-                        } 
+                                yield break;
+                            }
+                            yield return null;
+                        }
                     }
                 }
 
@@ -326,7 +339,7 @@ public class TMovement : MonoBehaviour
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSliderPermissions(); // Enable slider when done
-                        enabled = false; 
+                        enabled = false;
                     }
                     yield break;
                 }
@@ -363,7 +376,7 @@ public class TMovement : MonoBehaviour
     bool preventDecreasingValueSlider(int i)
     {
         if (allDimensions == null) return false;
-        
+
         // Safety checks for vertical count
         if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
         if (i < 0) return false;
@@ -404,31 +417,65 @@ public class TMovement : MonoBehaviour
         return false;
     }
 
+
     // --- RADIUS FLAG FUNCTIONS ---
     void leftflagRadius(int i)
     {
-        if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusYplusZDimension[i - 1] == null) gameManager.plusYplusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusYminusZDimension[i - 1] == null) gameManager.plusYminusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusYplusZDimension[i - 1] == null) gameManager.minusYplusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusYminusZDimension[i - 1] == null) gameManager.minusYminusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusXminusZDimension[i - 1] == null) gameManager.minusXminusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusXplusZDimension[i - 1] == null) gameManager.minusXplusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusXminusZDimension[i - 1] == null) gameManager.plusXminusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusXplusZDimension[i - 1] == null) gameManager.plusXplusZDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusXplusYDimension[i - 1] == null) gameManager.minusXplusYDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusXplusYDimension[i - 1] == null) gameManager.plusXplusYDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.minusXminusYDimension[i - 1] == null) gameManager.minusXminusYDimension[i - 1] = leftChildObject[0];
-        else if (gameManager.plusXminusYDimension[i - 1] == null) gameManager.plusXminusYDimension[i - 1] = leftChildObject[0];
+        // 1. Check if Local XY Plane is the one aligned
+        // The Normal of Local XY is Local Forward (Z)
+        if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
+        {
+            Debug.Log("left Aligned Plane: Local XY (Axes: Right & Up) with XY");
+            if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXplusYDimension[i - 1] == null) gameManager.minusXplusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusXplusYDimension[i - 1] == null) gameManager.plusXplusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXminusYDimension[i - 1] == null) gameManager.minusXminusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusXminusYDimension[i - 1] == null) gameManager.plusXminusYDimension[i - 1] = leftChildObject[0];
+
+        }
+
+        // 2. Check if Local YZ Plane is the one aligned with XY
+        // The Normal of Local YZ is Local Right (X)
+        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
+        {
+            Debug.Log("left Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
+            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusYplusZDimension[i - 1] == null) gameManager.plusYplusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusYminusZDimension[i - 1] == null) gameManager.plusYminusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusYplusZDimension[i - 1] == null) gameManager.minusYplusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusYminusZDimension[i - 1] == null) gameManager.minusYminusZDimension[i - 1] = leftChildObject[0];
+        }
+
+
+        // 3. Check if Local ZX Plane is the one aligned
+        // The Normal of Local ZX is Local Up (Y)
+        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
+        {
+            Debug.Log("left Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
+            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXminusZDimension[i - 1] == null) gameManager.minusXminusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.minusXplusZDimension[i - 1] == null) gameManager.minusXplusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusXminusZDimension[i - 1] == null) gameManager.plusXminusZDimension[i - 1] = leftChildObject[0];
+            else if (gameManager.plusXplusZDimension[i - 1] == null) gameManager.plusXplusZDimension[i - 1] = leftChildObject[0];
+        }
+
+
+
+
     }
 
     void rightflagRadius(int i)
     {
+
         if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = rightChildObject[0];
         else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = rightChildObject[0];
         else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = rightChildObject[0];

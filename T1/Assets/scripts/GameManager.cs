@@ -201,7 +201,6 @@ public class GameManager : MonoBehaviour
    public void SpawnRandomObject()
     {
         if (objectsToSpawn.Count == 0) return;
-
         // 1. Pick a random index
         // explicit 'UnityEngine.Random' to avoid ambiguity
         int randomIndex = UnityEngine.Random.Range(0, objectsToSpawn.Count);
