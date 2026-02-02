@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections; 
+using System.Collections;
+using System;
 
 public class SliderPedestalController1 : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class SliderPedestalController1 : MonoBehaviour
     public SwipeInput swipeInput;
     public TMovement tMovement; 
 
+    public event Action onSlide ;
     void Awake()
     {
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>(); 
@@ -87,6 +89,7 @@ public class SliderPedestalController1 : MonoBehaviour
 
         // --- 4. PROCESS ROTATION ---
         SnapAndRotate(value, true);
+         onSlide?.Invoke();
     }
 
     void SnapAndRotate(float rawValue, bool checkForCollisions)
