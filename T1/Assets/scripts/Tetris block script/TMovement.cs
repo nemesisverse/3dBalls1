@@ -422,6 +422,77 @@ public class TMovement : MonoBehaviour
     // --- RADIUS FLAG FUNCTIONS ---
     void leftflagRadius(int i)
     {
+        float angleYZ = Mathf.Atan2(transform.right.y, transform.right.x) * Mathf.Rad2Deg;
+        float angleZX = Mathf.Atan2(transform.up.y, transform.up.x) * Mathf.Rad2Deg;
+        float angleXY = Mathf.Atan2(transform.forward.y, transform.forward.x) * Mathf.Rad2Deg; // Angle of Local XY Plane Normal (Z)
+        float tolerance = 1.0f;
+
+        // 2. THE SINGLE IF CONDITION
+        // Check: (Local XY Parallel to Global XY) && (YZ is Diagonal) && (ZX is Diagonal)
+        if ((Mathf.Abs(Vector3.Dot(transform.forward, Vector3.forward)) > 0.99f) &&
+        (Mathf.Abs(Mathf.Abs(angleYZ) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleYZ) - 135f) <= tolerance) &&
+        (Mathf.Abs(Mathf.Abs(angleZX) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleZX) - 135f) <= tolerance))
+        {
+            Debug.Log("SUCCESS: Object is flat on XY, and both YZ & ZX planes are at 45° diagonals!");
+            // 3. Log the specific details for YZ Plane (Right Axis)
+            if (Mathf.Abs(angleYZ - 45f) <= tolerance || Mathf.Abs(angleYZ - (-135f)) <= tolerance)
+            {
+                Debug.Log("loca YZ was making +45 with  global YZ so adding it in left diognal ring ");
+            }
+            //ZX making +45 degree angle
+            else if (Mathf.Abs(angleZX - 45f) <= tolerance || Mathf.Abs(angleZX - (-135f)) <= tolerance)
+            {
+                Debug.Log("local ZX making  +ve angle with global YZ ");
+
+            }
+        }
+
+        // Check A: Local YZ Normal (Right) is Parallel to Global XY Normal (Forward) -> Object is "side-on" to camera
+        // Check B: Local XY Plane (Forward) is Diagonal
+        // Check C: Local ZX Plane (Up) is Diagonal
+        if ((Mathf.Abs(Vector3.Dot(transform.right, Vector3.forward)) > 0.99f) &&
+        (Mathf.Abs(Mathf.Abs(angleXY) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleXY) - 135f) <= tolerance) &&
+        (Mathf.Abs(Mathf.Abs(angleZX) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleZX) - 135f) <= tolerance))
+        {
+            Debug.Log("SUCCESS: Local YZ is flat on XY, and both XY & ZX planes are at 45° diagonals!");
+            // [Local XY] is +45° on left side
+            if (Mathf.Abs(angleXY - 45f) <= tolerance || Mathf.Abs(angleXY - (-135f)) <= tolerance)
+            {
+
+            }
+            //ZX tilted left side
+            else if (Mathf.Abs(angleZX - 45f) <= tolerance || Mathf.Abs(angleZX - (-135f)) <= tolerance)
+            {
+
+            }
+
+
+            // Check A: Local ZX Normal (Up) is Parallel to Global XY Normal (Forward) -> Object is "top-down" to camera
+            // Check B: Local YZ Plane (Right) is Diagonal
+            // Check C: Local XY Plane (Forward) is Diagonal
+            if ((Mathf.Abs(Vector3.Dot(transform.up, Vector3.forward)) > 0.99f) &&
+                (Mathf.Abs(Mathf.Abs(angleYZ) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleYZ) - 135f) <= tolerance) &&
+                (Mathf.Abs(Mathf.Abs(angleXY) - 45f) <= tolerance || Mathf.Abs(Mathf.Abs(angleXY) - 135f) <= tolerance))
+            {
+                Debug.Log("SUCCESS: Local ZX is flat on XY, and both YZ & XY planes are at 45° diagonals!");
+                //YZ 
+                if (Mathf.Abs(angleYZ - 45f) <= tolerance || Mathf.Abs(angleYZ - (-135f)) <= tolerance)
+                {
+                    Debug.Log("loca YZ was making +45 with  global YZ so adding it in left diognal ring ");
+                }
+
+                //XY plane
+                // [Local XY] is +45° on left side
+                else if (Mathf.Abs(angleXY - 45f) <= tolerance || Mathf.Abs(angleXY - (-135f)) <= tolerance)
+                {
+
+                }
+
+
+            }
+
+
+        }
         // 1. Check if Local XY Plane is the one aligned
         // The Normal of Local XY is Local Forward (Z)
         if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
@@ -529,8 +600,8 @@ public class TMovement : MonoBehaviour
     void verticalflagRadius(int i)
     {
         //local XY parallel against global XY
-        if ( (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, Vector3.forward)) > 0.99f) && 
-     Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) < 0.99f) 
+        if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, Vector3.forward)) > 0.99f) &&
+     Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) < 0.99f)
         {
             // Executes if the object is tilted (e.g., 45°, 30°, etc.) relative to the Global YZ wall
             Debug.Log("local XY is flat against XY Plane, but rotated (Tilted)!");
@@ -549,10 +620,10 @@ public class TMovement : MonoBehaviour
 
         /////////
         // Condition: Local YZ is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
-            else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.forward)) > 0.99f) &&
-                 (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.up)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.up)) < 0.99f))
+        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.forward)) > 0.99f) &&
+             (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.up)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.up)) < 0.99f))
         {
-           Debug.Log("Local YZ Plane is flat against Global XY, but rotated (Tilted)!");
+            Debug.Log("Local YZ Plane is flat against Global XY, but rotated (Tilted)!");
             //Block add in YZ
 
             if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
@@ -567,14 +638,14 @@ public class TMovement : MonoBehaviour
 
         }
         /////////
-         // Condition: Local XZ Plane is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
-            else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.forward)) > 0.99f) &&
-                 (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) < 0.99f))
+        // Condition: Local XZ Plane is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
+        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, Vector3.forward)) > 0.99f) &&
+             (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, Vector3.right)) < 0.99f))
         {
-           Debug.Log("Local XZ Plane is flat against Global XY, but rotated (Tilted)!");
+            Debug.Log("Local XZ Plane is flat against Global XY, but rotated (Tilted)!");
 
             //Block need to add in ZX
-             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }

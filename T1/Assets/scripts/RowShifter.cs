@@ -93,15 +93,15 @@ public class RowShifter : MonoBehaviour
         // 1. Reference: Global YZ Plane (Normal is Global X)
         Vector3 globalYZNormal = Vector3.right;
         Vector3 rotationAxis = Vector3.forward;
-       // float tolerance = 1.0f;
+        //float tolerance = 1.0f;
 
         void IdentifyPlane(Vector3 localNormal, string planeName)
         {
             // FILTER: Skip the face pointing at the camera
-            if (Mathf.Abs(Vector3.Dot(localNormal, rotationAxis)) > 0.9f) return;
+            // if (Mathf.Abs(Vector3.Dot(localNormal, rotationAxis)) > 0.9f) return;
 
-            // CALCULATE: Angle relative to Global X
-            float angle = Vector3.SignedAngle(globalYZNormal, localNormal, rotationAxis);
+            // // CALCULATE: Angle relative to Global X
+            // float angle = Vector3.SignedAngle(globalYZNormal, localNormal, rotationAxis);
 
             // CHECK ALL 4 DIAGONALS (45, -45, 135, -135)
 
@@ -121,26 +121,7 @@ public class RowShifter : MonoBehaviour
             // else if (Mathf.Abs(angle - (-135f)) <= tolerance)
             //     Debug.Log($"[-135°] {planeName} is tilted -135° (equivalent to +45°).");
 
-            // Condition: Local XY is Parallel to Global XY (Locked on Z) AND Local YZ is Tilted (Rotated on Z)
-            if ((Mathf.Abs(Vector3.Dot(transform.forward, Vector3.forward)) > 0.99f) &&
-                 Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) < 0.99f)
-            {
-                Debug.Log("local XY is flat against XY Plane, but rotated (Tilted)!");
-            }
-
-            // Condition: Local YZ is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
-            else if ((Mathf.Abs(Vector3.Dot(transform.right, Vector3.forward)) > 0.99f) &&
-                 (Mathf.Abs(Vector3.Dot(transform.up, Vector3.up)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.up, Vector3.up)) < 0.99f))
-            {
-                Debug.Log("Local YZ Plane is flat against Global XY, but rotated (Tilted)!");
-            }
-            /////////
-            // Condition: Local XZ Plane is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
-            else if ((Mathf.Abs(Vector3.Dot(transform.up, Vector3.forward)) > 0.99f) &&
-                 (Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) < 0.99f))
-            {
-                Debug.Log("Local XZ Plane is flat against Global XY, but rotated (Tilted)!");
-            }
+            
 
 
 
@@ -151,3 +132,25 @@ public class RowShifter : MonoBehaviour
         IdentifyPlane(transform.forward, "Local XY Plane");
     }
 }
+
+
+// Condition: Local XY is Parallel to Global XY (Locked on Z) AND Local YZ is Tilted (Rotated on Z)
+            // if ((Mathf.Abs(Vector3.Dot(transform.forward, Vector3.forward)) > 0.99f) &&
+            //      Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) < 0.99f)
+            // {
+            //     Debug.Log("local XY is flat against XY Plane, but rotated (Tilted)!");
+            // }
+
+            // // Condition: Local YZ is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
+            // else if ((Mathf.Abs(Vector3.Dot(transform.right, Vector3.forward)) > 0.99f) &&
+            //      (Mathf.Abs(Vector3.Dot(transform.up, Vector3.up)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.up, Vector3.up)) < 0.99f))
+            // {
+            //     Debug.Log("Local YZ Plane is flat against Global XY, but rotated (Tilted)!");
+            // }
+            // /////////
+            // // Condition: Local XZ Plane is Parallel to Global XY (Locked on Z) AND the other axes are Tilted
+            // else if ((Mathf.Abs(Vector3.Dot(transform.up, Vector3.forward)) > 0.99f) &&
+            //      (Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) > 0.01f && Mathf.Abs(Vector3.Dot(transform.right, Vector3.right)) < 0.99f))
+            // {
+            //     Debug.Log("Local XZ Plane is flat against Global XY, but rotated (Tilted)!");
+            // }
