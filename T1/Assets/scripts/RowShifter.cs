@@ -19,7 +19,7 @@ public class RowShifter : MonoBehaviour
             // swipeInput.OnSwipe += CheckPlaneAngles;
             // swipeInput.OnSwipe += CheckWhichLocalPlaneIsYZ;
 
-            sliderValueChanger.onSlide += CheckWhichPlanesAre45;
+            //sliderValueChanger.onSlide += CheckWhichPlanesAre45;
         }
     }
 
@@ -30,9 +30,31 @@ public class RowShifter : MonoBehaviour
         {
             // swipeInput.OnSwipe -= CheckPlaneAngles;
             // swipeInput.OnSwipe -= CheckWhichLocalPlaneIsYZ;
-            sliderValueChanger.onSlide -= CheckWhichPlanesAre45;
+            //sliderValueChanger.onSlide -= CheckWhichPlanesAre45;
         }
     }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // This method runs automatically whenever SwipeInput fires "OnSwipe"
     // void CheckPlaneAngles()
@@ -132,6 +154,8 @@ public class RowShifter : MonoBehaviour
         IdentifyPlane(transform.forward, "Local XY Plane");
     }
 }
+
+
 
 
 // Condition: Local XY is Parallel to Global XY (Locked on Z) AND Local YZ is Tilted (Rotated on Z)

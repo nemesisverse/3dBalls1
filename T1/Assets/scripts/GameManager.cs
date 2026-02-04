@@ -163,6 +163,22 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    // void Start()
+    // {
+    //     // Start the repeating check when the game begins
+    //     StartCoroutine(RingCheckRoutine());
+    // }
+
+    // IEnumerator RingCheckRoutine()
+    // {
+    //     while (true)
+    //     {
+    //         checkRingToDestroy();
+    //         // Wait for 0.1 seconds (checks 10 times per second)
+    //         yield return new WaitForSeconds(0.1f);
+    //     }
+    // }
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     {
         foreach (Transform child in parent)
@@ -186,6 +202,39 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+   public void checkRingToDestroy()
+{
+    // Ensure we don't go out of bounds of your lists
+    //int checkCount = 13; 
+
+    for (int i = 12; i >= 0; i--)
+    {
+        // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
+        // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
+        bool isXYRingFull = 
+            (minusXplusYDimension[i] != null) && (plusXplusYDimension[i] != null) && 
+            (minusXminusYDimension[i] != null) && (plusXminusYDimension[i] != null) &&
+            (plusYDimension[i] != null) && (minusYDimension[i] != null) && 
+            (minusXDimension[i] != null) && (plusXDimension[i] != null);
+
+        if (isXYRingFull)
+        {
+            // 2. The Detailed Debug Log you requested
+            Debug.Log($"<color=green>SUCCESS:</color> XY Ring at radius {i} is completed!");
+            Debug.Log($"Pieces in Ring {i}: " +
+                      $"Top: {plusYDimension[i].name}, " +
+                      $"Bottom: {minusYDimension[i].name}, " +
+                      $"Left: {minusXDimension[i].name}, " +
+                      $"Right: {plusXDimension[i].name}, " +
+                      $"Corners: {minusXplusYDimension[i].name}, {plusXplusYDimension[i].name}, " +
+                      $"{minusXminusYDimension[i].name}, {plusXminusYDimension[i].name}");
+
+            // IMPORTANT: If you want to stop the log from spamming, 
+            // you must clear the ring here or set a flag.
+        }
+    }
+}
+
     // public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     // {
     //     foreach (Transform child in parent)
@@ -198,7 +247,7 @@ public class GameManager : MonoBehaviour
     //     return false;
     // }
 
-   public void SpawnRandomObject()
+    public void SpawnRandomObject()
     {
         if (objectsToSpawn.Count == 0) return;
         // 1. Pick a random index
