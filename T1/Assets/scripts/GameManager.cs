@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> plusXminusYDimension = new List<GameObject>();  // Right-Down
 
 
-
+    int count = 0;
 
 
     void Awake()
@@ -163,22 +163,91 @@ public class GameManager : MonoBehaviour
         }
 
     }
+    void FixedUpdate()
+    {
 
-    // void Start()
-    // {
-    //     // Start the repeating check when the game begins
-    //     StartCoroutine(RingCheckRoutine());
-    // }
 
-    // IEnumerator RingCheckRoutine()
-    // {
-    //     while (true)
-    //     {
-    //         checkRingToDestroy();
-    //         // Wait for 0.1 seconds (checks 10 times per second)
-    //         yield return new WaitForSeconds(0.1f);
-    //     }
-    // }
+        {
+            ringFullCheckXY();
+        }
+    }
+
+    void RadialCheckX()
+    {
+        int i = 0;
+        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        {
+            int count1 = 0;
+            if (plusXDimension[i].transform.position == new Vector3(-v, v, 0) || plusXDimension[i].transform.position == new Vector3(v, v, 0) || plusXDimension[i].transform.position == new Vector3(-v, -v, 0) || plusXDimension[i].transform.position == new Vector3(v, -v, 0))
+            {
+                count1++;
+            }
+
+
+            if (count1 == 4)
+            {
+                count += count1;
+                break;
+            }
+            i++;
+        }
+
+    }
+
+    // Pink Ocean Algo
+    void ringFullCheckXY()
+    {
+        var allDimensions = new List<List<GameObject>>
+    {
+        plusYDimension, minusYDimension, minusXDimension, plusXDimension, plusZDimension, minusZDimension,
+        plusYplusZDimension, plusYminusZDimension, minusYplusZDimension, minusYminusZDimension,
+        minusXminusZDimension, minusXplusZDimension, plusXminusZDimension, plusXplusZDimension,
+        minusXplusYDimension, plusXplusYDimension, minusXminusYDimension, plusXminusYDimension
+    };
+
+        float a = 10.251f;
+        float b = 9.544f;
+        float c = 8.837f;
+        float d = 8.130f;
+        float e = 7.423f;
+        float f = 6.716f;
+        float g = 6.009f;
+        float h = 5.302f;
+        float i = 4.595f;
+        float j = 3.888f;
+        float k = 3.181f;
+        float l = 2.474f;
+        float m = 1.767f;
+
+
+        
+        for (int x = 0; x < allDimensions.Count; x++)
+        {
+            List<GameObject> currentDimension = allDimensions[x];
+            
+
+            // 3. Loop through the GameObjects inside that specific list
+            for (int y = 0; y < currentDimension.Count; y++)
+            {
+                Vector3 obj = currentDimension[y].transform.position;
+                //currentDimension[j];
+
+                if (currentDimension[y]!=null )
+                {
+                    if(j==0)
+                    {
+                        
+                    }
+                    //Count is 13
+                    Debug.Log(currentDimension.Count);
+
+                }
+               
+            }
+        }
+
+
+    }
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     {
         foreach (Transform child in parent)
@@ -202,38 +271,38 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-   public void checkRingToDestroy()
-{
-    // Ensure we don't go out of bounds of your lists
-    //int checkCount = 13; 
-
-    for (int i = 12; i >= 0; i--)
+    public void checkRingToDestroy()
     {
-        // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
-        // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
-        bool isXYRingFull = 
-            (minusXplusYDimension[i] != null) && (plusXplusYDimension[i] != null) && 
-            (minusXminusYDimension[i] != null) && (plusXminusYDimension[i] != null) &&
-            (plusYDimension[i] != null) && (minusYDimension[i] != null) && 
-            (minusXDimension[i] != null) && (plusXDimension[i] != null);
+        // Ensure we don't go out of bounds of your lists
+        //int checkCount = 13; 
 
-        if (isXYRingFull)
+        for (int i = 12; i >= 0; i--)
         {
-            // 2. The Detailed Debug Log you requested
-            Debug.Log($"<color=green>SUCCESS:</color> XY Ring at radius {i} is completed!");
-            Debug.Log($"Pieces in Ring {i}: " +
-                      $"Top: {plusYDimension[i].name}, " +
-                      $"Bottom: {minusYDimension[i].name}, " +
-                      $"Left: {minusXDimension[i].name}, " +
-                      $"Right: {plusXDimension[i].name}, " +
-                      $"Corners: {minusXplusYDimension[i].name}, {plusXplusYDimension[i].name}, " +
-                      $"{minusXminusYDimension[i].name}, {plusXminusYDimension[i].name}");
+            // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
+            // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
+            bool isXYRingFull =
+                (minusXplusYDimension[i] != null) && (plusXplusYDimension[i] != null) &&
+                (minusXminusYDimension[i] != null) && (plusXminusYDimension[i] != null) &&
+                (plusYDimension[i] != null) && (minusYDimension[i] != null) &&
+                (minusXDimension[i] != null) && (plusXDimension[i] != null);
 
-            // IMPORTANT: If you want to stop the log from spamming, 
-            // you must clear the ring here or set a flag.
+            if (isXYRingFull)
+            {
+                // 2. The Detailed Debug Log you requested
+                Debug.Log($"<color=green>SUCCESS:</color> XY Ring at radius {i} is completed!");
+                Debug.Log($"Pieces in Ring {i}: " +
+                          $"Top: {plusYDimension[i].name}, " +
+                          $"Bottom: {minusYDimension[i].name}, " +
+                          $"Left: {minusXDimension[i].name}, " +
+                          $"Right: {plusXDimension[i].name}, " +
+                          $"Corners: {minusXplusYDimension[i].name}, {plusXplusYDimension[i].name}, " +
+                          $"{minusXminusYDimension[i].name}, {plusXminusYDimension[i].name}");
+
+                // IMPORTANT: If you want to stop the log from spamming, 
+                // you must clear the ring here or set a flag.
+            }
         }
     }
-}
 
     // public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     // {
