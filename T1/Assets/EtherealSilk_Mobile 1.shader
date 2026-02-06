@@ -1,22 +1,28 @@
-Shader "Unlit/OrbitingFlakes"
+Shader "Unlit/AnimeNightSky_v3"
 {
     Properties
     {
-        [Header(Global Atmosphere)]
-        _ColorTop ("Top Color", Color) = (0.0, 0.02, 0.08, 1)
-        _ColorBot ("Bottom Color", Color) = (0.05, 0.1, 0.2, 1)
-        
-        [Header(Orbiting Flakes)]
-        _StarDensity ("Flake Density", Range(50, 500)) = 150.0
-        _StarSize ("Flake Size", Range(0.001, 0.03)) = 0.01
-        _RotationSpeed ("Orbit Speed", Range(-1.0, 1.0)) = 0.05 // Controls revolution speed
-        
-        [Header(Aurora Borealis)]
-        _AuroraColor1 ("Aurora Primary", Color) = (0.0, 0.8, 0.5, 1)
-        _AuroraColor2 ("Aurora Secondary", Color) = (0.3, 0.0, 0.8, 1)
-        _AuroraSpeed ("Aurora Speed", Float) = 0.05
-        _AuroraIntensity ("Aurora Intensity", Range(0.0, 2.0)) = 1.0
-        _AuroraHeight ("Aurora Band (Min, Max)", Vector) = (-0.2, 0.8, 0,0)
+        [Header(Painterly Gradient)]
+        _ColorTop ("Deep Space (Top)", Color) = (0.02, 0.02, 0.1, 1)
+        _ColorMid ("Midnight (Middle)", Color) = (0.1, 0.1, 0.35, 1)
+        _ColorBot ("Horizon (Bottom)", Color) = (0.0, 0.6, 0.8, 1)
+        _GradientSpread ("Gradient Spread", Range(0.1, 2.0)) = 1.2
+
+        [Header(Stylized Stars)]
+        _StarDensity ("Star Density", Range(50, 400)) = 150.0
+        _StarSize ("Star Size", Range(0.001, 0.02)) = 0.008
+        _TwinkleSpeed ("Twinkle Speed", Float) = 2.0
+
+        [Header(Anime Clouds)]
+        _CloudColor ("Cloud Color", Color) = (0.2, 0.3, 0.6, 0.4)
+        _CloudSpeed ("Cloud Drift", Float) = 0.02
+        _CloudDensity ("Cloud Cover", Range(0.0, 1.0)) = 0.5
+        _CloudSharpness ("Brush Stroke Hardness", Range(0.0, 1.0)) = 0.3
+
+        [Header(Shooting Star)]
+        _ShootingStarSpeed ("Shooting Star Speed", Float) = 3.0
+        _ShootingStarFreq ("Shooting Star Frequency", Range(0.0, 1.0)) = 0.1
+        _ShootingStarSize ("Shooting Star Thickness", Range(0.5, 2.0)) = 1.0
     }
     SubShader
     {
@@ -44,64 +50,138 @@ Shader "Unlit/OrbitingFlakes"
                 float3 worldPos : TEXCOORD0;
             };
 
-            fixed4 _ColorTop, _ColorBot;
-            float _StarDensity, _StarSize, _RotationSpeed;
-            fixed4 _AuroraColor1, _AuroraColor2;
-            float _AuroraSpeed, _AuroraIntensity;
-            float2 _AuroraHeight;
+            fixed4 _ColorTop, _ColorMid, _ColorBot;
+            float _GradientSpread;
+            float _StarDensity, _StarSize, _TwinkleSpeed;
+            fixed4 _CloudColor;
+            float _CloudSpeed, _CloudDensity, _CloudSharpness;
+            float _ShootingStarSpeed, _ShootingStarFreq, _ShootingStarSize;
 
-            // Pseudo-random hash
+            // --- NOISE FUNCTIONS ---
             float hash21(float2 p) {
                 p = frac(p * float2(123.34, 456.21));
                 p += dot(p, p + 45.32);
                 return frac(p.x * p.y);
             }
 
-            // 3D Orbiting Flake Function
-            float stars(float3 viewDir, float t) {
-                // 1. Spherical Mapping
-                float2 uv;
-                uv.x = atan2(viewDir.z, viewDir.x) / 6.28318; // Longitude
-                uv.y = asin(viewDir.y) / 3.14159;            // Latitude
-                
-                // 2. REVOLUTION LOGIC
-                // We add time to uv.x to make them spin around the Y-axis (the poles)
-                uv.x += t * _RotationSpeed; 
-
-                // 3. Grid Logic
-                uv *= _StarDensity;
-                float2 gridID = floor(uv);
-                
-                // 4. Generate Flakes
-                float n = hash21(gridID); 
-                
-                // Create solid white circles
-                // 'n' determines which cell gets a star.
-                // We compare 'n' to a threshold based on _StarSize.
-                // Using a sharp smoothstep (0.01 width) makes them solid hard dots.
-                float starShape = smoothstep(1.0 - _StarSize, 1.0 - _StarSize + 0.01, n);
-
-                // Note: No twinkle math here. If starShape > 0, it is 1.0 (Solid White).
-                return starShape;
+            float valueNoise(float2 uv) {
+                float2 i = floor(uv);
+                float2 f = frac(uv);
+                f = f * f * (3.0 - 2.0 * f); 
+                float a = hash21(i);
+                float b = hash21(i + float2(1.0, 0.0));
+                float c = hash21(i + float2(0.0, 1.0));
+                float d = hash21(i + float2(1.0, 1.0));
+                return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
             }
 
-            float aurora(float3 viewDir, float t) {
-                float2 p = viewDir.xz * 2.0 + float2(t*0.1, t*0.2);
-                p += float2(sin(p.y * 0.8 - t), cos(p.x * 0.9 + t*0.7)) * 0.5;
-                float noiseVal = sin(p.x * 1.5) * cos(p.y * 1.5 + t * 0.2);
-                noiseVal += sin(p.x * 3.5 - t*1.2) * 0.3;
-                noiseVal = noiseVal * 0.5 + 0.5;
-                noiseVal = pow(noiseVal, 4.0) * 2.0;
-                float mask = smoothstep(_AuroraHeight.x, _AuroraHeight.x + 0.2, viewDir.y);
-                mask *= smoothstep(_AuroraHeight.y + 0.2, _AuroraHeight.y, viewDir.y);
-                return saturate(noiseVal * mask * _AuroraIntensity);
+            // --- SHOOTING STAR LOGIC ---
+            float ShootingStar(float3 viewDir, float t) {
+                // 1. Map to Spherical UVs
+                float2 uv = float2(atan2(viewDir.z, viewDir.x) / 6.28318, asin(viewDir.y) / 3.14159);
+                
+                // 2. EQUATOR BIAS (Probability Mask)
+                // Stars are more likely near y=0 (Equator/Horizon)
+                float equatorProb = 1.0 - abs(uv.y * 2.5); 
+                equatorProb = smoothstep(0.0, 1.0, equatorProb); 
+
+                // 3. Grid Setup
+                // Skew the UVs for diagonal fall
+                float2 gridUV = uv;
+                gridUV.x += gridUV.y * 0.4; 
+                gridUV.x *= 12.0; // Fewer lanes for thicker feel
+                
+                // 4. Randomized Time Flow
+                float id = floor(gridUV.x);
+                float randomOffset = hash21(float2(id, 42.0)); 
+                
+                // Random speed per lane
+                float speed = _ShootingStarSpeed * (0.8 + 0.5 * randomOffset);
+                float laneTime = t * speed + randomOffset * 100.0;
+                
+                float slotID = floor(laneTime);
+                float slotUV = frac(laneTime); // 0 to 1 progress within the slot
+
+                // 5. Spawn Check
+                float rnd = hash21(float2(id, slotID));
+                
+                // Frequency check combined with equator bias
+                if (rnd > (1.0 - _ShootingStarFreq * equatorProb)) {
+                    
+                    // --- DRAWING THE STAR SHAPE ---
+                    // 'pos' is the distance from the head (0.0) to the tail (1.0)
+                    float pos = slotUV; 
+                    
+                    // Randomize Length: Some stars fade out faster
+                    float lengthMod = 0.5 + 0.5 * hash21(float2(rnd, 99.0));
+                    pos = pos / lengthMod; // Scale position by length
+
+                    // If pos > 1.0, we are past the tail, so return 0
+                    if(pos > 1.0) return 0.0;
+
+                    // 1. Horizontal Centering
+                    float center = 0.5 + (hash21(float2(rnd, 1.0)) - 0.5) * 0.3;
+                    float distFromCenter = abs(frac(gridUV.x) - center);
+                    
+                    // 2. Tapering Thickness (Teardrop shape)
+                    // The star is thickest at pos=0 (head) and 0 width at pos=1 (tail)
+                    float thickness = 0.03 * _ShootingStarSize * (1.0 - pos);
+                    
+                    // Draw the body line
+                    float body = smoothstep(thickness, 0.0, distFromCenter);
+
+                    // 3. The Head (Glowing Nucleus)
+                    // A small circle at the very front (pos near 0)
+                    float headSize = 0.04 * _ShootingStarSize;
+                    float distToHead = length(float2(distFromCenter, pos));
+                    float head = smoothstep(headSize, 0.0, distToHead) * 4.0; // Extra Bright
+
+                    // 4. The Tail Fade
+                    // Brightness falls off exponentially towards the back
+                    float tailFade = smoothstep(1.0, 0.0, pos); // Linear fade
+                    tailFade = pow(tailFade, 2.0); // Exponential fade (comet look)
+
+                    return (body + head) * tailFade;
+                }
+                
+                return 0.0;
+            }
+
+            float Stars(float3 viewDir, float t) {
+                float2 uv = float2(atan2(viewDir.z, viewDir.x) / 6.28318, asin(viewDir.y) / 3.14159);
+                uv.x += t * 0.005;
+                uv *= _StarDensity;
+                float2 gridID = floor(uv);
+                float2 gridUV = frac(uv) - 0.5;
+                float n = hash21(gridID);
+                float2 offset = (float2(n, frac(n*10.0)) - 0.5) * 0.5;
+                float d = length(gridUV - offset);
+                float twinkle = 0.5 + 0.5 * sin(t * _TwinkleSpeed + n * 100.0);
+                float s = 0.0;
+                if (n > 0.95) {
+                    s = smoothstep(_StarSize, _StarSize * 0.5, d);
+                    s *= twinkle;
+                }
+                return s;
+            }
+
+            float Clouds(float3 viewDir, float t) {
+                float2 uv = viewDir.xz / (viewDir.y + 0.5); 
+                uv *= 2.0;
+                uv += float2(t * 0.5, t * 0.1); 
+                float n = valueNoise(uv);
+                n += valueNoise(uv * 2.0 + t) * 0.5;
+                n *= 0.66; 
+                float cloudShape = smoothstep(1.0 - _CloudDensity, 1.0 - _CloudDensity + _CloudSharpness, n);
+                float zenithFade = smoothstep(0.8, 0.2, viewDir.y);
+                return cloudShape * zenithFade;
             }
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.worldPos = normalize(mul(unity_ObjectToWorld, v.vertex).xyz);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 return o;
             }
 
@@ -110,23 +190,24 @@ Shader "Unlit/OrbitingFlakes"
                 float3 viewDir = normalize(i.worldPos);
                 float t = _Time.y;
 
-                // 1. Background
-                float gradientFactor = viewDir.y * 0.5 + 0.5;
-                fixed3 finalCol = lerp(_ColorBot.rgb, _ColorTop.rgb, gradientFactor);
+                float y = saturate(viewDir.y * 0.5 + 0.5);
+                y = pow(y, _GradientSpread); 
 
-                // 2. Aurora
-                float auroraVal = aurora(viewDir, t * _AuroraSpeed);
-                float3 auroraCol = lerp(_AuroraColor1.rgb, _AuroraColor2.rgb, smoothstep(0, 1, auroraVal));
-                finalCol += auroraCol * auroraVal;
+                float3 skyColor = lerp(_ColorBot.rgb, _ColorMid.rgb, smoothstep(0.0, 0.5, y));
+                skyColor = lerp(skyColor, _ColorTop.rgb, smoothstep(0.5, 1.0, y));
 
-                // 3. Solid White Flakes
-                float starVal = stars(viewDir, t);
-                
-                // Additive blend: Since 'starVal' is 0 or 1, this adds pure white.
-                // saturate ensures we don't blow out the HDR bloom too much if not desired.
-                finalCol += starVal; 
+                float stars = Stars(viewDir, t);
+                skyColor += stars;
 
-                return fixed4(finalCol, 1.0);
+                float clouds = Clouds(viewDir, t * _CloudSpeed);
+                skyColor = lerp(skyColor, _CloudColor.rgb, clouds * _CloudColor.a);
+                skyColor += clouds * 0.2 * _ColorBot.rgb;
+
+                // Call Updated Shooting Star
+                float shoot = ShootingStar(viewDir, t);
+                skyColor += shoot;
+
+                return fixed4(skyColor, 1.0);
             }
             ENDCG
         }
