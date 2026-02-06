@@ -93,43 +93,54 @@ public class SliderPedestalController1 : MonoBehaviour
     }
 
     void SnapAndRotate(float rawValue, bool checkForCollisions)
+{
+    float snapInterval = 1f / (snapPoints - 1);
+    int nearestStep = Mathf.RoundToInt(rawValue / snapInterval);
+    float targetSnappedValue = nearestStep * snapInterval;
+
+    float targetAngleZ = targetSnappedValue * 360f;
+    float deltaZ = targetAngleZ - currentZAngle;
+
+    // If the movement is negligible, don't process
+    if (Mathf.Abs(deltaZ) < 0.01f) return;
+
+    // --- 1. SAVE CURRENT STATE (The "Safe" Point) ---
+    Quaternion originalRotation = pedestal.rotation;
+    float originalZAngle = currentZAngle;
+    int originalStepIndex = previousStepIndex;
+    float originalSliderValue = previousValue;
+
+    // --- 2. PERFORM TRIAL ROTATION ---
+    pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
+    
+    // We update this temporarily to check if the new position is valid
+    currentZAngle = targetAngleZ; 
+
+    // --- 3. COLLISION CHECK ---
+    if (checkForCollisions && tMovement != null)
     {
-        float snapInterval = 1f / (snapPoints - 1);
-        int nearestStep = Mathf.RoundToInt(rawValue / snapInterval);
-        float snappedValue = nearestStep * snapInterval;
+        // Force Unity to update collider positions immediately
+        Physics.SyncTransforms(); 
 
-        float targetAngleZ = snappedValue * 360f;
-        float deltaZ = targetAngleZ - currentZAngle;
-
-        if (Mathf.Abs(deltaZ) < 0.01f) return;
-
-        Quaternion originalRotation = pedestal.rotation;
-        float originalZAngle = currentZAngle;
-        float originalSliderValue = previousValue;
-
-        pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
-        currentZAngle = targetAngleZ;
-
-        // Collision Check
-        if (checkForCollisions && tMovement != null)
+        if (tMovement.IsRotationColliding())
         {
-            Physics.SyncTransforms(); 
-
-            if (tMovement.IsRotationColliding())
-            {
-                Debug.Log("Collision! Reverting Slider...");
-                pedestal.rotation = originalRotation;
-                currentZAngle = originalZAngle;
-                StartCoroutine(ForceSliderVisual(originalSliderValue));
-                return; 
-            }
+            Debug.Log("<color=red>Collision Detected!</color> Reverting to: " + originalSliderValue);
+            
+            // Revert Physical Rotation
+            pedestal.rotation = originalRotation;
+            currentZAngle = originalZAngle;
+            
+            // Revert UI Slider (via Coroutine to bypass event lock)
+            StartCoroutine(ForceSliderVisual(originalSliderValue));
+            return; // Exit early, do not update 'previous' values
         }
-
-        // Success
-        previousValue = snappedValue;
-        previousStepIndex = nearestStep;
-        HandleSwipeInputState(targetAngleZ);
     }
+
+    // --- 4. SUCCESS: COMMIT STATE ---
+    previousValue = targetSnappedValue;
+    previousStepIndex = nearestStep;
+    HandleSwipeInputState(targetAngleZ);
+}
 
     IEnumerator ForceSliderVisual(float targetValue)
     {
