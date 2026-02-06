@@ -27,6 +27,14 @@ public class TMovement : MonoBehaviour
     Vector3 globalNormalX = Vector3.right; //YZ plane ke liye
     Vector3 globalNormalZ = Vector3.forward; // XY plane ke liye
 
+
+    // ... existing variables ...
+
+    // ADD THIS LINE:
+    public bool isLockedBySlider = false; 
+
+    // ... existing lists ...
+
     void Awake()
     {
         if (gameManager == null) gameManager = FindFirstObjectByType<GameManager>();
@@ -133,6 +141,7 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
+                while (isLockedBySlider) yield return null;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -161,6 +170,7 @@ public class TMovement : MonoBehaviour
                     {
                         while (stop != -1 && stopperID != 1)
                         {
+                            while (isLockedBySlider) yield return null;
                             if (!enabled)
                             {
                                 leftflagRadius(i);
@@ -199,6 +209,7 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
+                while (isLockedBySlider) yield return null;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -227,6 +238,7 @@ public class TMovement : MonoBehaviour
                     {
                         while (stop != -1 && stopperID != 2)
                         {
+                            while (isLockedBySlider) yield return null;
                             if (!enabled)
                             {
                                 rightflagRadius(i);
@@ -265,6 +277,7 @@ public class TMovement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
+                while (isLockedBySlider) yield return null;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -297,6 +310,7 @@ public class TMovement : MonoBehaviour
                     {
                         while (stop != -1 && stopperID != 3)
                         {
+                            while (isLockedBySlider) yield return null;
                             if (!enabled)
                             {
                                 verticalflagRadius(i);

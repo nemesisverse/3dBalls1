@@ -1,4 +1,204 @@
-﻿using UnityEngine;
+﻿// using UnityEngine;
+// using UnityEngine.UI;
+// using System.Collections;
+// using System;
+
+// public class SliderPedestalController1 : MonoBehaviour
+// {
+//     public Slider slider;
+//     public Transform pedestal;
+//     public int snapPoints = 9; 
+
+//     // --- State Tracking ---
+//     private float currentZAngle = 0f;
+    
+//     // The last KNOWN SAFE rotation & slider value (no collision)
+//     private float lastSafeSliderValue;
+//     private float lastSafeZAngle;
+//     private Quaternion lastSafeRotation;
+    
+//     private bool isProcessing = false;
+
+//     // References
+//     public SwipeInput swipeInput;
+//     // DON'T cache TMovement - it gets destroyed/recreated each piece
+
+//     public event Action onSlide;
+
+//     void Awake()
+//     {
+//         if (swipeInput == null) 
+//         {
+//             swipeInput = FindFirstObjectByType<SwipeInput>();
+//             if (swipeInput == null)
+//                 Debug.LogError("[SliderController] SwipeInput not found in scene!");
+//         }
+//     }
+
+//     void Start()
+//     {
+//         slider.onValueChanged.AddListener(OnSliderValueChanged);
+        
+//         // Initialize Safe State
+//         lastSafeSliderValue = slider.value;
+//         lastSafeZAngle = 0f;
+//         lastSafeRotation = pedestal.rotation;
+        
+//         // Initial Rotation (no collision check)
+//         SnapAndRotate(slider.value, 0, false); 
+//     }
+
+//     void OnSliderValueChanged(float rawValue)
+//     {
+//         // Block ALL input during processing
+//         if (isProcessing) 
+//         {
+//             return;
+//         }
+
+//         float snapInterval = 1f / (snapPoints - 1);
+        
+//         // Calculate steps
+//         int safeStepIndex = Mathf.RoundToInt(lastSafeSliderValue / snapInterval);
+//         int currentStepIndex = Mathf.RoundToInt(rawValue / snapInterval);
+
+//         // No step change? Ignore
+//         if (currentStepIndex == safeStepIndex) return; 
+
+//         // Determine direction of movement
+//         int direction = currentStepIndex > safeStepIndex ? 1 : -1;
+        
+//         // Anti-tunneling: Force 1-step increments
+//         int targetStepIndex = safeStepIndex + direction;
+//         float targetValue = Mathf.Clamp01(targetStepIndex * snapInterval);
+
+//         // Start processing
+//         StartCoroutine(ProcessRotation(targetValue, direction));
+//     }
+
+//     IEnumerator ProcessRotation(float targetValue, int direction)
+//     {
+//         isProcessing = true;
+
+//         // Calculate target angle
+//         float snapInterval = 1f / (snapPoints - 1);
+//         float snappedValue = Mathf.Round(targetValue / snapInterval) * snapInterval;
+//         float targetAngleZ = snappedValue * 360f;
+//         float deltaZ = targetAngleZ - currentZAngle;
+
+//         // Validate there's actually a change needed
+//         if (Mathf.Abs(deltaZ) < 0.01f)
+//         {
+//             isProcessing = false;
+//             yield break;
+//         }
+
+//         // Store CURRENT safe state (for potential rollback)
+//         Quaternion savedRotation = lastSafeRotation;
+//         float savedZAngle = lastSafeZAngle;
+//         float savedSliderValue = lastSafeSliderValue;
+
+//         // Apply rotation
+//         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
+//         currentZAngle = targetAngleZ;
+
+//         // Force Unity to update transforms
+//         Physics.SyncTransforms();
+        
+//         // Wait for physics to settle
+//         yield return new WaitForFixedUpdate();
+//         yield return new WaitForFixedUpdate();
+
+//         // ⬇️ FIND TMovement DYNAMICALLY (it gets destroyed/recreated each piece) ⬇️
+//         TMovement tMovement = FindFirstObjectByType<TMovement>();
+        
+//         // Check collision
+//         bool hasCollision = false;
+//         if (tMovement != null)
+//         {
+//             hasCollision = tMovement.IsRotationColliding();
+//         }
+//         else
+//         {
+//             // No active falling piece = no collision possible
+//             hasCollision = false;
+//         }
+
+//         if (hasCollision)
+//         {
+//             // REVERT rotation to saved safe state
+//             pedestal.rotation = savedRotation;
+//             currentZAngle = savedZAngle;
+            
+//             // Force slider back to safe value
+//             slider.SetValueWithoutNotify(savedSliderValue);
+            
+//             HandleSwipeInputState(savedZAngle);
+//         }
+//         else
+//         {
+//             // Update safe state to NEW position
+//             lastSafeSliderValue = snappedValue;
+//             lastSafeZAngle = currentZAngle;
+//             lastSafeRotation = pedestal.rotation;
+            
+//             // Ensure slider shows exact snapped value
+//             slider.SetValueWithoutNotify(snappedValue);
+            
+//             HandleSwipeInputState(currentZAngle);
+//         }
+
+//         onSlide?.Invoke();
+        
+//         isProcessing = false;
+//     }
+
+//     void SnapAndRotate(float targetValue, int direction, bool checkForCollisions)
+//     {
+//         // Used for initial setup only
+//         float snapInterval = 1f / (snapPoints - 1);
+//         float snappedValue = Mathf.Round(targetValue / snapInterval) * snapInterval;
+//         float targetAngleZ = snappedValue * 360f;
+//         float deltaZ = targetAngleZ - currentZAngle;
+
+//         if (Mathf.Abs(deltaZ) < 0.01f) return;
+
+//         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
+//         currentZAngle = targetAngleZ;
+        
+//         lastSafeSliderValue = snappedValue;
+//         lastSafeZAngle = targetAngleZ;
+//         lastSafeRotation = pedestal.rotation;
+        
+//         HandleSwipeInputState(targetAngleZ);
+//     }
+
+//     void HandleSwipeInputState(float angleZ)
+//     {
+//         if (swipeInput != null)
+//         {
+//             float remainder = angleZ % 90f;
+//             if (Mathf.Abs(remainder) < 1f || Mathf.Abs(remainder - 90f) < 1f)
+//             {
+//                 if (!swipeInput.enabled) swipeInput.enabled = true;
+//             }
+//             else if (Mathf.Abs(remainder - 45f) < 1f)
+//             {
+//                 if (swipeInput.enabled) swipeInput.enabled = false;
+//             }
+//         }
+//     }
+
+//     public void UpdateSafeState()
+//     {
+//         lastSafeSliderValue = slider.value;
+//         lastSafeZAngle = currentZAngle;
+//         lastSafeRotation = pedestal.rotation;
+//     }
+// }
+
+
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System;
@@ -21,8 +221,6 @@ public class SliderPedestalController1 : MonoBehaviour
 
     // References
     public SwipeInput swipeInput;
-    // DON'T cache TMovement - it gets destroyed/recreated each piece
-
     public event Action onSlide;
 
     void Awake()
@@ -45,12 +243,12 @@ public class SliderPedestalController1 : MonoBehaviour
         lastSafeRotation = pedestal.rotation;
         
         // Initial Rotation (no collision check)
-        SnapAndRotate(slider.value, 0, false); 
+        SnapAndRotate(slider.value, false); 
     }
 
     void OnSliderValueChanged(float rawValue)
     {
-        // Block ALL input during processing
+        // Block ALL input during processing to prevent state corruption
         if (isProcessing) 
         {
             return;
@@ -62,21 +260,18 @@ public class SliderPedestalController1 : MonoBehaviour
         int safeStepIndex = Mathf.RoundToInt(lastSafeSliderValue / snapInterval);
         int currentStepIndex = Mathf.RoundToInt(rawValue / snapInterval);
 
-        // No step change? Ignore
+        // No step change? Ignore to save performance
         if (currentStepIndex == safeStepIndex) return; 
 
-        // Determine direction of movement
-        int direction = currentStepIndex > safeStepIndex ? 1 : -1;
-        
-        // Anti-tunneling: Force 1-step increments
-        int targetStepIndex = safeStepIndex + direction;
-        float targetValue = Mathf.Clamp01(targetStepIndex * snapInterval);
+        // --- CHANGE: REMOVED 1-STEP LIMIT ---
+        // We now allow the user to drag to ANY step instantly.
+        float targetValue = Mathf.Clamp01(currentStepIndex * snapInterval);
 
-        // Start processing
-        StartCoroutine(ProcessRotation(targetValue, direction));
+        // Start processing the move
+        StartCoroutine(ProcessRotation(targetValue));
     }
 
-    IEnumerator ProcessRotation(float targetValue, int direction)
+    IEnumerator ProcessRotation(float targetValue)
     {
         isProcessing = true;
 
@@ -102,14 +297,14 @@ public class SliderPedestalController1 : MonoBehaviour
         pedestal.Rotate(Vector3.forward, -deltaZ, Space.World);
         currentZAngle = targetAngleZ;
 
-        // Force Unity to update transforms
+        // Force Unity to update transforms so colliders move
         Physics.SyncTransforms();
         
-        // Wait for physics to settle
+        // Wait for physics to settle (Critical for accurate collision detection)
         yield return new WaitForFixedUpdate();
         yield return new WaitForFixedUpdate();
 
-        // ⬇️ FIND TMovement DYNAMICALLY (it gets destroyed/recreated each piece) ⬇️
+        // ⬇️ FIND TMovement DYNAMICALLY ⬇️
         TMovement tMovement = FindFirstObjectByType<TMovement>();
         
         // Check collision
@@ -118,14 +313,10 @@ public class SliderPedestalController1 : MonoBehaviour
         {
             hasCollision = tMovement.IsRotationColliding();
         }
-        else
-        {
-            // No active falling piece = no collision possible
-            hasCollision = false;
-        }
 
         if (hasCollision)
         {
+            Debug.Log("<color=red>Collision detected! Reverting...</color>");
             // REVERT rotation to saved safe state
             pedestal.rotation = savedRotation;
             currentZAngle = savedZAngle;
@@ -137,7 +328,7 @@ public class SliderPedestalController1 : MonoBehaviour
         }
         else
         {
-            // Update safe state to NEW position
+            // SUCCESS: Update safe state to NEW position
             lastSafeSliderValue = snappedValue;
             lastSafeZAngle = currentZAngle;
             lastSafeRotation = pedestal.rotation;
@@ -153,7 +344,7 @@ public class SliderPedestalController1 : MonoBehaviour
         isProcessing = false;
     }
 
-    void SnapAndRotate(float targetValue, int direction, bool checkForCollisions)
+    void SnapAndRotate(float targetValue, bool checkForCollisions)
     {
         // Used for initial setup only
         float snapInterval = 1f / (snapPoints - 1);
@@ -178,10 +369,12 @@ public class SliderPedestalController1 : MonoBehaviour
         if (swipeInput != null)
         {
             float remainder = angleZ % 90f;
+            // Enable swipe at 0, 90, 180...
             if (Mathf.Abs(remainder) < 1f || Mathf.Abs(remainder - 90f) < 1f)
             {
                 if (!swipeInput.enabled) swipeInput.enabled = true;
             }
+            // Disable swipe at 45, 135...
             else if (Mathf.Abs(remainder - 45f) < 1f)
             {
                 if (swipeInput.enabled) swipeInput.enabled = false;
