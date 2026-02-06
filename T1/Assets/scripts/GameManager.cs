@@ -235,6 +235,69 @@ public class GameManager : MonoBehaviour
     }
 }
 
+
+public void checkYZRingToDestroy()
+{
+    // Iterate through all radius layers
+    for (int i = 12; i >= 0; i--)
+    {
+        // 1. Check if the 8 slots required for a YZ Ring are full
+        // Cardinals: +Y, -Y, +Z, -Z
+        // Diagonals: +Y+Z, +Y-Z, -Y+Z, -Y-Z
+        bool isYZRingFull = 
+            (plusYDimension[i] != null) && (minusYDimension[i] != null) && 
+            (plusZDimension[i] != null) && (minusZDimension[i] != null) &&
+            (plusYplusZDimension[i] != null) && (plusYminusZDimension[i] != null) &&
+            (minusYplusZDimension[i] != null) && (minusYminusZDimension[i] != null);
+
+        if (isYZRingFull)
+        {
+            // 2. Debug Log for YZ Ring
+            Debug.Log($"<color=cyan>SUCCESS:</color> YZ Ring at radius {i} is completed!");
+            Debug.Log($"Pieces in YZ Ring {i}: " +
+                      $"Up: {plusYDimension[i].name}, " +
+                      $"Down: {minusYDimension[i].name}, " +
+                      $"Forward: {plusZDimension[i].name}, " +
+                      $"Back: {minusZDimension[i].name}, " +
+                      $"Diagonals: {plusYplusZDimension[i].name}, {plusYminusZDimension[i].name}, " +
+                      $"{minusYplusZDimension[i].name}, {minusYminusZDimension[i].name}");
+
+            // TODO: Destroy these objects or clear the list slots here to prevent spam
+        }
+    }
+}
+
+public void checkXZRingToDestroy()
+{
+    // Iterate through all radius layers
+    for (int i = 12; i >= 0; i--)
+    {
+        // 1. Check if the 8 slots required for an XZ Ring are full
+        // Cardinals: +X, -X, +Z, -Z
+        // Diagonals: -X-Z, -X+Z, +X-Z, +X+Z
+        bool isXZRingFull = 
+            (plusXDimension[i] != null) && (minusXDimension[i] != null) && 
+            (plusZDimension[i] != null) && (minusZDimension[i] != null) &&
+            (minusXminusZDimension[i] != null) && (minusXplusZDimension[i] != null) &&
+            (plusXminusZDimension[i] != null) && (plusXplusZDimension[i] != null);
+
+        if (isXZRingFull)
+        {
+            // 2. Debug Log for XZ Ring
+            Debug.Log($"<color=magenta>SUCCESS:</color> XZ Ring at radius {i} is completed!");
+            Debug.Log($"Pieces in XZ Ring {i}: " +
+                      $"Right: {plusXDimension[i].name}, " +
+                      $"Left: {minusXDimension[i].name}, " +
+                      $"Forward: {plusZDimension[i].name}, " +
+                      $"Back: {minusZDimension[i].name}, " +
+                      $"Diagonals: {minusXplusZDimension[i].name}, {plusXplusZDimension[i].name}, " +
+                      $"{minusXminusZDimension[i].name}, {plusXminusZDimension[i].name}");
+
+            // TODO: Destroy these objects or clear the list slots here
+        }
+    }
+}
+
     // public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     // {
     //     foreach (Transform child in parent)

@@ -285,6 +285,8 @@ public class TMovement : MonoBehaviour
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSliderPermissions(); // Enable slider when done
                             gameManager.checkRingToDestroy();
+                            gameManager.checkXZRingToDestroy();
+                            gameManager.checkYZRingToDestroy();
                             enabled = false;
                             yield break;
                         }
@@ -301,6 +303,8 @@ public class TMovement : MonoBehaviour
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSliderPermissions();
                                 gameManager.checkRingToDestroy();
+                                gameManager.checkXZRingToDestroy();
+                                gameManager.checkYZRingToDestroy();
                                 yield break;
                             }
                             yield return null;
@@ -343,6 +347,8 @@ public class TMovement : MonoBehaviour
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSliderPermissions(); // Enable slider when done
                         gameManager.checkRingToDestroy();
+                        gameManager.checkXZRingToDestroy();
+                        gameManager.checkYZRingToDestroy();
                         enabled = false;
                     }
                     yield break;
@@ -656,7 +662,7 @@ public class TMovement : MonoBehaviour
         {
             Debug.Log("SUCCESS: Local YZ is flat on XY, and both XY & ZX planes are at 45° diagonals!");
             // [Local XY] is +45° on left side
-            if (Mathf.Abs(angleXY - (-45f)) <= tolerance|| Mathf.Abs(angleXY - 135f) <= tolerance)
+            if (Mathf.Abs(angleXY - (-45f)) <= tolerance || Mathf.Abs(angleXY - 135f) <= tolerance)
             {
                 if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
                 else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
@@ -697,7 +703,7 @@ public class TMovement : MonoBehaviour
         {
             Debug.Log("SUCCESS: Local ZX is flat on XY, and both YZ & XY planes are at 45° diagonals!");
             //YZ 
-            if (Mathf.Abs(angleYZ - (-45f)) <= tolerance|| Mathf.Abs(angleYZ - 135f) <= tolerance)
+            if (Mathf.Abs(angleYZ - (-45f)) <= tolerance || Mathf.Abs(angleYZ - 135f) <= tolerance)
             {
                 Debug.Log("loca YZ was making +45 with  global YZ so adding it in left diognal ring ");
 
@@ -835,10 +841,10 @@ public class TMovement : MonoBehaviour
             else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
         }
 
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
+        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
         {
             // add block in local XY and local zx plane ring
-             Debug.Log("XY is paraller to global XY and ZX is parallel to global YZ");
+            Debug.Log("XY is paraller to global XY and ZX is parallel to global YZ");
             //adding in XY ring 
             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
@@ -866,7 +872,7 @@ public class TMovement : MonoBehaviour
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
         {
             // add block in local XY and local yz  plane ring 
-              Debug.Log("XY is paraller to global XY and YZ is parallel to global YZ");
+            Debug.Log("XY is paraller to global XY and YZ is parallel to global YZ");
             //Block in XY plane
             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
@@ -897,8 +903,8 @@ public class TMovement : MonoBehaviour
         {
             // add block in local YZ and local XY plane ring 
             Debug.Log("YZ is paraller to global XY and XY is parallel to global YZ");
-                //Block in XY
-             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
+            //Block in XY
+            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
@@ -917,10 +923,10 @@ public class TMovement : MonoBehaviour
             else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
 
-  
+
         }
 
-        
+
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
         {
             // add block in local YZ and local XZ plane ring
@@ -950,21 +956,21 @@ public class TMovement : MonoBehaviour
         //
 
 
-         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
+        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
         {
             // add block in  local XZ plane and local XY 
             Debug.Log("ZX is paraller to global XY and XY is parallel to global YZ");
 
             //Block in XY
-            if (gameManager.plusXDimension[i - 1] == null &&  gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i - 1] == null &&  gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null &&  gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXplusYDimension[i - 1] == null &&  gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i - 1] == null &&  gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i - 1] == null &&  gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
 
             //Block in XZ plane 
             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
@@ -977,7 +983,7 @@ public class TMovement : MonoBehaviour
             else if (gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
 
-            
+
         }
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
         {
