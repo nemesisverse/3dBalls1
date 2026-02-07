@@ -104,7 +104,10 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _CloudDensity: 0
     - _CloudScale: 3
+    - _CloudSharpness: 0.9
+    - _CloudSpeed: 0.02
     - _Complexity: 4
     - _Cull: 2
     - _CurlStrength: 0.8
@@ -119,6 +122,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _GradientSpread: 1.2
     - _HorizonHeight: 0.1
     - _Metallic: 0
     - _NebulaDensity: 0.4
@@ -132,6 +136,9 @@ Material:
     - _RotationSpeed: -0.01
     - _Scale: 3
     - _Sharpness: 2.5
+    - _ShootingStarFreq: 0.16
+    - _ShootingStarSize: 1
+    - _ShootingStarSpeed: 3
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -139,8 +146,8 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _StarBrightness: 1
-    - _StarDensity: 354
-    - _StarSize: 0.016
+    - _StarDensity: 306
+    - _StarSize: 0.02
     - _StarTwinkleSpeed: 3
     - _Surface: 0
     - _TwinkleSpeed: 2
@@ -164,6 +171,7 @@ Material:
     - _Color5: {r: 0.2214756, g: 0.35411167, b: 0.745283, a: 1}
     - _ColorBot: {r: 0, g: 0, b: 0, a: 1}
     - _ColorDeep: {r: 0.09999997, g: 0.09999997, b: 0.29999998, a: 1}
+    - _ColorMid: {r: 0, g: 0, b: 0, a: 1}
     - _ColorRim: {r: 0, g: 0.8, b: 1, a: 1}
     - _ColorTop: {r: 0, g: 0, b: 0.049999982, a: 1}
     - _DeepColor: {r: 0.049999982, g: 0, b: 0.09999997, a: 1}
