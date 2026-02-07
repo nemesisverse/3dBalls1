@@ -240,30 +240,29 @@ public class SwipeInput : MonoBehaviour
     }
 
     // UPDATED: Logic to Try Rotate -> Check Collision -> Revert if needed
-    void ApplyRotationInstant(Vector3 axis, float degrees)
+   void ApplyRotationInstant(Vector3 axis, float degrees)
+{
+    Quaternion originalRotation = transform.rotation;
+    Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
+    transform.rotation = targetRotation;
+
+    // Force ALL transforms to update
+    Physics.SyncTransforms();
+    Canvas.ForceUpdateCanvases(); // If you have any UI
+    
+    // Give Unity a frame to process the rotation
+    UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
+    
+    TMovement activeMovement = FindFirstObjectByType<TMovement>();
+
+    if (activeMovement != null)
     {
-        // 1. Store previous rotation
-        Quaternion originalRotation = transform.rotation;
-
-        // 2. Apply Rotation
-        Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
-        transform.rotation = targetRotation;
-
-        // Force transforms to update immediately so we can check positions accurately
-        Physics.SyncTransforms(); 
-
-        // 3. Find the active TMovement script to check for overlaps
-        TMovement activeMovement = FindFirstObjectByType<TMovement>();
-
-        if (activeMovement != null)
+        if (activeMovement.IsRotationColliding())
         {
-            // If the rotation we just did caused a collision...
-            if (activeMovement.IsRotationColliding())
-            {
-                Debug.Log("Rotation Blocked by Collision! Reverting...");
-                // 4. Revert
-                transform.rotation = originalRotation;
-            }
+            Debug.Log("Rotation Blocked by Collision! Reverting...");
+            transform.rotation = originalRotation;
+            Physics.SyncTransforms(); // Sync again after reverting
         }
     }
+}
 }

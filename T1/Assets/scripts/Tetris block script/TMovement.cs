@@ -59,7 +59,7 @@ public class TMovement : MonoBehaviour
     }
 
     // Add this helper method to check if ANY element overlaps with motherPlatform's children
-   // Add this helper method to check if ANY element overlaps with motherPlatform's children
+  // Replace your IsAnyElementOverlapping method with this:
 bool IsAnyElementOverlapping(List<GameObject> movingObjects)
 {
     if (movingObjects == null || movingObjects.Count == 0) return false;
@@ -73,8 +73,8 @@ bool IsAnyElementOverlapping(List<GameObject> movingObjects)
         {
             if (child == null) continue;
             
-            // IMPORTANT: Don't skip self-check here because movingBlock is NOT yet a child
-            // We're checking BEFORE parenting happens
+            // Skip if this child is one of our moving blocks (prevent self-check)
+            if (movingObjects.Contains(child.gameObject)) continue;
             
             if (ArePositionsOverlapping(child.position, movingBlock.transform.position))
             {
