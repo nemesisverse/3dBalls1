@@ -3,35 +3,35 @@ using UnityEngine;
 public class RowShifter : MonoBehaviour
 {
     public SwipeInput swipeInput;
-    public SliderPedestalController1 sliderValueChanger;
+   // public SliderPedestalController1 sliderValueChanger;
 
     void Awake()
     {
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
-        if (sliderValueChanger == null) sliderValueChanger = FindFirstObjectByType<SliderPedestalController1>();
+       // if (sliderValueChanger == null) sliderValueChanger = FindFirstObjectByType<SliderPedestalController1>();
     }
 
     // Subscribe to the event when this object is enabled
     void OnEnable()
     {
-        if (swipeInput != null && sliderValueChanger != null)
-        {
-            // swipeInput.OnSwipe += CheckPlaneAngles;
-            // swipeInput.OnSwipe += CheckWhichLocalPlaneIsYZ;
+        // if (swipeInput != null && sliderValueChanger != null)
+        // {
+        //     // swipeInput.OnSwipe += CheckPlaneAngles;
+        //     // swipeInput.OnSwipe += CheckWhichLocalPlaneIsYZ;
 
-            //sliderValueChanger.onSlide += CheckWhichPlanesAre45;
-        }
+        //     //sliderValueChanger.onSlide += CheckWhichPlanesAre45;
+        // }
     }
 
     // Unsubscribe when disabled (important to prevent errors)
     void OnDisable()
     {
-        if (swipeInput != null && sliderValueChanger != null)
-        {
-            // swipeInput.OnSwipe -= CheckPlaneAngles;
-            // swipeInput.OnSwipe -= CheckWhichLocalPlaneIsYZ;
-            //sliderValueChanger.onSlide -= CheckWhichPlanesAre45;
-        }
+        // if (swipeInput != null && sliderValueChanger != null)
+        // {
+        //     // swipeInput.OnSwipe -= CheckPlaneAngles;
+        //     // swipeInput.OnSwipe -= CheckWhichLocalPlaneIsYZ;
+        //     //sliderValueChanger.onSlide -= CheckWhichPlanesAre45;
+        // }
     }
 
     
