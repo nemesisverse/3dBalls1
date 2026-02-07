@@ -92,29 +92,37 @@ public class SwipeInput : MonoBehaviour
 
     // UPDATED: Logic to Try Rotate -> Check Collision -> Revert if needed
     void ApplyRotationInstant(Vector3 axis, float degrees)
+{
+    // 1. Store previous rotation
+    Quaternion originalRotation = transform.rotation;
+
+    // 2. Calculate the Target Rotation without applying it yet
+    Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
+    
+    // 3. Temporarily apply it to check for collision
+    transform.rotation = targetRotation;
+
+    // IMPORTANT: Forces the physics engine to catch up with the new transform position/rotation
+    Physics.SyncTransforms(); 
+
+    TMovement activeMovement = FindFirstObjectByType<TMovement>();
+
+    if (activeMovement != null)
     {
-        // 1. Store previous rotation
-        Quaternion originalRotation = transform.rotation;
-
-        // 2. Apply Rotation
-        Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
-        transform.rotation = targetRotation;
-
-        // Force transforms to update immediately so we can check positions accurately
-        Physics.SyncTransforms(); 
-
-        // 3. Find the active TMovement script to check for overlaps
-        TMovement activeMovement = FindFirstObjectByType<TMovement>();
-
-        if (activeMovement != null)
+        // 4. Check if this NEW position is valid
+        if (activeMovement.IsRotationColliding())
         {
-            // If the rotation we just did caused a collision...
-            if (activeMovement.IsRotationColliding())
-            {
-                Debug.Log("Rotation Blocked by Collision! Reverting...");
-                // 4. Revert
-                transform.rotation = originalRotation;
-            }
+            Debug.Log("Rotation Blocked! Reverting to: " + originalRotation.eulerAngles);
+            transform.rotation = originalRotation;
+            
+            // Re-sync after reverting to ensure the "old" valid state is registered
+            Physics.SyncTransforms(); 
+        }
+        else 
+        {
+            // Rotation is valid! 
+            Debug.Log("Rotation Successful");
         }
     }
+}
 }
