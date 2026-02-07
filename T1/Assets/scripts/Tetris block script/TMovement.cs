@@ -116,14 +116,14 @@ public class TMovement : MonoBehaviour
     int stopperID = 0;
 
     // Helper to re-enable slider when block is placed (Finished)
-    void ResetSliderPermissions()
-    {
-        if (sliderController != null)
-        {
-            sliderController.allowDecrease = true;
-            sliderController.allowIncrease = true;
-        }
-    }
+    // void ResetSliderPermissions()
+    // {
+    //     if (sliderController != null)
+    //     {
+    //         sliderController.allowDecrease = true;
+    //         sliderController.allowIncrease = true;
+    //     }
+    // }
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
@@ -150,7 +150,7 @@ public class TMovement : MonoBehaviour
                         {
                             leftflagRadius(i);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            ResetSliderPermissions(); // Enable slider when done
+                            //ResetSliderPermissions(); // Enable slider when done
                             enabled = false;
                             yield break;
                         }
@@ -164,7 +164,7 @@ public class TMovement : MonoBehaviour
                             {
                                 leftflagRadius(i);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                ResetSliderPermissions();
+                                //ResetSliderPermissions();
                                 yield break;
                             }
                             yield return null;
@@ -181,7 +181,7 @@ public class TMovement : MonoBehaviour
                     {
                         leftflagRadius(i + 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSliderPermissions(); // Enable slider when done
+                        //ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
                     }
                     yield break;
@@ -216,7 +216,7 @@ public class TMovement : MonoBehaviour
                         {
                             rightflagRadius(i);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            ResetSliderPermissions(); // Enable slider when done
+                            //ResetSliderPermissions(); // Enable slider when done
                             enabled = false;
                             yield break;
                         }
@@ -230,7 +230,7 @@ public class TMovement : MonoBehaviour
                             {
                                 rightflagRadius(i);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                ResetSliderPermissions();
+                               // ResetSliderPermissions();
                                 yield break;
                             }
                             yield return null;
@@ -247,7 +247,8 @@ public class TMovement : MonoBehaviour
                     {
                         rightflagRadius(i + 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSliderPermissions(); // Enable slider when done
+                       // ResetSliderPermissions(); // Enable slider when done
+                        
                         enabled = false;
                     }
                     yield break;
@@ -283,8 +284,10 @@ public class TMovement : MonoBehaviour
                             verticalflagRadius(i);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            ResetSliderPermissions(); // Enable slider when done
+                           // ResetSliderPermissions(); // Enable slider when done
                             gameManager.checkRingToDestroy();
+                                gameManager.checkYZRingToDestroy();
+                                gameManager.checkXZRingToDestroy();
                             enabled = false;
                             yield break;
                         }
@@ -299,8 +302,10 @@ public class TMovement : MonoBehaviour
                                 verticalflagRadius(i);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                ResetSliderPermissions();
+                               // ResetSliderPermissions();
                                 gameManager.checkRingToDestroy();
+                                gameManager.checkYZRingToDestroy();
+                                gameManager.checkXZRingToDestroy();
                                 yield break;
                             }
                             yield return null;
@@ -311,25 +316,25 @@ public class TMovement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-                // --- YOUR LOGIC: Check & Lock Slider Directions ---
-                if (sliderController != null)
-                {
-                    // 1. Reset permissions to TRUE at the start of every step
-                    sliderController.allowDecrease = true;
-                    sliderController.allowIncrease = true;
+                // // --- YOUR LOGIC: Check & Lock Slider Directions ---
+                // if (sliderController != null)
+                // {
+                //     // 1. Reset permissions to TRUE at the start of every step
+                //     sliderController.allowDecrease = true;
+                //     sliderController.allowIncrease = true;
 
-                    // 2. Check Decrease Condition
-                    if (preventDecreasingValueSlider(i))
-                    {
-                        sliderController.allowDecrease = false;
-                    }
+                //     // 2. Check Decrease Condition
+                //     if (preventDecreasingValueSlider(i))
+                //     {
+                //         sliderController.allowDecrease = false;
+                //     }
 
-                    // 3. Check Increase Condition
-                    if (preventIncreasingValueSlider(i))
-                    {
-                        sliderController.allowIncrease = false;
-                    }
-                }
+                //     // 3. Check Increase Condition
+                //     if (preventIncreasingValueSlider(i))
+                //     {
+                //         sliderController.allowIncrease = false;
+                //     }
+                // }
                 // --------------------------------------------------
 
                 try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 3; } } }
@@ -341,8 +346,10 @@ public class TMovement : MonoBehaviour
                         verticalflagRadius(i + 1);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSliderPermissions(); // Enable slider when done
+                       // ResetSliderPermissions(); // Enable slider when done
                         gameManager.checkRingToDestroy();
+                                gameManager.checkYZRingToDestroy();
+                                gameManager.checkXZRingToDestroy();
                         enabled = false;
                     }
                     yield break;
