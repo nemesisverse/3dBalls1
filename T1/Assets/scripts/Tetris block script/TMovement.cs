@@ -58,6 +58,33 @@ public class TMovement : MonoBehaviour
         };
     }
 
+    // Add this helper method to check if ANY element overlaps with motherPlatform's children
+   // Add this helper method to check if ANY element overlaps with motherPlatform's children
+bool IsAnyElementOverlapping(List<GameObject> movingObjects)
+{
+    if (movingObjects == null || movingObjects.Count == 0) return false;
+
+    foreach (var movingBlock in movingObjects)
+    {
+        if (movingBlock == null) continue;
+
+        // Check against all children of motherPlatform
+        foreach (Transform child in gameManager.motherPlatform.transform)
+        {
+            if (child == null) continue;
+            
+            // IMPORTANT: Don't skip self-check here because movingBlock is NOT yet a child
+            // We're checking BEFORE parenting happens
+            
+            if (ArePositionsOverlapping(child.position, movingBlock.transform.position))
+            {
+                Debug.Log($"<color=red>OVERLAP DETECTED!</color> Moving: {movingBlock.name} at {movingBlock.transform.position} overlaps with: {child.name} at {child.position}");
+                return true;
+            }
+        }
+    }
+    return false;
+}
     // ------------------------------------------------------------------------
     // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
     // ------------------------------------------------------------------------
@@ -148,9 +175,16 @@ public class TMovement : MonoBehaviour
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            leftflagRadius(i);
-                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            //ResetSliderPermissions(); // Enable slider when done
+                            // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                            if (!IsAnyElementOverlapping(leftChildObject))
+                            {
+                                leftflagRadius(i);
+                                leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            }
+                            else
+                            {
+                                Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                            }
                             enabled = false;
                             yield break;
                         }
@@ -160,14 +194,17 @@ public class TMovement : MonoBehaviour
                     {
                         while (stop != -1 && stopperID != 1)
                         {
-                            if (!enabled)
+                            // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                            if (!IsAnyElementOverlapping(leftChildObject))
                             {
                                 leftflagRadius(i);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                //ResetSliderPermissions();
-                                yield break;
                             }
-                            yield return null;
+                            else
+                            {
+                                Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                            }
+                            yield break;
                         }
                     }
                 }
@@ -179,9 +216,16 @@ public class TMovement : MonoBehaviour
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
-                        leftflagRadius(i + 1);
-                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        //ResetSliderPermissions(); // Enable slider when done
+                        // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                        if (!IsAnyElementOverlapping(leftChildObject))
+                        {
+                            leftflagRadius(i + 1);
+                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                        }
                         enabled = false;
                     }
                     yield break;
@@ -214,9 +258,16 @@ public class TMovement : MonoBehaviour
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            rightflagRadius(i);
-                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            //ResetSliderPermissions(); // Enable slider when done
+                            // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                            if (!IsAnyElementOverlapping(rightChildObject))
+                            {
+                                rightflagRadius(i);
+                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            }
+                            else
+                            {
+                                Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                            }
                             enabled = false;
                             yield break;
                         }
@@ -228,9 +279,15 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
-                                rightflagRadius(i);
-                                rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                               // ResetSliderPermissions();
+                                if (!IsAnyElementOverlapping(rightChildObject))
+                                {
+                                    rightflagRadius(i);
+                                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                                }
                                 yield break;
                             }
                             yield return null;
@@ -245,10 +302,16 @@ public class TMovement : MonoBehaviour
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
-                        rightflagRadius(i + 1);
-                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                       // ResetSliderPermissions(); // Enable slider when done
-                        
+                        // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                        if (!IsAnyElementOverlapping(rightChildObject))
+                        {
+                            rightflagRadius(i + 1);
+                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Cannot parent - overlap detected with motherPlatform children!");
+                        }
                         enabled = false;
                     }
                     yield break;
@@ -281,13 +344,20 @@ public class TMovement : MonoBehaviour
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            verticalflagRadius(i);
-                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                           // ResetSliderPermissions(); // Enable slider when done
-                            gameManager.checkRingToDestroy();
+                            // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                            if (!IsAnyElementOverlapping(verticalChildObject))
+                            {
+                                verticalflagRadius(i);
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
                                 gameManager.checkXZRingToDestroy();
+                            }
+                            else
+                            {
+                                Debug.LogWarning("Cannot parent vertical blocks - overlap detected with motherPlatform children!");
+                            }
                             enabled = false;
                             yield break;
                         }
@@ -299,13 +369,20 @@ public class TMovement : MonoBehaviour
                         {
                             if (!enabled)
                             {
-                                verticalflagRadius(i);
-                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                               // ResetSliderPermissions();
-                                gameManager.checkRingToDestroy();
-                                gameManager.checkYZRingToDestroy();
-                                gameManager.checkXZRingToDestroy();
+                                // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                                if (!IsAnyElementOverlapping(verticalChildObject))
+                                {
+                                    verticalflagRadius(i);
+                                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                    gameManager.checkRingToDestroy();
+                                    gameManager.checkYZRingToDestroy();
+                                    gameManager.checkXZRingToDestroy();
+                                }
+                                else
+                                {
+                                    Debug.LogWarning("Cannot parent vertical blocks - overlap detected with motherPlatform children!");
+                                }
                                 yield break;
                             }
                             yield return null;
@@ -343,13 +420,20 @@ public class TMovement : MonoBehaviour
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        verticalflagRadius(i + 1);
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                       // ResetSliderPermissions(); // Enable slider when done
-                        gameManager.checkRingToDestroy();
-                                gameManager.checkYZRingToDestroy();
-                                gameManager.checkXZRingToDestroy();
+                        // ⭐ CHECK FOR OVERLAP BEFORE PARENTING ⭐
+                        if (!IsAnyElementOverlapping(verticalChildObject))
+                        {
+                            verticalflagRadius(i + 1);
+                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            gameManager.checkRingToDestroy();
+                            gameManager.checkYZRingToDestroy();
+                            gameManager.checkXZRingToDestroy();
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Cannot parent vertical blocks - overlap detected with motherPlatform children!");
+                        }
                         enabled = false;
                     }
                     yield break;
@@ -663,7 +747,7 @@ public class TMovement : MonoBehaviour
         {
             Debug.Log("SUCCESS: Local YZ is flat on XY, and both XY & ZX planes are at 45° diagonals!");
             // [Local XY] is +45° on left side
-            if (Mathf.Abs(angleXY - (-45f)) <= tolerance|| Mathf.Abs(angleXY - 135f) <= tolerance)
+            if (Mathf.Abs(angleXY - (-45f)) <= tolerance || Mathf.Abs(angleXY - 135f) <= tolerance)
             {
                 if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
                 else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
@@ -704,7 +788,7 @@ public class TMovement : MonoBehaviour
         {
             Debug.Log("SUCCESS: Local ZX is flat on XY, and both YZ & XY planes are at 45° diagonals!");
             //YZ 
-            if (Mathf.Abs(angleYZ - (-45f)) <= tolerance|| Mathf.Abs(angleYZ - 135f) <= tolerance)
+            if (Mathf.Abs(angleYZ - (-45f)) <= tolerance || Mathf.Abs(angleYZ - 135f) <= tolerance)
             {
                 Debug.Log("loca YZ was making +45 with  global YZ so adding it in left diognal ring ");
 
@@ -904,8 +988,8 @@ public class TMovement : MonoBehaviour
         {
             // add block in local YZ and local XY plane ring 
 
-                //Block in XY
-             if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
+            //Block in XY
+            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
@@ -926,10 +1010,10 @@ public class TMovement : MonoBehaviour
             else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
             else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
 
-  
+
         }
 
-        
+
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
         {
             // add block in local YZ and local XZ plane ring
