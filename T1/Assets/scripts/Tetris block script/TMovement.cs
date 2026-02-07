@@ -22,18 +22,14 @@ public class TMovement : MonoBehaviour
     public SwipeInput swipeInput;
     public SliderPedestalController1 sliderController;
 
-    // Optimized list for collision checking
     private List<List<GameObject>> allDimensions;
-    Vector3 globalNormalX = Vector3.right; //YZ plane ke liye
-    Vector3 globalNormalZ = Vector3.forward; // XY plane ke liye
+    Vector3 globalNormalX = Vector3.right;
+    Vector3 globalNormalZ = Vector3.forward;
 
-
-    // ... existing variables ...
-
-    // ADD THIS LINE:
+    // ADD THESE: For slider locking and state management
     public bool isLockedBySlider = false;
-
-    // ... existing lists ...
+    private Quaternion lastValidRotation;
+    private Vector3 lastValidPosition;
 
     void Awake()
     {
@@ -41,7 +37,6 @@ public class TMovement : MonoBehaviour
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sliderController == null) sliderController = FindFirstObjectByType<SliderPedestalController1>();
 
-        // Populate Coordinates
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f) leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
         for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f) rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
         for (float v = 14.5f; v >= 2.5f; v -= 1f) verticalCoordinates.Add(new Vector3(0f, v, 0f));
@@ -52,7 +47,10 @@ public class TMovement : MonoBehaviour
         countChildren();
         CheckChildrenWorldX();
 
-        // Initialize the Grid List ONCE to save performance
+        // Save initial valid state
+        lastValidRotation = transform.rotation;
+        lastValidPosition = transform.position;
+
         allDimensions = new List<List<GameObject>>
         {
             gameManager.plusXDimension, gameManager.plusYDimension, gameManager.plusZDimension,
@@ -66,31 +64,22 @@ public class TMovement : MonoBehaviour
         };
     }
 
+    // PUBLIC METHODS FOR SAVING/REVERTING STATE
+    public void SaveCurrentState()
+    {
+        lastValidRotation = transform.rotation;
+        lastValidPosition = transform.position;
+    }
 
+    public void RevertToLastValidState()
+    {
+        transform.rotation = lastValidRotation;
+        transform.position = lastValidPosition;
+        Physics.SyncTransforms();
+        Debug.Log("<color=yellow>Reverted T-piece to last valid state due to collision</color>");
+    }
 
-    // Add this new helper method
-// Simplified version - just check if parenting would collide
-private bool WouldParentingCauseCollision(GameObject childToParent)
-{
-    // Store original parent
-    Transform originalParent = childToParent.transform.parent;
-    
-    // Temporarily parent
-    childToParent.transform.SetParent(gameManager.motherPlatform.transform, true);
-    Physics.SyncTransforms();
-    
-    // Check collision
-    bool collision = IsRotationColliding();
-    
-    // Restore original parent
-    childToParent.transform.SetParent(originalParent, true);
-    Physics.SyncTransforms();
-    
-    return collision;
-}
-    // ------------------------------------------------------------------------
-    // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
-    // ------------------------------------------------------------------------
+    // COLLISION DETECTION - Checks against motherPlatform children
     public bool IsRotationColliding()
     {
         List<GameObject> activeMovingChildren = new List<GameObject>();
@@ -100,32 +89,41 @@ private bool WouldParentingCauseCollision(GameObject childToParent)
 
         if (activeMovingChildren.Count == 0) return false;
 
-        if (allDimensions == null) return false;
-
-        foreach (var dimensionList in allDimensions)
+        // Check collision with ALL children of motherPlatform (actual placed blocks)
+        foreach (Transform placedChild in gameManager.motherPlatform.transform)
         {
-            if (dimensionList == null) continue;
+            if (placedChild == null) continue;
 
-            foreach (var placedBlock in dimensionList)
+            foreach (var movingBlock in activeMovingChildren)
             {
-                if (placedBlock == null) continue;
+                if (movingBlock == null) continue;
+                if (placedChild.gameObject == movingBlock) continue; // Ignore self
 
-                foreach (var movingBlock in activeMovingChildren)
+                if (ArePositionsOverlapping(placedChild.position, movingBlock.transform.position))
                 {
-                    if (movingBlock == null) continue;
-                    if (placedBlock == movingBlock) continue; // Ignore self
-
-                    if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
-                    {
-                        Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
-                        return true;
-                    }
+                    Debug.Log($"<color=red>COLLISION!</color> {movingBlock.name} at {movingBlock.transform.position} overlaps with {placedChild.name} at {placedChild.position}");
+                    return true;
                 }
             }
         }
+        
         return false;
     }
 
+    private bool WouldParentingCauseCollision(GameObject childToParent)
+    {
+        Transform originalParent = childToParent.transform.parent;
+        
+        childToParent.transform.SetParent(gameManager.motherPlatform.transform, true);
+        Physics.SyncTransforms();
+        
+        bool collision = IsRotationColliding();
+        
+        childToParent.transform.SetParent(originalParent, true);
+        Physics.SyncTransforms();
+        
+        return collision;
+    }
 
     bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
     {
@@ -140,78 +138,40 @@ private bool WouldParentingCauseCollision(GameObject childToParent)
         return (x1 == x2) && (y1 == y2) && (z1 == z2);
     }
 
-    // ------------------------------------------------------------------------
     // MOVEMENT COROUTINES
-    // ------------------------------------------------------------------------
     int stop = -1;
     int stopperID = 0;
 
-    // Helper to re-enable slider when block is placed (Finished)
-    // void ResetSliderPermissions()
-    // {
-    //     if (sliderController != null)
-    //     {
-    //         sliderController.allowDecrease = true;
-    //         sliderController.allowIncrease = true;
-    //     }
-    // }
-
-   IEnumerator moveLeftDiognal(Transform child, int childCount)
-{
-    if (leftChildObject == null || leftChildObject.Count == 0) yield break;
-    if (childCount == 1)
+    IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
-        for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+        if (leftChildObject == null || leftChildObject.Count == 0) yield break;
+        if (childCount == 1)
         {
-            while (isLockedBySlider) yield return null;
-            if (stop == -1)
+            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                bool blocked = false;
-                try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { }
-                if (blocked) { stop = i - 1; stopperID = 1; }
-            }
-            yield return null;
-
-            if (stop != -1 && i > stop)
-            {
-                if (stopperID == 1)
+                while (isLockedBySlider) yield return null;
+                if (stop == -1)
                 {
-                    bool stillBlocked = false;
-                    try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                    if (stillBlocked)
-                    {
-                        leftflagRadius(i);
-                        
-                        // MODIFIED: Check collision before parenting, but DON'T exit if collision
-                        if (!WouldParentingCauseCollision(leftChildObject[0]))
-                        {
-                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            enabled = false;
-                            yield break;
-                        }
-                        else
-                        {
-                            Debug.Log("Prevented left diagonal parenting due to collision - continuing movement");
-                            stop = -1;
-                            stopperID = 0;
-                            // Continue the loop - don't yield break
-                        }
-                    }
-                    else { stop = -1; stopperID = 0; }
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { }
+                    if (blocked) { stop = i - 1; stopperID = 1; }
                 }
-                else
+                yield return null;
+
+                if (stop != -1 && i > stop)
                 {
-                    while (stop != -1 && stopperID != 1)
+                    if (stopperID == 1)
                     {
-                        while (isLockedBySlider) yield return null;
-                        if (!enabled)
+                        bool stillBlocked = false;
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
+                        if (stillBlocked)
                         {
                             leftflagRadius(i);
                             
-                            // MODIFIED: Same logic
                             if (!WouldParentingCauseCollision(leftChildObject[0]))
                             {
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                enabled = false;
                                 yield break;
                             }
                             else
@@ -219,98 +179,94 @@ private bool WouldParentingCauseCollision(GameObject childToParent)
                                 Debug.Log("Prevented left diagonal parenting due to collision - continuing movement");
                                 stop = -1;
                                 stopperID = 0;
-                                break; // Exit the inner while loop to continue main loop
                             }
                         }
-                        yield return null;
-                    }
-                }
-            }
-
-            leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-
-            try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 1; } } }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
-                {
-                    leftflagRadius(i + 1);
-                    
-                    // MODIFIED: At the end, try to parent, if fails just end
-                    if (!WouldParentingCauseCollision(leftChildObject[0]))
-                    {
-                        leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        else { stop = -1; stopperID = 0; }
                     }
                     else
                     {
-                        Debug.Log("Reached end but can't parent left diagonal due to collision - stays as T-piece child");
-                    }
-                    
-                    enabled = false;
-                }
-                yield break;
-            }
-            yield return new WaitForSeconds(moveSpeed);
-        }
-    }
-}
-
-IEnumerator moveRightDiognal(Transform child, int childCount)
-{
-    if (rightChildObject == null || rightChildObject.Count == 0) yield break;
-    if (childCount == 1)
-    {
-        for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
-        {
-            while (isLockedBySlider) yield return null;
-            if (stop == -1)
-            {
-                bool blocked = false;
-                try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { }
-                if (blocked) { stop = i - 1; stopperID = 2; }
-            }
-            yield return null;
-
-            if (stop != -1 && i > stop)
-            {
-                if (stopperID == 2)
-                {
-                    bool stillBlocked = false;
-                    try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
-                    if (stillBlocked)
-                    {
-                        rightflagRadius(i);
-                        
-                        // MODIFIED: Check collision before parenting, but DON'T exit if collision
-                        if (!WouldParentingCauseCollision(rightChildObject[0]))
+                        while (stop != -1 && stopperID != 1)
                         {
-                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            enabled = false;
-                            yield break;
+                            while (isLockedBySlider) yield return null;
+                            if (!enabled)
+                            {
+                                leftflagRadius(i);
+                                
+                                if (!WouldParentingCauseCollision(leftChildObject[0]))
+                                {
+                                    leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                    yield break;
+                                }
+                                else
+                                {
+                                    Debug.Log("Prevented left diagonal parenting due to collision - continuing movement");
+                                    stop = -1;
+                                    stopperID = 0;
+                                    break;
+                                }
+                            }
+                            yield return null;
+                        }
+                    }
+                }
+
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+
+                try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 1; } } }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
+                    {
+                        leftflagRadius(i + 1);
+                        
+                        if (!WouldParentingCauseCollision(leftChildObject[0]))
+                        {
+                            leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         }
                         else
                         {
-                            Debug.Log("Prevented right diagonal parenting due to collision - continuing movement");
-                            stop = -1;
-                            stopperID = 0;
-                            // Continue the loop - don't yield break
+                            Debug.Log("Reached end but can't parent left diagonal due to collision - stays as T-piece child");
                         }
+                        
+                        enabled = false;
                     }
-                    else { stop = -1; stopperID = 0; }
+                    yield break;
                 }
-                else
+                yield return new WaitForSeconds(moveSpeed);
+            }
+        }
+    }
+
+    IEnumerator moveRightDiognal(Transform child, int childCount)
+    {
+        if (rightChildObject == null || rightChildObject.Count == 0) yield break;
+        if (childCount == 1)
+        {
+            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            {
+                while (isLockedBySlider) yield return null;
+                if (stop == -1)
                 {
-                    while (stop != -1 && stopperID != 2)
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { }
+                    if (blocked) { stop = i - 1; stopperID = 2; }
+                }
+                yield return null;
+
+                if (stop != -1 && i > stop)
+                {
+                    if (stopperID == 2)
                     {
-                        while (isLockedBySlider) yield return null;
-                        if (!enabled)
+                        bool stillBlocked = false;
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
+                        if (stillBlocked)
                         {
                             rightflagRadius(i);
                             
-                            // MODIFIED: Same logic
                             if (!WouldParentingCauseCollision(rightChildObject[0]))
                             {
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                enabled = false;
                                 yield break;
                             }
                             else
@@ -318,125 +274,90 @@ IEnumerator moveRightDiognal(Transform child, int childCount)
                                 Debug.Log("Prevented right diagonal parenting due to collision - continuing movement");
                                 stop = -1;
                                 stopperID = 0;
-                                break; // Exit the inner while loop to continue main loop
                             }
                         }
-                        yield return null;
-                    }
-                }
-            }
-
-            rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
-
-            try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 2; } } }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
-                {
-                    rightflagRadius(i + 1);
-                    
-                    // MODIFIED: At the end, try to parent, if fails just end
-                    if (!WouldParentingCauseCollision(rightChildObject[0]))
-                    {
-                        rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        else { stop = -1; stopperID = 0; }
                     }
                     else
                     {
-                        Debug.Log("Reached end but can't parent right diagonal due to collision - stays as T-piece child");
+                        while (stop != -1 && stopperID != 2)
+                        {
+                            while (isLockedBySlider) yield return null;
+                            if (!enabled)
+                            {
+                                rightflagRadius(i);
+                                
+                                if (!WouldParentingCauseCollision(rightChildObject[0]))
+                                {
+                                    rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                    yield break;
+                                }
+                                else
+                                {
+                                    Debug.Log("Prevented right diagonal parenting due to collision - continuing movement");
+                                    stop = -1;
+                                    stopperID = 0;
+                                    break;
+                                }
+                            }
+                            yield return null;
+                        }
                     }
-                    
-                    enabled = false;
                 }
-                yield break;
+
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+
+                try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 2; } } }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
+                    {
+                        rightflagRadius(i + 1);
+                        
+                        if (!WouldParentingCauseCollision(rightChildObject[0]))
+                        {
+                            rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        }
+                        else
+                        {
+                            Debug.Log("Reached end but can't parent right diagonal due to collision - stays as T-piece child");
+                        }
+                        
+                        enabled = false;
+                    }
+                    yield break;
+                }
+                yield return new WaitForSeconds(moveSpeed);
             }
-            yield return new WaitForSeconds(moveSpeed);
         }
     }
-}
 
-IEnumerator moveVertical(Transform child, int childCount)
-{
-    if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
-    if (childCount == 2)
+    IEnumerator moveVertical(Transform child, int childCount)
     {
-        for (int i = 2; i < verticalCoordinates.Count; i++)
+        if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
+        if (childCount == 2)
         {
-            while (isLockedBySlider) yield return null;
-            if (stop == -1)
+            for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                bool blocked = false;
-                try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
-                if (blocked) { stop = i - 1; stopperID = 3; }
-            }
-            yield return null;
-
-            if (stop != -1 && i > stop)
-            {
-                if (stopperID == 3)
+                while (isLockedBySlider) yield return null;
+                if (stop == -1)
                 {
-                    bool stillBlocked = false;
-                    try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
-                    if (stillBlocked)
-                    {
-                        verticalflagRadius(i);
-                        
-                        // MODIFIED: Check collision before parenting (both children), but DON'T exit if collision
-                        bool collision0 = WouldParentingCauseCollision(verticalChildObject[0]);
-                        bool collision1 = WouldParentingCauseCollision(verticalChildObject[1]);
-                        
-                        // Try to parent both blocks if no collision
-                        bool anyParented = false;
-                        
-                        if (!collision0)
-                        {
-                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            anyParented = true;
-                        }
-                        else
-                        {
-                            Debug.Log("Prevented vertical[0] parenting due to collision");
-                        }
-                        
-                        if (!collision1)
-                        {
-                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            anyParented = true;
-                        }
-                        else
-                        {
-                            Debug.Log("Prevented vertical[1] parenting due to collision");
-                        }
-                        
-                        // If both blocks collided, continue movement instead of stopping
-                        if (collision0 && collision1)
-                        {
-                            Debug.Log("Both vertical blocks prevented from parenting - continuing movement");
-                            stop = -1;
-                            stopperID = 0;
-                            // Continue the loop
-                        }
-                        else
-                        {
-                            // At least one block was parented successfully
-                            gameManager.checkRingToDestroy();
-                            gameManager.checkXZRingToDestroy();
-                            gameManager.checkYZRingToDestroy();
-                            enabled = false;
-                            yield break;
-                        }
-                    }
-                    else { stop = -1; stopperID = 0; }
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
+                    if (blocked) { stop = i - 1; stopperID = 3; }
                 }
-                else
+                yield return null;
+
+                if (stop != -1 && i > stop)
                 {
-                    while (stop != -1 && stopperID != 3)
+                    if (stopperID == 3)
                     {
-                        while (isLockedBySlider) yield return null;
-                        if (!enabled)
+                        bool stillBlocked = false;
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
+                        if (stillBlocked)
                         {
                             verticalflagRadius(i);
                             
-                            // MODIFIED: Check collision before parenting (both children)
                             bool collision0 = WouldParentingCauseCollision(verticalChildObject[0]);
                             bool collision1 = WouldParentingCauseCollision(verticalChildObject[1]);
                             
@@ -458,74 +379,116 @@ IEnumerator moveVertical(Transform child, int childCount)
                                 Debug.Log("Prevented vertical[1] parenting due to collision");
                             }
                             
-                            // If both blocks collided, continue movement
                             if (collision0 && collision1)
                             {
                                 Debug.Log("Both vertical blocks prevented from parenting - continuing movement");
                                 stop = -1;
                                 stopperID = 0;
-                                break; // Exit the inner while loop to continue main loop
                             }
                             else
                             {
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkXZRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
+                                enabled = false;
                                 yield break;
                             }
                         }
-                        yield return null;
+                        else { stop = -1; stopperID = 0; }
+                    }
+                    else
+                    {
+                        while (stop != -1 && stopperID != 3)
+                        {
+                            while (isLockedBySlider) yield return null;
+                            if (!enabled)
+                            {
+                                verticalflagRadius(i);
+                                
+                                bool collision0 = WouldParentingCauseCollision(verticalChildObject[0]);
+                                bool collision1 = WouldParentingCauseCollision(verticalChildObject[1]);
+                                
+                                if (!collision0)
+                                {
+                                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                }
+                                else
+                                {
+                                    Debug.Log("Prevented vertical[0] parenting due to collision");
+                                }
+                                
+                                if (!collision1)
+                                {
+                                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                }
+                                else
+                                {
+                                    Debug.Log("Prevented vertical[1] parenting due to collision");
+                                }
+                                
+                                if (collision0 && collision1)
+                                {
+                                    Debug.Log("Both vertical blocks prevented from parenting - continuing movement");
+                                    stop = -1;
+                                    stopperID = 0;
+                                    break;
+                                }
+                                else
+                                {
+                                    gameManager.checkRingToDestroy();
+                                    gameManager.checkXZRingToDestroy();
+                                    gameManager.checkYZRingToDestroy();
+                                    yield break;
+                                }
+                            }
+                            yield return null;
+                        }
                     }
                 }
-            }
 
-            verticalChildObject[0].transform.position = verticalCoordinates[i];
-            verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+                verticalChildObject[0].transform.position = verticalCoordinates[i];
+                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
 
-            try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 3; } } }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
-                    verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 3; } } }
+                catch (System.ArgumentOutOfRangeException)
                 {
-                    verticalflagRadius(i + 1);
-                    
-                    // MODIFIED: At the end, try to parent both, if fails just end
-                    bool collision0 = WouldParentingCauseCollision(verticalChildObject[0]);
-                    bool collision1 = WouldParentingCauseCollision(verticalChildObject[1]);
-                    
-                    if (!collision0)
+                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
+                        verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        verticalflagRadius(i + 1);
+                        
+                        bool collision0 = WouldParentingCauseCollision(verticalChildObject[0]);
+                        bool collision1 = WouldParentingCauseCollision(verticalChildObject[1]);
+                        
+                        if (!collision0)
+                        {
+                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        }
+                        else
+                        {
+                            Debug.Log("Reached end but can't parent vertical[0] due to collision - stays as T-piece child");
+                        }
+                        
+                        if (!collision1)
+                        {
+                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        }
+                        else
+                        {
+                            Debug.Log("Reached end but can't parent vertical[1] due to collision - stays as T-piece child");
+                        }
+                        
+                        gameManager.checkRingToDestroy();
+                        gameManager.checkXZRingToDestroy();
+                        gameManager.checkYZRingToDestroy();
+                        enabled = false;
                     }
-                    else
-                    {
-                        Debug.Log("Reached end but can't parent vertical[0] due to collision - stays as T-piece child");
-                    }
-                    
-                    if (!collision1)
-                    {
-                        verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    }
-                    else
-                    {
-                        Debug.Log("Reached end but can't parent vertical[1] due to collision - stays as T-piece child");
-                    }
-                    
-                    gameManager.checkRingToDestroy();
-                    gameManager.checkXZRingToDestroy();
-                    gameManager.checkYZRingToDestroy();
-                    enabled = false;
+                    yield break;
                 }
-                yield break;
+                yield return new WaitForSeconds(moveSpeed);
             }
-            yield return new WaitForSeconds(moveSpeed);
         }
     }
-}
-    // ------------------------------------------------------------------------
-    // HELPER FUNCTIONS 
-    // ------------------------------------------------------------------------
 
     void countChildren()
     {
@@ -546,52 +509,6 @@ IEnumerator moveVertical(Transform child, int childCount)
             else if (worldX > 0f && !rightStarted) { StartCoroutine(moveRightDiognal(child, rightDiagonalCount)); rightStarted = true; }
         }
     }
-
-    // // --- LOGIC TO PREVENT SLIDER MOVEMENT ---
-    // bool preventDecreasingValueSlider(int i)
-    // {
-    //     if (allDimensions == null) return false;
-
-    //     // Safety checks for vertical count
-    //     if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
-    //     if (i < 0) return false;
-
-    //     for (int d = 0; d < allDimensions.Count; d++)
-    //     {
-    //         if (i < allDimensions[d].Count)
-    //         {
-    //             if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x > 0f && allDimensions[d][i].transform.position.y >= 0f)
-    //             {
-    //                 Debug.Log("prevent decreasing the value");
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // bool preventIncreasingValueSlider(int i)
-    // {
-    //     if (allDimensions == null) return false;
-
-    //     // Safety checks for vertical count
-    //     if (verticalChildObject == null || verticalChildObject.Count == 0) return false;
-    //     if (i < 0) return false;
-
-    //     for (int d = 0; d < allDimensions.Count; d++)
-    //     {
-    //         if (i < allDimensions[d].Count)
-    //         {
-    //             if (allDimensions[d][i] != null && allDimensions[d][i].transform.position.x < 0f && allDimensions[d][i].transform.position.y >= 0f)
-    //             {
-    //                 Debug.Log("prevent increasing the value");
-    //                 return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
 
     // --- RADIUS FLAG FUNCTIONS ---
     void leftflagRadius(int i)
