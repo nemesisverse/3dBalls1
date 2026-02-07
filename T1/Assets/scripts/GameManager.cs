@@ -202,39 +202,102 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-   public void checkRingToDestroy()
-{
-    // Ensure we don't go out of bounds of your lists
-    //int checkCount = 13; 
+    public void checkRingToDestroy()
+    {
+        // Ensure we don't go out of bounds of your lists
+        //int checkCount = 13; 
 
+        for (int i = 12; i >= 0; i--)
+        {
+            // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
+            // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
+            bool isXYRingFull =
+                (minusXplusYDimension[i] != null) && (plusXplusYDimension[i] != null) &&
+                (minusXminusYDimension[i] != null) && (plusXminusYDimension[i] != null) &&
+                (plusYDimension[i] != null) && (minusYDimension[i] != null) &&
+                (minusXDimension[i] != null) && (plusXDimension[i] != null);
+
+            if (isXYRingFull)
+            {
+                Debug.Log($"<color=green>SUCCESS:</color> XY Ring at radius {i} is completed!");
+
+                // Additional verification - count non-null entries
+                int count = 0;
+                if (plusYDimension[i] != null) count++;
+                if (minusYDimension[i] != null) count++;
+                if (minusXDimension[i] != null) count++;
+                if (plusXDimension[i] != null) count++;
+                if (minusXplusYDimension[i] != null) count++;
+                if (plusXplusYDimension[i] != null) count++;
+                if (minusXminusYDimension[i] != null) count++;
+                if (plusXminusYDimension[i] != null) count++;
+
+                Debug.Log($"Actual count of filled slots: {count}/8");
+            }
+        }
+    }
+
+public void checkYZRingToDestroy()
+{
     for (int i = 12; i >= 0; i--)
     {
-        // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
-        // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
-        bool isXYRingFull = 
-            (minusXplusYDimension[i] != null) && (plusXplusYDimension[i] != null) && 
-            (minusXminusYDimension[i] != null) && (plusXminusYDimension[i] != null) &&
-            (plusYDimension[i] != null) && (minusYDimension[i] != null) && 
-            (minusXDimension[i] != null) && (plusXDimension[i] != null);
+        // Cardinals: Up, Down, Forward, Back
+        // Diagonals: Top-Forward, Top-Back, Bottom-Forward, Bottom-Back
+        bool isYZRingFull =
+            (plusYDimension[i] != null) && (minusYDimension[i] != null) &&
+            (plusZDimension[i] != null) && (minusZDimension[i] != null) &&
+            (plusYplusZDimension[i] != null) && (plusYminusZDimension[i] != null) &&
+            (minusYplusZDimension[i] != null) && (minusYminusZDimension[i] != null);
 
-        if (isXYRingFull)
+        if (isYZRingFull)
         {
-            // 2. The Detailed Debug Log you requested
-            Debug.Log($"<color=green>SUCCESS:</color> XY Ring at radius {i} is completed!");
-            Debug.Log($"Pieces in Ring {i}: " +
-                      $"Top: {plusYDimension[i].name}, " +
-                      $"Bottom: {minusYDimension[i].name}, " +
-                      $"Left: {minusXDimension[i].name}, " +
-                      $"Right: {plusXDimension[i].name}, " +
-                      $"Corners: {minusXplusYDimension[i].name}, {plusXplusYDimension[i].name}, " +
-                      $"{minusXminusYDimension[i].name}, {plusXminusYDimension[i].name}");
+            Debug.Log($"<color=cyan>SUCCESS:</color> YZ Ring at radius {i} is completed!");
+            
+            // Optional: Detailed verification count
+            int count = 0;
+            if (plusYDimension[i] != null) count++;
+            if (minusYDimension[i] != null) count++;
+            if (plusZDimension[i] != null) count++;
+            if (minusZDimension[i] != null) count++;
+            if (plusYplusZDimension[i] != null) count++;
+            if (plusYminusZDimension[i] != null) count++;
+            if (minusYplusZDimension[i] != null) count++;
+            if (minusYminusZDimension[i] != null) count++;
 
-            // IMPORTANT: If you want to stop the log from spamming, 
-            // you must clear the ring here or set a flag.
+            Debug.Log($"YZ Ring {i} filled slots: {count}/8");
         }
     }
 }
+public void checkXZRingToDestroy()
+{
+    for (int i = 12; i >= 0; i--)
+    {
+        // Cardinals: Right, Left, Forward, Back
+        // Diagonals: Front-Right, Front-Left, Back-Right, Back-Left
+        bool isXZRingFull =
+            (plusXDimension[i] != null) && (minusXDimension[i] != null) &&
+            (plusZDimension[i] != null) && (minusZDimension[i] != null) &&
+            (plusXplusZDimension[i] != null) && (minusXplusZDimension[i] != null) &&
+            (plusXminusZDimension[i] != null) && (minusXminusZDimension[i] != null);
 
+        if (isXZRingFull)
+        {
+            Debug.Log($"<color=magenta>SUCCESS:</color> XZ Ring at radius {i} is completed!");
+            
+            int count = 0;
+            if (plusXDimension[i] != null) count++;
+            if (minusXDimension[i] != null) count++;
+            if (plusZDimension[i] != null) count++;
+            if (minusZDimension[i] != null) count++;
+            if (plusXplusZDimension[i] != null) count++;
+            if (minusXplusZDimension[i] != null) count++;
+            if (plusXminusZDimension[i] != null) count++;
+            if (minusXminusZDimension[i] != null) count++;
+
+            Debug.Log($"XZ Ring {i} filled slots: {count}/8");
+        }
+    }
+}
     // public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     // {
     //     foreach (Transform child in parent)
@@ -262,6 +325,8 @@ public class GameManager : MonoBehaviour
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
+
+    
 
 
 }
