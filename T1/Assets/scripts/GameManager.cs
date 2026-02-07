@@ -272,8 +272,32 @@ public void checkXZRingToDestroy()
 {
     for (int i = 12; i >= 0; i--)
     {
-        // Cardinals: Right, Left, Forward, Back
-        // Diagonals: Front-Right, Front-Left, Back-Right, Back-Left
+        Debug.Log($"=== Checking XZ Ring at radius {i} ===");
+        
+        // Log each dimension slot
+        Debug.Log($"plusXDimension[{i}]: {(plusXDimension[i] != null ? plusXDimension[i].name : "NULL")}");
+        Debug.Log($"minusXDimension[{i}]: {(minusXDimension[i] != null ? minusXDimension[i].name : "NULL")}");
+        Debug.Log($"plusZDimension[{i}]: {(plusZDimension[i] != null ? plusZDimension[i].name : "NULL")}");
+        Debug.Log($"minusZDimension[{i}]: {(minusZDimension[i] != null ? minusZDimension[i].name : "NULL")}");
+        Debug.Log($"plusXplusZDimension[{i}]: {(plusXplusZDimension[i] != null ? plusXplusZDimension[i].name : "NULL")}");
+        Debug.Log($"minusXplusZDimension[{i}]: {(minusXplusZDimension[i] != null ? minusXplusZDimension[i].name : "NULL")}");
+        Debug.Log($"plusXminusZDimension[{i}]: {(plusXminusZDimension[i] != null ? plusXminusZDimension[i].name : "NULL")}");
+        Debug.Log($"minusXminusZDimension[{i}]: {(minusXminusZDimension[i] != null ? minusXminusZDimension[i].name : "NULL")}");
+        
+        // Count filled slots
+        int count = 0;
+        if (plusXDimension[i] != null) count++;
+        if (minusXDimension[i] != null) count++;
+        if (plusZDimension[i] != null) count++;
+        if (minusZDimension[i] != null) count++;
+        if (plusXplusZDimension[i] != null) count++;
+        if (minusXplusZDimension[i] != null) count++;
+        if (plusXminusZDimension[i] != null) count++;
+        if (minusXminusZDimension[i] != null) count++;
+        
+        Debug.Log($"XZ Ring {i} filled slots: {count}/8");
+        
+        // Check if ring is full
         bool isXZRingFull =
             (plusXDimension[i] != null) && (minusXDimension[i] != null) &&
             (plusZDimension[i] != null) && (minusZDimension[i] != null) &&
@@ -283,18 +307,10 @@ public void checkXZRingToDestroy()
         if (isXZRingFull)
         {
             Debug.Log($"<color=magenta>SUCCESS:</color> XZ Ring at radius {i} is completed!");
-            
-            int count = 0;
-            if (plusXDimension[i] != null) count++;
-            if (minusXDimension[i] != null) count++;
-            if (plusZDimension[i] != null) count++;
-            if (minusZDimension[i] != null) count++;
-            if (plusXplusZDimension[i] != null) count++;
-            if (minusXplusZDimension[i] != null) count++;
-            if (plusXminusZDimension[i] != null) count++;
-            if (minusXminusZDimension[i] != null) count++;
-
-            Debug.Log($"XZ Ring {i} filled slots: {count}/8");
+        }
+        else 
+        {
+            Debug.Log($"<color=yellow>XZ Ring {i} is NOT complete - missing {8 - count} blocks</color>");
         }
     }
 }
