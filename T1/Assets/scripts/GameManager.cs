@@ -326,5 +326,139 @@ public void checkXZRingToDestroy()
     }
 
 
+     public struct RingMembership
+    {
+        public bool isInXYRing;
+        public bool isInYZRing;
+        public bool isInXZRing;
+        public int radiusIndex;
+    }
+
+
+    // ADD THESE NEW METHODS HERE
+    public RingMembership GetRingMembership(Vector3 position)
+    {
+        RingMembership result = new RingMembership();
+        
+        // Round position to 2 decimal places for consistency
+        float x = Mathf.Round(position.x * 100f) / 100f;
+        float y = Mathf.Round(position.y * 100f) / 100f;
+        float z = Mathf.Round(position.z * 100f) / 100f;
+        
+        // Calculate distances from each plane
+        float distFromXYPlane = Mathf.Abs(z); // Distance from XY plane (Z=0)
+        float distFromYZPlane = Mathf.Abs(x); // Distance from YZ plane (X=0)
+        float distFromXZPlane = Mathf.Abs(y); // Distance from XZ plane (Y=0)
+        
+        float tolerance = 0.1f;
+        
+        // Check which planes this position is ON (or very close to)
+        result.isInXYRing = distFromXYPlane < tolerance;
+        result.isInYZRing = distFromYZPlane < tolerance;
+        result.isInXZRing = distFromXZPlane < tolerance;
+        
+        // Determine radius index based on which ring(s) it belongs to
+        if (result.isInXYRing)
+        {
+            // For XY ring, radius is based on X and Y
+            float radius = Mathf.Sqrt(x * x + y * y);
+            result.radiusIndex = GetRadiusIndex(radius);
+        }
+        else if (result.isInYZRing)
+        {
+            // For YZ ring, radius is based on Y and Z
+            float radius = Mathf.Sqrt(y * y + z * z);
+            result.radiusIndex = GetRadiusIndex(radius);
+        }
+        else if (result.isInXZRing)
+        {
+            // For XZ ring, radius is based on X and Z
+            float radius = Mathf.Sqrt(x * x + z * z);
+            result.radiusIndex = GetRadiusIndex(radius);
+        }
+        
+        return result;
+    }
+
+    private int GetRadiusIndex(float radius)
+    {
+        // Your diagonal coordinates: 10.251, 9.544, 8.837... down to 1.767 (step: 0.707)
+        // Your vertical coordinates: 14.5, 13.5, 12.5... down to 2.5 (step: 1.0)
+        
+        // For diagonal rings (approximately √2 * step for each level)
+        int diagonalIndex = Mathf.RoundToInt((10.251f - radius) / 0.707f);
+        
+        // For cardinal rings (1.0 step for each level)
+        int cardinalIndex = Mathf.RoundToInt((14.5f - radius) / 1.0f);
+        
+        // Use whichever is valid (diagonal rings are more common in your setup)
+        if (diagonalIndex >= 0 && diagonalIndex < 13)
+            return diagonalIndex;
+        if (cardinalIndex >= 0 && cardinalIndex < 13)
+            return cardinalIndex;
+            
+        return -1; // Invalid
+    }
+
+    public void CheckAllRingsSimplified()
+    {
+        // Initialize counters for each ring at each radius
+        Dictionary<int, int> xyRingCounts = new Dictionary<int, int>();
+        Dictionary<int, int> yzRingCounts = new Dictionary<int, int>();
+        Dictionary<int, int> xzRingCounts = new Dictionary<int, int>();
+        
+        // Scan all children of motherPlatform
+        foreach (Transform child in motherPlatform.transform)
+        {
+            RingMembership membership = GetRingMembership(child.position);
+            
+            if (membership.radiusIndex < 0 || membership.radiusIndex > 12)
+                continue;
+                
+            // Count blocks in each ring type
+            if (membership.isInXYRing)
+            {
+                if (!xyRingCounts.ContainsKey(membership.radiusIndex))
+                    xyRingCounts[membership.radiusIndex] = 0;
+                xyRingCounts[membership.radiusIndex]++;
+            }
+            
+            if (membership.isInYZRing)
+            {
+                if (!yzRingCounts.ContainsKey(membership.radiusIndex))
+                    yzRingCounts[membership.radiusIndex] = 0;
+                yzRingCounts[membership.radiusIndex]++;
+            }
+            
+            if (membership.isInXZRing)
+            {
+                if (!xzRingCounts.ContainsKey(membership.radiusIndex))
+                    xzRingCounts[membership.radiusIndex] = 0;
+                xzRingCounts[membership.radiusIndex]++;
+            }
+        }
+        
+        // Check for completed rings (8 blocks = complete)
+        foreach (var kvp in xyRingCounts)
+        {
+            if (kvp.Value >= 8)
+                Debug.Log($"<color=green>XY Ring {kvp.Key} is COMPLETE! ({kvp.Value} blocks)</color>");
+        }
+        
+        foreach (var kvp in yzRingCounts)
+        {
+            if (kvp.Value >= 8)
+                Debug.Log($"<color=cyan>YZ Ring {kvp.Key} is COMPLETE! ({kvp.Value} blocks)</color>");
+        }
+        
+        foreach (var kvp in xzRingCounts)
+        {
+            if (kvp.Value >= 8)
+                Debug.Log($"<color=magenta>XZ Ring {kvp.Key} is COMPLETE! ({kvp.Value} blocks)</color>");
+        }
+    }
+
+    
+
 
 }

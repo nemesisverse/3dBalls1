@@ -418,9 +418,10 @@ IEnumerator moveVertical(Transform child, int childCount)
                         else
                         {
                             // At least one block was parented successfully
-                            gameManager.checkRingToDestroy();
-                            gameManager.checkXZRingToDestroy();
-                            gameManager.checkYZRingToDestroy();
+                            // gameManager.checkRingToDestroy();
+                            // gameManager.checkXZRingToDestroy();
+                            // gameManager.checkYZRingToDestroy();
+                            gameManager.CheckAllRingsSimplified();
                             enabled = false;
                             yield break;
                         }
@@ -468,9 +469,10 @@ IEnumerator moveVertical(Transform child, int childCount)
                             }
                             else
                             {
-                                gameManager.checkRingToDestroy();
-                                gameManager.checkXZRingToDestroy();
-                                gameManager.checkYZRingToDestroy();
+                                // gameManager.checkRingToDestroy();
+                                // gameManager.checkXZRingToDestroy();
+                                // gameManager.checkYZRingToDestroy();
+                                gameManager.CheckAllRingsSimplified();
                                 yield break;
                             }
                         }
@@ -512,9 +514,10 @@ IEnumerator moveVertical(Transform child, int childCount)
                         Debug.Log("Reached end but can't parent vertical[1] due to collision - stays as T-piece child");
                     }
                     
-                    gameManager.checkRingToDestroy();
-                    gameManager.checkXZRingToDestroy();
-                    gameManager.checkYZRingToDestroy();
+                    // gameManager.checkRingToDestroy();
+                    // gameManager.checkXZRingToDestroy();
+                    // gameManager.checkYZRingToDestroy();
+                    gameManager.CheckAllRingsSimplified();
                     enabled = false;
                 }
                 yield break;
@@ -1291,5 +1294,9 @@ void verticalflagRadius(int i)
         else if (gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
     }
 }
+
+
+
+
     
 }
