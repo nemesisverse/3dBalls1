@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 9a819b815e161b64e8c78164c1902994, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 4131a4bfc73af4317a4a091361fade93, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1294,7 +1294,7 @@ Skybox:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 9a819b815e161b64e8c78164c1902994, type: 2}
+  m_CustomSkybox: {fileID: 2100000, guid: 4131a4bfc73af4317a4a091361fade93, type: 2}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4027,16 +4027,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12889e1e0862d344cb49acc1fd09b751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SliderPedestalController1
-  slider: {fileID: 964506737}
-  snapPoints: 9
-  currentZAngle: 0
-  previousValue: 0
-  previousStepIndex: 0
-  isReverting: 0
-  allowIncrease: 1
-  allowDecrease: 1
-  swipeInput: {fileID: 0}
-  tMovement: {fileID: 0}
 --- !u!1 &1237907810
 GameObject:
   m_ObjectHideFlags: 0
@@ -4349,6 +4339,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -2571118854743697038, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4504e8364584644a6bc378f28e44ceef, type: 2}
     - target: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
       propertyPath: m_Name
       value: mother
@@ -4357,6 +4351,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7339356831882890532, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ac20a18c95fa74645bd31cc4b87fc3bd, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

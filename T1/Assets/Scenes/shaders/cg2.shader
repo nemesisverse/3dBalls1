@@ -1,80 +1,74 @@
-﻿Shader "Unlit/cg2"
+﻿Shader "Unlit/IonToonSphere"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _TimeSpeed ("Pulse Speed", Float) = 1
-        _DistortionStrength ("Warp Intensity", Float) = 0.2
-        _GlowIntensity ("Glow Intensity", Float) = 1.5
-        _ColorShift ("Hue Shift", Float) = 2
+        _BaseColor ("Base Color", Color) = (0.95, 0.35, 0.4, 1)    // Coral/Salmon
+        _ShadowColor ("Shadow Color", Color) = (0.3, 0.1, 0.25, 1) // Deep Purple
+        _HighlightColor ("Highlight Color", Color) = (1, 0.9, 0.7, 1)
+        _Step1 ("Shadow Threshold", Range(0, 1)) = 0.2
+        _Step2 ("Highlight Threshold", Range(0, 1)) = 0.8
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 200
 
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma multi_compile_fog
-
             #include "UnityCG.cginc"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float _TimeSpeed;
-            float _DistortionStrength;
-            float _GlowIntensity;
-            float _ColorShift;
+            float4 _BaseColor;
+            float4 _ShadowColor;
+            float4 _HighlightColor;
+            float _Step1;
+            float _Step2;
 
-            struct appdata
-            {
+            struct appdata {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
-            struct v2f
-            {
+            struct v2f {
+                float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-                float2 screenUV : TEXCOORD1;
-                UNITY_FOG_COORDS(2)
+                float3 worldNormal : TEXCOORD1;
             };
 
-            v2f vert (appdata v)
-            {
+            v2f vert (appdata v) {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.screenUV = v.uv;
-                UNITY_TRANSFER_FOG(o, o.vertex);
+                // Get normal in world space for lighting
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float t = _Time.y * _TimeSpeed;
+                // 1. Lighting Direction (Matching the top-right light in your image)
+                float3 lightDir = normalize(float3(0.5, 0.5, 1.0));
+                float d = dot(normalize(i.worldNormal), lightDir);
+                
+                // 2. Remap Dot product from [-1, 1] to [0, 1]
+                float lightIntensity = d * 0.5 + 0.5;
 
-                // Plasma-style UV distortion
-                float2 uv = i.uv;
-                uv += sin(uv.yx * 15.0 + t * 3.0) * _DistortionStrength;
-                uv += cos(uv.xy * 10.0 - t * 2.0) * (_DistortionStrength * 0.5);
+                // 3. THE TOON LOGIC: Hard transitions using step()
+                // If lightIntensity > _Step1, use BaseColor, else ShadowColor
+                fixed4 color = lerp(_ShadowColor, _BaseColor, step(_Step1, lightIntensity));
+                
+                // If lightIntensity > _Step2, add a sharp Highlight
+                color = lerp(color, _HighlightColor, step(_Step2, lightIntensity));
 
-                // Sample base texture
-                fixed4 texColor = tex2D(_MainTex, uv);
-
-                // Holographic color shifting using sine waves
-                float r = 0.5 + 0.5 * sin(texColor.r * _ColorShift + t);
-                float g = 0.5 + 0.5 * sin(texColor.g * _ColorShift + t + 2.0);
-                float b = 0.5 + 0.5 * sin(texColor.b * _ColorShift + t + 4.0);
-                float pulse = 0.5 + 0.5 * sin(t * 2.0 + uv.x * 5.0 + uv.y * 5.0);
-
-                fixed4 finalColor = fixed4(r, g, b, 1.0) * pulse * _GlowIntensity;
-
-                UNITY_APPLY_FOG(i.fogCoord, finalColor);
-                return finalColor;
+                // 4. Optional: Multiply by texture (keep it subtle for the toon look)
+                fixed4 tex = tex2D(_MainTex, i.uv);
+                
+                return color * tex;
             }
             ENDCG
         }
