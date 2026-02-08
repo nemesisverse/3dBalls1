@@ -57,44 +57,54 @@ public class TMovement : MonoBehaviour
             gameManager.minusXminusYDimension, gameManager.plusXminusYDimension
         };
     }
+public bool IsRotationColliding()
+{
+    List<GameObject> activeMovingChildren = new List<GameObject>();
+    if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
+    if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
+    if (verticalChildObject != null) activeMovingChildren.AddRange(verticalChildObject);
 
-    // ------------------------------------------------------------------------
-    // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
-    // ------------------------------------------------------------------------
-    public bool IsRotationColliding()
+    if (activeMovingChildren.Count == 0 || allDimensions == null) return false;
+
+    // Build HashSet of placed block positions
+    HashSet<Vector3Int> placedPositions = new HashSet<Vector3Int>();
+    foreach (var dimensionList in allDimensions)
     {
-        List<GameObject> activeMovingChildren = new List<GameObject>();
-        if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
-        if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
-        if (verticalChildObject != null) activeMovingChildren.AddRange(verticalChildObject);
-
-        if (activeMovingChildren.Count == 0) return false;
-
-        if (allDimensions == null) return false;
-
-        foreach (var dimensionList in allDimensions)
+        if (dimensionList == null) continue;
+        foreach (var placedBlock in dimensionList)
         {
-            if (dimensionList == null) continue;
-
-            foreach (var placedBlock in dimensionList)
+            if (placedBlock != null && !activeMovingChildren.Contains(placedBlock))
             {
-                if (placedBlock == null) continue;
-
-                foreach (var movingBlock in activeMovingChildren)
-                {
-                    if (movingBlock == null) continue;
-                    if (placedBlock == movingBlock) continue; // Ignore self
-
-                    if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
-                    {
-                        Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
-                        return true;
-                    }
-                }
+                Vector3 pos = placedBlock.transform.position;
+                placedPositions.Add(new Vector3Int(
+                    Mathf.RoundToInt(pos.x * 100),
+                    Mathf.RoundToInt(pos.y * 100),
+                    Mathf.RoundToInt(pos.z * 100)
+                ));
             }
         }
-        return false;
     }
+
+    // Check moving blocks against HashSet (O(1) lookup)
+    foreach (var moving in activeMovingChildren)
+    {
+        if (moving == null) continue;
+        Vector3 pos = moving.transform.position;
+        Vector3Int posRounded = new Vector3Int(
+            Mathf.RoundToInt(pos.x * 100),
+            Mathf.RoundToInt(pos.y * 100),
+            Mathf.RoundToInt(pos.z * 100)
+        );
+
+        if (placedPositions.Contains(posRounded))
+        {
+            Debug.Log($"Collision detected at position: {posRounded}");
+            return true;
+        }
+    }
+
+    return false;
+}
 
     bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
     {
