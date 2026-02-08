@@ -91,38 +91,24 @@ public class SwipeInput : MonoBehaviour
     }
 
     // UPDATED: Logic to Try Rotate -> Check Collision -> Revert if needed
-    void ApplyRotationInstant(Vector3 axis, float degrees)
+  void ApplyRotationInstant(Vector3 axis, float degrees)
 {
-    // 1. Store previous rotation
-    Quaternion originalRotation = transform.rotation;
-
-    // 2. Calculate the Target Rotation without applying it yet
-    Quaternion targetRotation = Quaternion.AngleAxis(degrees, axis) * transform.rotation;
+    Quaternion originalRotation = gameManager.motherPlatform.transform.rotation;
     
-    // 3. Temporarily apply it to check for collision
-    transform.rotation = targetRotation;
-
-    // IMPORTANT: Forces the physics engine to catch up with the new transform position/rotation
-    Physics.SyncTransforms(); 
+    gameManager.motherPlatform.transform.rotation = Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
+    Physics.SyncTransforms();
 
     TMovement activeMovement = FindFirstObjectByType<TMovement>();
 
-    if (activeMovement != null)
+    if (activeMovement != null && activeMovement.IsRotationColliding())
     {
-        // 4. Check if this NEW position is valid
-        if (activeMovement.IsRotationColliding())
-        {
-            Debug.Log("Rotation Blocked! Reverting to: " + originalRotation.eulerAngles);
-            transform.rotation = originalRotation;
-            
-            // Re-sync after reverting to ensure the "old" valid state is registered
-            Physics.SyncTransforms(); 
-        }
-        else 
-        {
-            // Rotation is valid! 
-            Debug.Log("Rotation Successful");
-        }
+        gameManager.motherPlatform.transform.rotation = originalRotation;
+        Physics.SyncTransforms();
+        Debug.Log("Rotation Blocked - Reverted");
+    }
+    else
+    {
+        Debug.Log("Rotation Successful");
     }
 }
 }
