@@ -17,6 +17,11 @@ public class SwipeInput : MonoBehaviour
     public GameManager gameManager;
     public event Action OnSwipe;
 
+    public bool canSwipeRight = true;
+    public bool canSwipeLeft = true;
+    public bool canSwipeUp = true;
+    public bool canSwipeDown = true;
+
     void Awake()
     {
         touchControl = new TouchControl();
@@ -65,50 +70,76 @@ public class SwipeInput : MonoBehaviour
         {
             if (swipe.x > 0)
             {
+                if (canSwipeRight)
+                {
+                    // Swipe Right
+                    ApplyRotationInstant(Vector3.up, -90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Right blocked by canSwipeRight");
+                }
                 // Swipe Right
-                ApplyRotationInstant(Vector3.up, -90f);
+                //ApplyRotationInstant(Vector3.up, -90f);
             }
             else
             {
+                if (canSwipeLeft)
+                {
+                    // Swipe Left
+                    ApplyRotationInstant(Vector3.up, 90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Left blocked by canSwipeLeft");
+                }
                 // Swipe Left
-                ApplyRotationInstant(Vector3.up, 90f);
+                //ApplyRotationInstant(Vector3.up, 90f);
             }
         }
         else
         {
             if (swipe.y > 0)
-            {
+            {   
+                if (canSwipeUp)
+                {
+                    // Swipe Up
+                    ApplyRotationInstant(Vector3.right, 90f);
+                }
+                else
+                {
+                    Debug.Log("Swipe Up blocked by canSwipeUp");
+                }
+
                 // Swipe Up
-                ApplyRotationInstant(Vector3.right, 90f);
+                //ApplyRotationInstant(Vector3.right, 90f);
             }
             else
             {
-                // Swipe Down
-                ApplyRotationInstant(Vector3.right, -90f);
+                if (canSwipeDown)
+                {
+                    // Swipe Down
+                    ApplyRotationInstant(Vector3.right, -90f);
+                }
+                else
+                {
+                   // Debug.Log("Swipe Down blocked by canSwipeDown");
+                }
             }
         }
          OnSwipe?.Invoke(); //invoke ke liye check
     }
 
-    // UPDATED: Logic to Try Rotate -> Check Collision -> Revert if needed
-  void ApplyRotationInstant(Vector3 axis, float degrees)
+   
+void ApplyRotationInstant(Vector3 axis, float degrees)
 {
-    Quaternion originalRotation = gameManager.motherPlatform.transform.rotation;
-    
-    gameManager.motherPlatform.transform.rotation = Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
-    Physics.SyncTransforms();
+    // 1. Calculate and apply the new rotation directly
+    gameManager.motherPlatform.transform.rotation = 
+        Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
 
-    TMovement activeMovement = FindFirstObjectByType<TMovement>();
+    // 2. (Optional) Sync if you have other logic checking collisions immediately after
+    Physics.SyncTransforms(); 
 
-    if (activeMovement != null && activeMovement.IsRotationColliding())
-    {
-        gameManager.motherPlatform.transform.rotation = originalRotation;
-        Physics.SyncTransforms();
-        Debug.Log("Rotation Blocked - Reverted");
-    }
-    else
-    {
-        Debug.Log("Rotation Successful");
-    }
+    Debug.Log("Rotation Applied");
 }
 }

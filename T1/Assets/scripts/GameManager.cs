@@ -179,6 +179,19 @@ public class GameManager : MonoBehaviour
     //         yield return new WaitForSeconds(0.1f);
     //     }
     // }
+
+//     // In GameManager.cs (if you have access to modify it)
+// public void RegisterBlockPlacement(GameObject block)
+// {
+//     // Your existing placement logic...
+    
+//     // Invalidate all active TMovement caches
+//     TMovement[] allMovements = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
+//     foreach (var movement in allMovements)
+//     {
+//         movement.InvalidatePositionCache();
+//     }
+// }
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
     {
         foreach (Transform child in parent)

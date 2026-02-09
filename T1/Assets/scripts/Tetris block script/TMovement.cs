@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Android.Gradle;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class TMovement : MonoBehaviour
@@ -57,67 +58,184 @@ public class TMovement : MonoBehaviour
             gameManager.minusXminusYDimension, gameManager.plusXminusYDimension
         };
     }
-public bool IsRotationColliding()
-{
-    List<GameObject> activeMovingChildren = new List<GameObject>();
-    if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
-    if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
-    if (verticalChildObject != null) activeMovingChildren.AddRange(verticalChildObject);
 
-    if (activeMovingChildren.Count == 0 || allDimensions == null) return false;
 
-    // Build HashSet of placed block positions
-    HashSet<Vector3Int> placedPositions = new HashSet<Vector3Int>();
-    foreach (var dimensionList in allDimensions)
+    public void leftRotationStopper(int i)
+    //while writing this imagine block is moving left diognally [ONLY]
     {
-        if (dimensionList == null) continue;
-        foreach (var placedBlock in dimensionList)
+        foreach (var direction in allDimensions)
         {
-            if (placedBlock != null && !activeMovingChildren.Contains(placedBlock))
+            //Vector3 a = direction[i].transform.position;
+            //Vector3 b = leftChildObject[0].transform.position;
+            //apply if conditions 
+            if (direction[i] != null  && direction[i].transform.position.x < 0f && direction[i].transform.position.z < 0f)
             {
-                Vector3 pos = placedBlock.transform.position;
-                placedPositions.Add(new Vector3Int(
-                    Mathf.RoundToInt(pos.x * 100),
-                    Mathf.RoundToInt(pos.y * 100),
-                    Mathf.RoundToInt(pos.z * 100)
-                ));
+                swipeInput.canSwipeUp = false;
+                //return true;
+                //avoid swipe up
+            }
+            if (direction[i] != null && direction[i].transform.position.x < 0f && direction[i].transform.position.z > 0f)
+            {
+                swipeInput.canSwipeDown = false;
+                //return true;
+                //avoid swipe down
+            }
+
+
+
+            if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.y > 0f)
+            {
+                swipeInput.canSwipeLeft = false;
+                //return true;
+                //avoid swipe left
+            }
+            if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.y > 0f)
+            {
+                swipeInput.canSwipeRight = false;
+                //return true;
+                //avoid swipe right
+            }
+
+            //yaha par i-1 ka bhi check karta agar left side par i-1 par bhi block hota
+
+
+
+        }
+        
+    }
+
+    public void rightRotationStopper(int i)
+    //while writing this imagine block is moving right diognally [ONLY]
+    {
+        foreach (var direction in allDimensions)
+        {
+            if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z > 0f)
+            {
+                swipeInput.canSwipeDown = false;
+                //return true;
+                //avoid swipe down
+            }
+            if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z < 0f)
+            {
+                swipeInput.canSwipeUp = false;
+                //return true;
+                //avoid swipe up
+            }
+            if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z > 0f)
+            {
+                swipeInput.canSwipeLeft = false;
+                //return true;
+                //avoid swipe left
+            }
+            if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z < 0f)
+            {
+                swipeInput.canSwipeRight = false;
+                //return true;
+                //avoid swipe right
             }
         }
+
+
+
+        //return false;
+        // Similar logic can be applied here for right rotation stopper if needed
     }
 
-    // Check moving blocks against HashSet (O(1) lookup)
-    foreach (var moving in activeMovingChildren)
-    {
-        if (moving == null) continue;
-        Vector3 pos = moving.transform.position;
-        Vector3Int posRounded = new Vector3Int(
-            Mathf.RoundToInt(pos.x * 100),
-            Mathf.RoundToInt(pos.y * 100),
-            Mathf.RoundToInt(pos.z * 100)
-        );
 
-        if (placedPositions.Contains(posRounded))
-        {
-            Debug.Log($"Collision detected at position: {posRounded}");
-            return true;
-        }
-    }
-
-    return false;
+    public void ResetSwipePermissions()
+{
+    swipeInput.canSwipeRight = true;
+    swipeInput.canSwipeLeft = true;
+    swipeInput.canSwipeUp = true;
+    swipeInput.canSwipeDown = true;
 }
 
-    bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
+    public void verticalRotationStopper(int i)
+    //while writing this imagine block is moving vertically [ONLY]
     {
-        float x1 = (float)System.Math.Round(posA.x, 2);
-        float y1 = (float)System.Math.Round(posA.y, 2);
-        float z1 = (float)System.Math.Round(posA.z, 2);
+        foreach (var direction in allDimensions)
+        {
+            if (direction[i] != null && direction[i].transform.position.z > 0f)
+            {
+                swipeInput.canSwipeDown = false;
+                //return true;
+                //avoid swipe down
+            }
+            if (direction[i] != null && direction[i].transform.position.z < 0f)
+            {
+                swipeInput.canSwipeUp = false;
+                //return true;
+                //avoid swipe up    
+            }
 
-        float x2 = (float)System.Math.Round(posB.x, 2);
-        float y2 = (float)System.Math.Round(posB.y, 2);
-        float z2 = (float)System.Math.Round(posB.z, 2);
 
-        return (x1 == x2) && (y1 == y2) && (z1 == z2);
+            
+            if (direction[i-1] != null && direction[i-1].transform.position.z > 0f)
+            {
+                swipeInput.canSwipeDown = false;
+                //return true;
+                //avoid swipe down
+            }
+            if (direction[i-1] != null && direction[i-1].transform.position.z < 0f)
+            {
+                swipeInput.canSwipeUp = false;
+                //return true;
+                //avoid swipe up
+            }
+        }
+        //return false;
     }
+
+    // ------------------------------------------------------------------------
+    // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
+    // ------------------------------------------------------------------------
+    // public bool IsRotationColliding()
+    // {
+    //     List<GameObject> activeMovingChildren = new List<GameObject>();
+    //     if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
+    //     if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
+    //     if (verticalChildObject != null) activeMovingChildren.AddRange(verticalChildObject);
+
+    //     if (activeMovingChildren.Count == 0) return false;
+
+    //     if (allDimensions == null) return false;
+
+    //     foreach (var dimensionList in allDimensions)
+    //     {
+    //         if (dimensionList == null) continue;
+
+    //         foreach (var placedBlock in dimensionList)
+    //         {
+    //             if (placedBlock == null) continue;
+
+    //             foreach (var movingBlock in activeMovingChildren)
+    //             {
+    //                 if (movingBlock == null) continue;
+    //                 if (placedBlock == movingBlock) continue; // Ignore self
+
+    //                 if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
+    //                 {
+    //                     Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
+    //                     return true;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+
+    // bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
+    // {
+    //     float x1 = (float)System.Math.Round(posA.x, 2);
+    //     float y1 = (float)System.Math.Round(posA.y, 2);
+    //     float z1 = (float)System.Math.Round(posA.z, 2);
+
+    //     float x2 = (float)System.Math.Round(posB.x, 2);
+    //     float y2 = (float)System.Math.Round(posB.y, 2);
+    //     float z2 = (float)System.Math.Round(posB.z, 2);
+
+    //     return (x1 == x2) && (y1 == y2) && (z1 == z2);
+    // }
 
     // ------------------------------------------------------------------------
     // MOVEMENT COROUTINES
@@ -135,6 +253,10 @@ public bool IsRotationColliding()
     //     }
     // }
 
+
+
+    // 4 jagah resetSwipe karo ek move function me
+
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
@@ -142,6 +264,8 @@ public bool IsRotationColliding()
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
+                ResetSwipePermissions();
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -158,8 +282,11 @@ public bool IsRotationColliding()
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            leftflagRadius(i);
+                            leftRotationStopper(i - 1);
+                            leftflagRadius(i - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            ResetSwipePermissions();
+                        
                             //  ResetSliderPermissions(); // Enable slider when done
                             enabled = false;
                             yield break;
@@ -172,8 +299,10 @@ public bool IsRotationColliding()
                         {
                             if (!enabled)
                             {
-                                leftflagRadius(i);
+                                leftRotationStopper(i - 1);
+                                leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                ResetSwipePermissions();
                                 //ResetSliderPermissions();
                                 yield break;
                             }
@@ -182,15 +311,20 @@ public bool IsRotationColliding()
                     }
                 }
 
+                //for example  i = 11 hai, toh block abhi i= 10 pe hai
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
+                leftRotationStopper(i); // check for swipe permissions at new position
+                //ab bolck i = 11 par hai
 
                 try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 1; } } }
                 catch (System.ArgumentOutOfRangeException)
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
-                        leftflagRadius(i + 1);
+                        leftRotationStopper(i); // error handling lagale
+                        leftflagRadius(i);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSwipePermissions();
                         // ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
                     }
@@ -208,6 +342,7 @@ public bool IsRotationColliding()
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
+                ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -224,8 +359,9 @@ public bool IsRotationColliding()
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            rightflagRadius(i);
+                            rightflagRadius(i - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            ResetSwipePermissions();
                             // ResetSliderPermissions(); // Enable slider when done
                             enabled = false;
                             yield break;
@@ -238,8 +374,9 @@ public bool IsRotationColliding()
                         {
                             if (!enabled)
                             {
-                                rightflagRadius(i);
+                                rightflagRadius(i - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                ResetSwipePermissions();
                                 // ResetSliderPermissions();
                                 yield break;
                             }
@@ -249,14 +386,16 @@ public bool IsRotationColliding()
                 }
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                rightRotationStopper(i); // check for swipe permissions at new position
 
                 try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 2; } } }
                 catch (System.ArgumentOutOfRangeException)
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
-                        rightflagRadius(i + 1);
+                        rightflagRadius(i);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSwipePermissions();
                         //ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
                     }
@@ -274,6 +413,7 @@ public bool IsRotationColliding()
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
+                 ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -290,13 +430,15 @@ public bool IsRotationColliding()
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            verticalflagRadius(i);
+                            verticalflagRadius(i - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                            ResetSwipePermissions();
                             //ResetSliderPermissions(); // Enable slider when done
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
-                            gameManager.checkYZRingToDestroy();
+                            gameManager.checkXZRingToDestroy();
                             enabled = false;
                             yield break;
                         }
@@ -308,13 +450,15 @@ public bool IsRotationColliding()
                         {
                             if (!enabled)
                             {
-                                verticalflagRadius(i);
+                                verticalflagRadius(i - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+
+                                ResetSwipePermissions();
                                 //ResetSliderPermissions();
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
-                                gameManager.checkYZRingToDestroy();
+                                gameManager.checkXZRingToDestroy();
                                 yield break;
                             }
                             yield return null;
@@ -324,6 +468,7 @@ public bool IsRotationColliding()
 
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+                verticalRotationStopper(i); // check for swipe permissions at new position
 
                 // --- YOUR LOGIC: Check & Lock Slider Directions ---
 
@@ -335,13 +480,14 @@ public bool IsRotationColliding()
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        verticalflagRadius(i + 1);
+                        verticalflagRadius(i);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        ResetSwipePermissions();
                         //ResetSliderPermissions(); // Enable slider when done
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();
-                        gameManager.checkYZRingToDestroy();
+                        gameManager.checkXZRingToDestroy();
                         enabled = false;
                     }
                     yield break;
@@ -386,14 +532,14 @@ public bool IsRotationColliding()
         if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
         {
             Debug.Log("left Aligned Plane: Local XY (Axes: Right & Up) with XY");
-            if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXplusYDimension[i - 1] == null) gameManager.minusXplusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusXplusYDimension[i - 1] == null) gameManager.plusXplusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXminusYDimension[i - 1] == null) gameManager.minusXminusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusXminusYDimension[i - 1] == null) gameManager.plusXminusYDimension[i - 1] = leftChildObject[0];
+            if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
+            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
+            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = leftChildObject[0];
+            else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = leftChildObject[0];
+            else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = leftChildObject[0];
 
         }
 
@@ -402,14 +548,14 @@ public bool IsRotationColliding()
         else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
         {
             Debug.Log("left Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
-            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusYplusZDimension[i - 1] == null) gameManager.plusYplusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusYminusZDimension[i - 1] == null) gameManager.plusYminusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusYplusZDimension[i - 1] == null) gameManager.minusYplusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusYminusZDimension[i - 1] == null) gameManager.minusYminusZDimension[i - 1] = leftChildObject[0];
+            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
+            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
+            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
+            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
+            else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = leftChildObject[0];
+            else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = leftChildObject[0];
+            else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = leftChildObject[0];
+            else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = leftChildObject[0];
         }
 
 
@@ -418,14 +564,14 @@ public bool IsRotationColliding()
         else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
         {
             Debug.Log("left Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
-            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXminusZDimension[i - 1] == null) gameManager.minusXminusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.minusXplusZDimension[i - 1] == null) gameManager.minusXplusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusXminusZDimension[i - 1] == null) gameManager.plusXminusZDimension[i - 1] = leftChildObject[0];
-            else if (gameManager.plusXplusZDimension[i - 1] == null) gameManager.plusXplusZDimension[i - 1] = leftChildObject[0];
+            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
+            else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
+            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = leftChildObject[0];
+            else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = leftChildObject[0];
+            else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = leftChildObject[0];
+            else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = leftChildObject[0];
         }
 
 
@@ -442,28 +588,28 @@ public bool IsRotationColliding()
         {
 
             Debug.Log("right Aligned Plane: Local XY (Axes: Right & Up) with XY");
-            if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXplusYDimension[i - 1] == null) gameManager.minusXplusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusXplusYDimension[i - 1] == null) gameManager.plusXplusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXminusYDimension[i - 1] == null) gameManager.minusXminusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusXminusYDimension[i - 1] == null) gameManager.plusXminusYDimension[i - 1] = rightChildObject[0];
+            if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
+            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
+            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = rightChildObject[0];
+            else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = rightChildObject[0];
+            else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = rightChildObject[0];
         }
         // 2. Check if Local YZ Plane is the one aligned
         // The Normal of Local YZ is Local Right (X)
         else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
         {
             Debug.Log("right Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
-            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusYDimension[i - 1] == null) gameManager.minusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusYDimension[i - 1] == null) gameManager.plusYDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusYplusZDimension[i - 1] == null) gameManager.plusYplusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusYminusZDimension[i - 1] == null) gameManager.plusYminusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusYplusZDimension[i - 1] == null) gameManager.minusYplusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusYminusZDimension[i - 1] == null) gameManager.minusYminusZDimension[i - 1] = rightChildObject[0];
+            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
+            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
+            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
+            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
+            else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = rightChildObject[0];
+            else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = rightChildObject[0];
+            else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = rightChildObject[0];
+            else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = rightChildObject[0];
 
         }
 
@@ -472,14 +618,14 @@ public bool IsRotationColliding()
         else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
         {
             Debug.Log("right Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
-            if (gameManager.minusZDimension[i - 1] == null) gameManager.minusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusXDimension[i - 1] == null) gameManager.plusXDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXDimension[i - 1] == null) gameManager.minusXDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusZDimension[i - 1] == null) gameManager.plusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXminusZDimension[i - 1] == null) gameManager.minusXminusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.minusXplusZDimension[i - 1] == null) gameManager.minusXplusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusXminusZDimension[i - 1] == null) gameManager.plusXminusZDimension[i - 1] = rightChildObject[0];
-            else if (gameManager.plusXplusZDimension[i - 1] == null) gameManager.plusXplusZDimension[i - 1] = rightChildObject[0];
+            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
+            else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
+            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = rightChildObject[0];
+            else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = rightChildObject[0];
+            else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = rightChildObject[0];
+            else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = rightChildObject[0];
         }
 
     }
@@ -494,27 +640,27 @@ public bool IsRotationColliding()
             // add block in local XY and local zx plane ring
 
             //adding in XY ring 
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
 
 
             // adding in ZX plane
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[1] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[1] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
 
         }
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
@@ -522,26 +668,26 @@ public bool IsRotationColliding()
             // add block in local XY and local yz  plane ring 
 
             //Block in XY plane
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
 
             // Block in YZ local plane
-            if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
 
         }
         //
@@ -552,26 +698,26 @@ public bool IsRotationColliding()
             // add block in local YZ and local XY plane ring 
 
             //Block in XY
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
 
             //Block in YZ local
-            if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
 
 
         }
@@ -582,82 +728,81 @@ public bool IsRotationColliding()
             // add block in local YZ and local XZ plane ring
 
             //Block in YZ
-            if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
 
             //Block in XZ ring
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
         }
         //
 
 
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
         {
-            // add block in  local XZ plane and local XY 
-
+            // add block in  local XZ plane and local XY 1
             //Block in XZ plane 
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
 
             //Block in XY
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
         }
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
         {
             // add block in local XZ and local YZ plane
 
             //Block in XZ plane
-            if (gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i - 1] = verticalChildObject[0]; gameManager.plusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i - 1] = verticalChildObject[0]; gameManager.minusXDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
 
             //Block in YZ plane
 
-            if (gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i - 1] = verticalChildObject[0]; gameManager.plusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i - 1] = verticalChildObject[0]; gameManager.minusYDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusZDimension[i - 2] = verticalChildObject[1]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
 
-            else if (gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i - 1] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[1]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
         }
         else
         {
