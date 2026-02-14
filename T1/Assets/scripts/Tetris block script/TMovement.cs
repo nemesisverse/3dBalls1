@@ -59,6 +59,8 @@ public class TMovement : MonoBehaviour
         };
     }
 
+// Helper method to check position with tolerance
+
 
     public void leftRotationStopper(int i)
     //while writing this imagine block is moving left diognally [ONLY]
@@ -186,72 +188,10 @@ public class TMovement : MonoBehaviour
         //return false;
     }
 
-    // ------------------------------------------------------------------------
-    // COLLISION LOGIC (CALLED BY SLIDER & SWIPE)
-    // ------------------------------------------------------------------------
-    // public bool IsRotationColliding()
-    // {
-    //     List<GameObject> activeMovingChildren = new List<GameObject>();
-    //     if (leftChildObject != null) activeMovingChildren.AddRange(leftChildObject);
-    //     if (rightChildObject != null) activeMovingChildren.AddRange(rightChildObject);
-    //     if (verticalChildObject != null) activeMovingChildren.AddRange(verticalChildObject);
-
-    //     if (activeMovingChildren.Count == 0) return false;
-
-    //     if (allDimensions == null) return false;
-
-    //     foreach (var dimensionList in allDimensions)
-    //     {
-    //         if (dimensionList == null) continue;
-
-    //         foreach (var placedBlock in dimensionList)
-    //         {
-    //             if (placedBlock == null) continue;
-
-    //             foreach (var movingBlock in activeMovingChildren)
-    //             {
-    //                 if (movingBlock == null) continue;
-    //                 if (placedBlock == movingBlock) continue; // Ignore self
-
-    //                 if (ArePositionsOverlapping(placedBlock.transform.position, movingBlock.transform.position))
-    //                 {
-    //                     Debug.Log($"Collision detected! Placed: {placedBlock.name} | Moving: {movingBlock.name}");
-    //                     return true;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // bool ArePositionsOverlapping(Vector3 posA, Vector3 posB)
-    // {
-    //     float x1 = (float)System.Math.Round(posA.x, 2);
-    //     float y1 = (float)System.Math.Round(posA.y, 2);
-    //     float z1 = (float)System.Math.Round(posA.z, 2);
-
-    //     float x2 = (float)System.Math.Round(posB.x, 2);
-    //     float y2 = (float)System.Math.Round(posB.y, 2);
-    //     float z2 = (float)System.Math.Round(posB.z, 2);
-
-    //     return (x1 == x2) && (y1 == y2) && (z1 == z2);
-    // }
-
-    // ------------------------------------------------------------------------
-    // MOVEMENT COROUTINES
-    // ------------------------------------------------------------------------
     int stop = -1;
     int stopperID = 0;
 
-    // Helper to re-enable slider when block is placed (Finished)
-    // void ResetSliderPermissions()
-    // {
-    //     if (sliderController != null)
-    //     {
-    //         sliderController.allowDecrease = true;
-    //         sliderController.allowIncrease = true;
-    //     }
-    // }
+
 
 
 
@@ -806,10 +746,15 @@ public class TMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log("vertical flag radius failed");
+            Debug.LogError("vertical flag radius failed");
         }
 
 
 
     }
+
+
+
+
+
 }

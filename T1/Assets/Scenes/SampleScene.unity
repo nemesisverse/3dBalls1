@@ -2040,10 +2040,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: T
       objectReference: {fileID: 0}
-    - target: {fileID: 1642180399421770191, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4624529452111292290, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -3187,6 +3183,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInput
   minSwipeDistance: 100
   gameManager: {fileID: 0}
+  canSwipeRight: 1
+  canSwipeLeft: 1
+  canSwipeUp: 1
+  canSwipeDown: 1
 --- !u!114 &1227501325
 MonoBehaviour:
   m_ObjectHideFlags: 0
