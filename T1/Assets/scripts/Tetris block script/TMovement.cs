@@ -35,9 +35,9 @@ public class TMovement : MonoBehaviour
         //if (sliderController == null) sliderController = FindFirstObjectByType<SliderPedestalController1>();
 
         // Populate Coordinates
-        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f) leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
-        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f) rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
-        for (float v = 14.5f; v >= 2.5f; v -= 1f) verticalCoordinates.Add(new Vector3(0f, v, 0f));
+        for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f) leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
+        for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f) rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
+        for (float v = 18.5f; v >= 2.5f; v -= 1f) verticalCoordinates.Add(new Vector3(0f, v, 0f));
     }
 
     void Start()
@@ -59,128 +59,6 @@ public class TMovement : MonoBehaviour
         };
     }
 
-// Helper method to check position with tolerance
-
-
-    // public void leftRotationStopper(int i)
-    // //while writing this imagine block is moving left diognally [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         //Vector3 a = direction[i].transform.position;
-    //         //Vector3 b = leftChildObject[0].transform.position;
-    //         //apply if conditions 
-    //         if (direction[i] != null  && direction[i].transform.position.x < 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.x < 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-
-
-
-    //         if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.y > 0f)
-    //         {
-    //             swipeInput.canSwipeLeft = false;
-    //             //return true;
-    //             //avoid swipe left
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.y > 0f)
-    //         {
-    //             swipeInput.canSwipeRight = false;
-    //             //return true;
-    //             //avoid swipe right
-    //         }
-
-    //         //yaha par i-1 ka bhi check karta agar left side par i-1 par bhi block hota
-
-
-
-    //     }
-        
-    // }
-
-    // public void rightRotationStopper(int i)
-    // //while writing this imagine block is moving right diognally [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeLeft = false;
-    //             //return true;
-    //             //avoid swipe left
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeRight = false;
-    //             //return true;
-    //             //avoid swipe right
-    //         }
-    //     }
-
-
-
-    //     //return false;
-    //     // Similar logic can be applied here for right rotation stopper if needed
-    // }
-
-
-
-
-    // public void verticalRotationStopper(int i)
-    // //while writing this imagine block is moving vertically [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         if (direction[i] != null && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up    
-    //         }
-
-
-            
-    //         if (direction[i-1] != null && direction[i-1].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i-1] != null && direction[i-1].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //     }
-    //     //return false;
-    // }
 
     public void leftRotationStopper(int i)
 {
@@ -231,15 +109,113 @@ public void rightRotationStopper(int i)
         swipeInput.canSwipeRight = false;
 }
 
-public void verticalRotationStopper(int i)
-{
-    // Vertical piece occupies two slots: i (top) and i-1 (bottom)
-    Vector3 topPos = verticalCoordinates[i];
-    Vector3 botPos = (i - 1 >= 0) ? verticalCoordinates[i - 1] : topPos;
+// public void verticalRotationStopper(int i)
+// {
+//     // Vertical piece occupies two slots: i (top) and i-1 (bottom)
+//     Vector3 topPos = verticalCoordinates[i];
+//     Vector3 botPos = (i - 1 >= 0) ? verticalCoordinates[i - 1] : topPos;
 
-    // Block swipe if EITHER block would collide after rotation
-    CheckSwipeCollision(topPos);
-    if (i - 1 >= 0) CheckSwipeCollision(botPos);
+//     // Block swipe if EITHER block would collide after rotation
+//     CheckSwipeCollision(topPos);
+//     if (i - 1 >= 0) CheckSwipeCollision(botPos);
+// }
+// public void verticalRotationStopper(int i)
+// {
+//     foreach (var direction in allDimensions)
+//     {
+//         // Check slot i
+//         if (i < direction.Count)
+//         {
+//             GameObject objI = direction[i];
+//             if (objI != null && objI != verticalChildObject[0] && objI != verticalChildObject[1])
+//             {
+//                 Vector3 pos = objI.transform.position;
+
+//                 if (Mathf.Approximately(pos.x, 0f) && Mathf.Approximately(pos.y, 0f))
+//                 {
+//                     if (pos.z > 0f) swipeInput.canSwipeDown = false;
+//                     if (pos.z < 0f) swipeInput.canSwipeUp   = false;
+//                 }
+//             }
+//         }
+
+//         // Check slot i-1
+//         if (i - 1 >= 0 && i - 1 < direction.Count)
+//         {
+//             GameObject objPrev = direction[i - 1];
+//             if (objPrev != null && objPrev != verticalChildObject[0] && objPrev != verticalChildObject[1])
+//             {
+//                 Vector3 pos = objPrev.transform.position;
+
+//                 if (Mathf.Approximately(pos.x, 0f) && Mathf.Approximately(pos.y, 0f))
+//                 {
+//                     if (pos.z > 0f) swipeInput.canSwipeDown = false;
+//                     if (pos.z < 0f) swipeInput.canSwipeUp   = false;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+//  public void verticalRotationStopper(int i)
+//     //while writing this imagine block is moving vertically [ONLY]
+//     {
+//         foreach (var direction in allDimensions)
+//         {
+//             if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f  )
+//             {
+//                 swipeInput.canSwipeDown = false;
+//                 //return true;
+//                 //avoid swipe down
+//             }
+//             if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
+//             {
+//                 swipeInput.canSwipeUp = false;
+//                 //return true;
+//                 //avoid swipe up    
+//             }
+
+
+            
+//             if (direction[i-1] != null && direction[i-1].transform.position.z > 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
+//             {
+//                 swipeInput.canSwipeDown = false;
+//                 //return true;
+//                 //avoid swipe down
+//             }
+//             if (direction[i-1] != null && direction[i-1].transform.position.z < 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
+//             {
+//                 swipeInput.canSwipeUp = false;
+//                 //return true;
+//                 //avoid swipe up
+//             }
+//         }
+//         //return false;
+//     }
+ 
+
+ public void verticalRotationStopper(int i)
+{
+    foreach (var direction in allDimensions)
+    {
+        // Check slot i
+        if (direction[i] != null && 
+            Mathf.Abs(direction[i].transform.position.x) < 0.1f && 
+            Mathf.Abs(direction[i].transform.position.y) < 0.1f)
+        {
+            if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+            if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp   = false;
+        }
+
+        // Check slot i-1 (guard against index underflow)
+        if (i - 1 >= 0 && direction[i - 1] != null && 
+            Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f && 
+            Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
+        {
+            if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+            if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp   = false;
+        }
+    }
 }
 
 // Checks all 4 swipe directions for a given world position
@@ -847,3 +823,128 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
 
 
 }
+
+
+
+// Helper method to check position with tolerance
+
+
+    // public void leftRotationStopper(int i)
+    // //while writing this imagine block is moving left diognally [ONLY]
+    // {
+    //     foreach (var direction in allDimensions)
+    //     {
+    //         //Vector3 a = direction[i].transform.position;
+    //         //Vector3 b = leftChildObject[0].transform.position;
+    //         //apply if conditions 
+    //         if (direction[i] != null  && direction[i].transform.position.x < 0f && direction[i].transform.position.z < 0f)
+    //         {
+    //             swipeInput.canSwipeUp = false;
+    //             //return true;
+    //             //avoid swipe up
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.x < 0f && direction[i].transform.position.z > 0f)
+    //         {
+    //             swipeInput.canSwipeDown = false;
+    //             //return true;
+    //             //avoid swipe down
+    //         }
+
+
+
+    //         if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.y > 0f)
+    //         {
+    //             swipeInput.canSwipeLeft = false;
+    //             //return true;
+    //             //avoid swipe left
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.y > 0f)
+    //         {
+    //             swipeInput.canSwipeRight = false;
+    //             //return true;
+    //             //avoid swipe right
+    //         }
+
+    //         //yaha par i-1 ka bhi check karta agar left side par i-1 par bhi block hota
+
+
+
+    //     }
+        
+    // }
+
+    // public void rightRotationStopper(int i)
+    // //while writing this imagine block is moving right diognally [ONLY]
+    // {
+    //     foreach (var direction in allDimensions)
+    //     {
+    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z > 0f)
+    //         {
+    //             swipeInput.canSwipeDown = false;
+    //             //return true;
+    //             //avoid swipe down
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z < 0f)
+    //         {
+    //             swipeInput.canSwipeUp = false;
+    //             //return true;
+    //             //avoid swipe up
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z > 0f)
+    //         {
+    //             swipeInput.canSwipeLeft = false;
+    //             //return true;
+    //             //avoid swipe left
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z < 0f)
+    //         {
+    //             swipeInput.canSwipeRight = false;
+    //             //return true;
+    //             //avoid swipe right
+    //         }
+    //     }
+
+
+
+    //     //return false;
+    //     // Similar logic can be applied here for right rotation stopper if needed
+    // }
+
+
+
+
+    // public void verticalRotationStopper(int i)
+    // //while writing this imagine block is moving vertically [ONLY]
+    // {
+    //     foreach (var direction in allDimensions)
+    //     {
+    //         if (direction[i] != null && direction[i].transform.position.z > 0f)
+    //         {
+    //             swipeInput.canSwipeDown = false;
+    //             //return true;
+    //             //avoid swipe down
+    //         }
+    //         if (direction[i] != null && direction[i].transform.position.z < 0f)
+    //         {
+    //             swipeInput.canSwipeUp = false;
+    //             //return true;
+    //             //avoid swipe up    
+    //         }
+
+
+            
+    //         if (direction[i-1] != null && direction[i-1].transform.position.z > 0f)
+    //         {
+    //             swipeInput.canSwipeDown = false;
+    //             //return true;
+    //             //avoid swipe down
+    //         }
+    //         if (direction[i-1] != null && direction[i-1].transform.position.z < 0f)
+    //         {
+    //             swipeInput.canSwipeUp = false;
+    //             //return true;
+    //             //avoid swipe up
+    //         }
+    //     }
+    //     //return false;
+    // }

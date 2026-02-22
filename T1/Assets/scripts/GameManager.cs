@@ -95,7 +95,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        for (float v = 10.251f; v >= 1.767f - 0.0001f; v -= 0.707f)
+        for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
         {
             // Y-Z Plane
             minusZYCoordinates.Add(new Vector3(0, v, -v));      // Up-Back
@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
 
         // --- LOOP 2: CARDINALS (Step 1.0) ---
         // Single axis directions (Up, Down, Left, Right, Forward, Back)
-        for (float v = 14.5f; v >= 2.5f; v -= 1f)
+        for (float v = 18.5f; v >= 2.5f; v -= 1f)
         {
             plusY.Add(new Vector3(0, v, 0));  // Up
             plusYDimension.Add(null);
@@ -222,7 +222,7 @@ public class GameManager : MonoBehaviour
         // Ensure we don't go out of bounds of your lists
         //int checkCount = 13; 
 
-        for (int i = 12; i >= 0; i--)
+        for (int i = 16; i >= 0; i--)
         {
             // 1. Check if slots are NOT null AND the GameObjects actually exist in the scene
             // We use '&& dimension[i]' as a shorthand for 'is not null and not destroyed'
@@ -254,7 +254,7 @@ public class GameManager : MonoBehaviour
 
 public void checkYZRingToDestroy()
 {
-    for (int i = 12; i >= 0; i--)
+    for (int i = 16; i >= 0; i--)
     {
         // Cardinals: Up, Down, Forward, Back
         // Diagonals: Top-Forward, Top-Back, Bottom-Forward, Bottom-Back
@@ -285,7 +285,7 @@ public void checkYZRingToDestroy()
 }
 public void checkXZRingToDestroy()
 {
-    for (int i = 12; i >= 0; i--)
+    for (int i = 16; i >= 0; i--)
     {
         // Cardinals: Right, Left, Forward, Back
         // Diagonals: Front-Right, Front-Left, Back-Right, Back-Left
