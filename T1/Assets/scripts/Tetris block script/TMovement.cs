@@ -109,90 +109,6 @@ public void rightRotationStopper(int i)
         swipeInput.canSwipeRight = false;
 }
 
-// public void verticalRotationStopper(int i)
-// {
-//     // Vertical piece occupies two slots: i (top) and i-1 (bottom)
-//     Vector3 topPos = verticalCoordinates[i];
-//     Vector3 botPos = (i - 1 >= 0) ? verticalCoordinates[i - 1] : topPos;
-
-//     // Block swipe if EITHER block would collide after rotation
-//     CheckSwipeCollision(topPos);
-//     if (i - 1 >= 0) CheckSwipeCollision(botPos);
-// }
-// public void verticalRotationStopper(int i)
-// {
-//     foreach (var direction in allDimensions)
-//     {
-//         // Check slot i
-//         if (i < direction.Count)
-//         {
-//             GameObject objI = direction[i];
-//             if (objI != null && objI != verticalChildObject[0] && objI != verticalChildObject[1])
-//             {
-//                 Vector3 pos = objI.transform.position;
-
-//                 if (Mathf.Approximately(pos.x, 0f) && Mathf.Approximately(pos.y, 0f))
-//                 {
-//                     if (pos.z > 0f) swipeInput.canSwipeDown = false;
-//                     if (pos.z < 0f) swipeInput.canSwipeUp   = false;
-//                 }
-//             }
-//         }
-
-//         // Check slot i-1
-//         if (i - 1 >= 0 && i - 1 < direction.Count)
-//         {
-//             GameObject objPrev = direction[i - 1];
-//             if (objPrev != null && objPrev != verticalChildObject[0] && objPrev != verticalChildObject[1])
-//             {
-//                 Vector3 pos = objPrev.transform.position;
-
-//                 if (Mathf.Approximately(pos.x, 0f) && Mathf.Approximately(pos.y, 0f))
-//                 {
-//                     if (pos.z > 0f) swipeInput.canSwipeDown = false;
-//                     if (pos.z < 0f) swipeInput.canSwipeUp   = false;
-//                 }
-//             }
-//         }
-//     }
-// }
-
-//  public void verticalRotationStopper(int i)
-//     //while writing this imagine block is moving vertically [ONLY]
-//     {
-//         foreach (var direction in allDimensions)
-//         {
-//             if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f  )
-//             {
-//                 swipeInput.canSwipeDown = false;
-//                 //return true;
-//                 //avoid swipe down
-//             }
-//             if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
-//             {
-//                 swipeInput.canSwipeUp = false;
-//                 //return true;
-//                 //avoid swipe up    
-//             }
-
-
-            
-//             if (direction[i-1] != null && direction[i-1].transform.position.z > 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
-//             {
-//                 swipeInput.canSwipeDown = false;
-//                 //return true;
-//                 //avoid swipe down
-//             }
-//             if (direction[i-1] != null && direction[i-1].transform.position.z < 0f && direction[i].transform.position.x == 0f &&  direction[i].transform.position.y == 0f)
-//             {
-//                 swipeInput.canSwipeUp = false;
-//                 //return true;
-//                 //avoid swipe up
-//             }
-//         }
-//         //return false;
-//     }
- 
 
  public void verticalRotationStopper(int i)
 {
@@ -440,7 +356,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                             ResetSwipePermissions();
-                            //ResetSliderPermissions(); // Enable slider when done
+                            
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
                             gameManager.checkXZRingToDestroy();
@@ -460,7 +376,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                                 ResetSwipePermissions();
-                                //ResetSliderPermissions();
+                               
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
                                 gameManager.checkXZRingToDestroy();
@@ -489,7 +405,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
-                        //ResetSliderPermissions(); // Enable slider when done
+                        
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();
                         gameManager.checkXZRingToDestroy();
