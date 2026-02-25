@@ -208,7 +208,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSwipePermissions();
                         
-                            //  ResetSliderPermissions(); // Enable slider when done
+                            
                             enabled = false;
                             yield break;
                         }
@@ -224,7 +224,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSwipePermissions();
-                                //ResetSliderPermissions();
+                                
                                 yield break;
                             }
                             yield return null;
@@ -246,7 +246,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         leftflagRadius(i);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
-                        // ResetSliderPermissions(); // Enable slider when done
+                        
                         enabled = false;
                     }
                     yield break;
@@ -283,7 +283,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             rightflagRadius(i - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSwipePermissions();
-                            // ResetSliderPermissions(); // Enable slider when done
+                            
                             enabled = false;
                             yield break;
                         }
@@ -298,7 +298,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 rightflagRadius(i - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSwipePermissions();
-                                // ResetSliderPermissions();
+                                
                                 yield break;
                             }
                             yield return null;
