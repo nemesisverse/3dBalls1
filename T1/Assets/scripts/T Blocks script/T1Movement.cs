@@ -59,7 +59,7 @@ public class T1Movement : MonoBehaviour
         };
     }
 
-   
+
 
     // public void rightRotationStopper(int i)
     // {
@@ -85,36 +85,36 @@ public class T1Movement : MonoBehaviour
     public void rightRotationStopper(int i)
     {
         // T1 Right Diagonal is a single block, moving down the right diagonal
-        
+
         foreach (var direction in allDimensions)
         {
             // First, make sure the slot exists and isn't empty
             if (i >= 0 && i < direction.Count && direction[i] != null)
             {
                 Vector3 pos = direction[i].transform.position;
-                
+
                 // If a block exists at slot 'i', where is it?
 
                 // 1. Is there a block on the +X / +Z plane? (Blocks DOWN swipe)
-                if (pos.x > 0.1f && pos.z > 0.1f) 
+                if (pos.x > 0.1f && pos.z > 0.1f)
                 {
                     swipeInput.canSwipeDown = false;
                 }
-                
+
                 // 2. Is there a block on the +X / -Z plane? (Blocks UP swipe)
-                if (pos.x > 0.1f && pos.z < -0.1f) 
+                if (pos.x > 0.1f && pos.z < -0.1f)
                 {
                     swipeInput.canSwipeUp = false;
                 }
-                
+
                 // 3. Is there a block on the +Y / +Z plane? (Blocks LEFT swipe)
-                if (pos.y > 0.1f && pos.z > 0.1f) 
+                if (pos.y > 0.1f && pos.z > 0.1f)
                 {
                     swipeInput.canSwipeLeft = false;
                 }
-                
+
                 // 4. Is there a block on the +Y / -Z plane? (Blocks RIGHT swipe)
-                if (pos.y > 0.1f && pos.z < -0.1f) 
+                if (pos.y > 0.1f && pos.z < -0.1f)
                 {
                     swipeInput.canSwipeRight = false;
                 }
@@ -155,11 +155,11 @@ public class T1Movement : MonoBehaviour
         }
     }
     // DONT ERASE
-    //  private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
-    // {
-    //     Vector3 pivot = gameManager.motherPlatform.transform.position;
-    //     return Quaternion.AngleAxis(degrees, axis) * (worldPoint - pivot) + pivot;
-    // }
+     private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
+    {
+        Vector3 pivot = gameManager.motherPlatform.transform.position;
+        return Quaternion.AngleAxis(degrees, axis) * (worldPoint - pivot) + pivot;
+    }
 
     // Checks all 4 swipe directions for a given world position
     // private void CheckSwipeCollision(Vector3 worldPos)
@@ -182,7 +182,7 @@ public class T1Movement : MonoBehaviour
     // }
 
     // Rotates a world-space point around the motherPlatform's center
-   
+
 
 
 
@@ -250,7 +250,7 @@ public class T1Movement : MonoBehaviour
                 }
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
-                rightRotationStopper(i-1); // check for swipe permissions at new position
+                rightRotationStopper(i - 1); // check for swipe permissions at new position
                 // dont erase this
                 // try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 2; } } }
                 // catch (System.ArgumentOutOfRangeException)
@@ -277,7 +277,7 @@ public class T1Movement : MonoBehaviour
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
-                        rightflagRadius(i-1);
+                        rightflagRadius(i - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
                         //ResetSliderPermissions();
@@ -464,7 +464,7 @@ public class T1Movement : MonoBehaviour
 
     }
 
-    void verticalflagRadius(int i)
+     void verticalflagRadius(int i)
     {
         //local XY parallel against global XY
 
@@ -474,27 +474,28 @@ public class T1Movement : MonoBehaviour
             // add block in local XY and local zx plane ring
 
             //adding in XY ring 
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null)  { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i-2] = verticalChildObject[2];}
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2]==null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2];}
             else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i-2]==null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[2];}
+
 
 
             // adding in ZX plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2]==null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2]==null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2]==null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2]==null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2]=verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null)  { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1];gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1];gameManager.plusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1];gameManager.minusZDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i-2]==null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i-2]==null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i-2]==null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i-2]==null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i-2]=verticalChildObject[2]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[2]; }
 
         }
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
@@ -502,86 +503,86 @@ public class T1Movement : MonoBehaviour
             // add block in local XY and local yz  plane ring 
 
             //Block in XY plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i-2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] ==null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1];gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i-2] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i-2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i-2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i-2]==null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1];gameManager.minusXplusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2]= verticalChildObject[2];}
 
             // Block in YZ local plane
-            if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1];gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null ) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1];gameManager.plusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i-2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i-2] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i-2] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[2]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i-2]==null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1];gameManager.plusYplusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[2];}
 
         }
         //
-
+        // yaha se continue
 
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
         {
             // add block in local YZ and local XY plane ring 
 
             //Block in XY
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2]==null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2]==null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2]==null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i-2]==null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i-2]=verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1];gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null ) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1];gameManager.plusYDimension[i - 2] = verticalChildObject[2] ;  }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1];gameManager.minusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2];}
 
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i-2]==null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i-2]==null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i-2]==null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i-2]==null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i-2]=verticalChildObject[2]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null ) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null ) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i - 2] = verticalChildObject[2];  }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null ) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[2];}
 
             //Block in YZ local
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2]==null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2]==null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i-2]==null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2]==null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2]=verticalChildObject[2]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1];  gameManager.plusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1];  gameManager.minusZDimension[i - 2] = verticalChildObject[2];}
 
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i-2]==null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYplusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i-2]==null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i-2]==null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i-2]=verticalChildObject[2]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i-2]==null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i-2]=verticalChildObject[2]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null ) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null ) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[2];}
 
 
         }
 
-
+//// cont 
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
         {
             // add block in local YZ and local XZ plane ring
 
             //Block in YZ
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null)  { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1];gameManager.plusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i-2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYplusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i-2] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i-2] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i-2] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1];gameManager.minusYplusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYminusZDimension[i - 2] = verticalChildObject[2]; }
 
             //Block in XZ ring
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2]  = verticalChildObject[2];}
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i - 2] = verticalChildObject[2];}
 
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i-2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i-2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i-2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i-2] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null &&  gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1];  gameManager.minusXminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[2]; }
         }
         //
 
@@ -590,53 +591,53 @@ public class T1Movement : MonoBehaviour
         {
             // add block in  local XZ plane and local XY 1
             //Block in XZ plane 
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i-2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i-2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i-2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i-2] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2]) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null ) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[2];}
 
             //Block in XY
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i-2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null ) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1];gameManager.plusYDimension[i - 2] = verticalChildObject[2];  }
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1];  gameManager.minusXDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2]; }
 
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i-2] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i-2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusYDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i-2]==null) { gameManager.minusXminusYDimension[i]=verticalChildObject[0];gameManager.minusXminusYDimension[i-1]=verticalChildObject [1 ];gameManager.minusXminusYDimension[i-2]=verticalChildObject[2];}
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i-2] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null && gameManager.minusXplusYDimension[i - 2] == null ) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null && gameManager.plusXplusYDimension[i - 2] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1];gameManager.plusXplusYDimension[i - 1] = verticalChildObject[2]; }
+            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null && gameManager.minusXminusYDimension[i - 2] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1];gameManager.minusXminusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null && gameManager.plusXminusYDimension[i - 2] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusYDimension[i - 2] = verticalChildObject[2];}
         }
         else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
         {
             // add block in local XZ and local YZ plane
 
             //Block in XZ plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i-2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i-2] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null && gameManager.plusXDimension[i - 2] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; gameManager.plusXDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1];  gameManager.plusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null && gameManager.minusXDimension[i - 2]) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; gameManager.minusXDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1];  gameManager.minusZDimension[i - 2] = verticalChildObject[2];}
 
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i-2]==null) { gameManager.minusXminusZDimension[i]=verticalChildObject[0];gameManager.minusXminusZDimension[i-1]=verticalChildObject [1 ];gameManager.minusXminusZDimension[i-2]=verticalChildObject[2];}
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i-2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i-2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXminusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i-2] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i-2] = verticalChildObject[2]; }
+            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null && gameManager.minusXminusZDimension[i - 2] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1];gameManager.minusXminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null && gameManager.minusXplusZDimension[i - 2] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusXplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null && gameManager.plusXminusZDimension[i - 2] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1];gameManager.plusXminusZDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null && gameManager.plusXplusZDimension[i - 2] == null ) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusXplusZDimension[i - 2] = verticalChildObject[2]; }
 
             //Block in YZ plane
 
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i-2]==null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i-2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i-2] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i-2] = verticalChildObject[2]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i-2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i-2] = verticalChildObject[2]; }
+            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null && gameManager.plusYDimension[i - 2] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; gameManager.plusYDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null && gameManager.plusZDimension[i - 2] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null && gameManager.minusYDimension[i - 2] == null ) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; gameManager.minusYDimension[i - 2] = verticalChildObject[2]; }
+            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null && gameManager.minusZDimension[i - 2] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusZDimension[i - 2] = verticalChildObject[2];}
 
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i-2]==null) { gameManager.plusYplusZDimension[i]=verticalChildObject[0];gameManager.plusYplusZDimension[i-1]=verticalChildObject[1];gameManager.plusYplusZDimension[i-2]=verticalChildObject[2];}
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i-2]==null) { gameManager.plusYminusZDimension[i]=verticalChildObject[0];gameManager.plusYminusZDimension[i-1]=verticalChildObject[1];gameManager.plusYminusZDimension[i-2]=verticalChildObject[2];}
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension [i-2]==null) { gameManager.minusYplusZDimension[i]=verticalChildObject[0];gameManager.minusYplusZDimension[i-1]=verticalChildObject[1];gameManager.minusYplusZDimension[i-2]=verticalChildObject[2];}
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i-2]==null) { gameManager.minusYminusZDimension[i]=verticalChildObject[0];gameManager.minusYminusZDimension[i-1]=verticalChildObject[1];gameManager.minusYminusZDimension[i-2]=verticalChildObject[2];}
+            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null && gameManager.plusYplusZDimension[i - 2] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1];  gameManager.plusYplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null && gameManager.plusYminusZDimension[i - 2] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; gameManager.plusYminusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null && gameManager.minusYplusZDimension[i - 2] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; gameManager.minusYplusZDimension[i - 2] = verticalChildObject[2];}
+            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null && gameManager.minusYminusZDimension[i - 2 ] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1];  gameManager.minusYminusZDimension[i - 2] = verticalChildObject[2];}
         }
         else
         {
