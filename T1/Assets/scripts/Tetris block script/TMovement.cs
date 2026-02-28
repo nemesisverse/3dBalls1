@@ -203,7 +203,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            leftRotationStopper(i - 1);
+                            //leftRotationStopper(i - 1);
                             leftflagRadius(i - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSwipePermissions();
@@ -220,7 +220,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         {
                             if (!enabled)
                             {
-                                leftRotationStopper(i - 1);
+                                //leftRotationStopper(i - 1);
                                 leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSwipePermissions();
@@ -242,7 +242,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1])
                     {
-                        leftRotationStopper(i); // error handling lagale
+                        //leftRotationStopper(i); // error handling lagale
                         leftflagRadius(i);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
