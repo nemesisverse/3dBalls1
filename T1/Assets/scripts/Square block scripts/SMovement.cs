@@ -60,108 +60,14 @@ public class SMovement : MonoBehaviour
             gameManager.minusXminusYDimension, gameManager.plusXminusYDimension
         };
     }
-
-//     public void leftRotationStopper(int i)
-// {
-//     // The falling block is at leftDiagonalCoordinates[i]
-//     // Check what position it would move TO if each swipe happened
-    
-//     Vector3 currentPos = leftDiagonalCoordinates[i];
-//     Vector3 currentPosPrevElement = leftDiagonalCoordinates[i-1];
-    
-//     // Simulate swipe up rotation (Vector3.right, 90f)
-//     Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
-//     Vector3 posAfterUp1 = RotatePoint(currentPosPrevElement, Vector3.right, 90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp) ||gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp1))
-//         swipeInput.canSwipeUp = false;
-
-//     // Simulate swipe down rotation (Vector3.right, -90f)
-//     Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
-//     Vector3 posAfterDown1 = RotatePoint(currentPosPrevElement, Vector3.right, -90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown) || gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown1) )
-//         swipeInput.canSwipeDown = false;
-
-//     // Simulate swipe left rotation (Vector3.up, 90f)
-//     Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
-//     Vector3 posAfterLeft1 = RotatePoint(currentPos, Vector3.up, 90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft) || gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft1))
-//         swipeInput.canSwipeLeft = false;
-
-//     // Simulate swipe right rotation (Vector3.up, -90f)
-//     Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
-//     Vector3 posAfterRight1 = RotatePoint(currentPos, Vector3.up, -90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight) || gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight1))
-//         swipeInput.canSwipeRight = false;
-// }
-
-// public void rightRotationStopper(int i)
-// {
-//     Vector3 currentPos = rightDiagonalCoordinates[i];
-
-//     Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
-//         swipeInput.canSwipeUp = false;
-
-//     Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
-//         swipeInput.canSwipeDown = false;
-
-//     Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
-//         swipeInput.canSwipeLeft = false;
-
-//     Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
-//     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
-//         swipeInput.canSwipeRight = false;
-// }
-
-// private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
-// {
-//     Vector3 pivot = gameManager.motherPlatform.transform.position;
-//     return Quaternion.AngleAxis(degrees, axis) * (worldPoint - pivot) + pivot;
-// }
-
+    //redefine this fuction with great logic 
     public void leftRotationStopper(int i)
-{
-    // T1 Left Diagonal is a single block, moving down the left diagonal
-
-    foreach (var direction in allDimensions)
     {
-        // First, make sure the slot exists and isn't empty
-        if (i >= 0 && i < direction.Count && direction[i] != null)
-        {
-            //Vector3 posPrevElement = direction[i-1].transform.position;
-            Vector3 pos = direction[i].transform.position;
-            //Vector3 posPrevElement = direction[i-1].transform.position;
-
-            // If a block exists at slot 'i', where is it?
-
-            // 1. Is there a block on the -X / +Z plane? (Blocks DOWN swipe)
-            if (pos.x < -0.1f && pos.z > 0.1f) 
-            {
-                swipeInput.canSwipeDown = false;
-            }
-
-            // 2. Is there a block on the -X / -Z plane? (Blocks UP swipe)
-            if ((pos.x < -0.1f && pos.z < -0.1f) )
-            {
-                swipeInput.canSwipeUp = false;
-            }
-
-            // 3. Is there a block on the +Y / +Z plane? (Blocks LEFT swipe)
-            if (pos.y > 0.1f && pos.z > 0.1f) 
-            {
-                swipeInput.canSwipeLeft = false;
-            }
-
-            // 4. Is there a block on the +Y / -Z plane? (Blocks RIGHT swipe)
-            if (pos.y > 0.1f && pos.z < -0.1f)
-            {
-                swipeInput.canSwipeRight = false;
-            }
-        }
+        
     }
-}
+
+
+
 
     public void verticalRotationStopper(int i)
     {
