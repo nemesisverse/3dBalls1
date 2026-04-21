@@ -129,25 +129,25 @@ public class SMovement : MonoBehaviour
 //     }
 // }
 
-public void leftRotationStopper(int i)
-{
-    foreach (var direction in allDimensions)
-    {
-        // Check both slots i and i-1 together
-        for (int offset = 0; offset <= 1; offset++)
-        {
-            int idx = i - offset;
-            if (idx < 0 || idx >= direction.Count || direction[idx] == null) continue;
+// public void leftRotationStopper(int i)
+// {
+//     foreach (var direction in allDimensions)
+//     {
+//         // Check both slots i and i-1 together
+//         for (int offset = 0; offset <= 1; offset++)
+//         {
+//             int idx = i - offset;
+//             if (idx < 0 || idx >= direction.Count || direction[idx] == null) continue;
 
-            Vector3 pos = direction[idx].transform.position;
+//             Vector3 pos = direction[idx].transform.position;
 
-            if (pos.x < -0.1f && pos.z > 0.1f)  swipeInput.canSwipeDown = false;
-            if (pos.x < -0.1f && pos.z < -0.1f) swipeInput.canSwipeUp = false;
-            if (pos.y > 0.1f  && pos.z > 0.1f)  swipeInput.canSwipeLeft = false;
-            if (pos.y > 0.1f  && pos.z < -0.1f) swipeInput.canSwipeRight = false;
-        }
-    }
-}
+//             if (pos.x < -0.1f && pos.z > 0.1f)  swipeInput.canSwipeDown = false;
+//             if (pos.x < -0.1f && pos.z < -0.1f) swipeInput.canSwipeUp = false;
+//             if (pos.y > 0.1f  && pos.z > 0.1f)  swipeInput.canSwipeLeft = false;
+//             if (pos.y > 0.1f  && pos.z < -0.1f) swipeInput.canSwipeRight = false;
+//         }
+//     }
+// }
 
 //  public void leftRotationStopper(int i)
 // {
@@ -186,37 +186,37 @@ public void leftRotationStopper(int i)
 
 
 
-    public void verticalRotationStopper(int i)
-    {
-        foreach (var direction in allDimensions)
-        {
-            // Check slot i
-            if (direction[i] != null &&
-                Mathf.Abs(direction[i].transform.position.x) < 0.1f &&
-                Mathf.Abs(direction[i].transform.position.y) < 0.1f)
-            {
-                if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-                if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp = false;
-            }
+    // public void verticalRotationStopper(int i)
+    // {
+    //     foreach (var direction in allDimensions)
+    //     {
+    //         // Check slot i
+    //         if (direction[i] != null &&
+    //             Mathf.Abs(direction[i].transform.position.x) < 0.1f &&
+    //             Mathf.Abs(direction[i].transform.position.y) < 0.1f)
+    //         {
+    //             if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+    //             if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp = false;
+    //         }
 
-            // Check slot i-1 (guard against index underflow)
-            if (i - 1 >= 0 && direction[i - 1] != null &&
-                Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f &&
-                Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
-            {
-                if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-                if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp = false;
-            }
-        }
-    }
+    //         // Check slot i-1 (guard against index underflow)
+    //         if (i - 1 >= 0 && direction[i - 1] != null &&
+    //             Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f &&
+    //             Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
+    //         {
+    //             if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+    //             if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp = false;
+    //         }
+    //     }
+    // }
 
-    public void ResetSwipePermissions()
-    {
-        swipeInput.canSwipeRight = true;
-        swipeInput.canSwipeLeft = true;
-        swipeInput.canSwipeUp = true;
-        swipeInput.canSwipeDown = true;
-    }
+    // public void ResetSwipePermissions()
+    // {
+    //     swipeInput.canSwipeRight = true;
+    //     swipeInput.canSwipeLeft = true;
+    //     swipeInput.canSwipeUp = true;
+    //     swipeInput.canSwipeDown = true;
+    // }
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
@@ -225,7 +225,7 @@ public void leftRotationStopper(int i)
         {
             for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
             {
-                ResetSwipePermissions();
+               // ResetSwipePermissions();
                 
                 if (stop == -1)
                 {
@@ -247,7 +247,7 @@ public void leftRotationStopper(int i)
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                            ResetSwipePermissions();
+                           // ResetSwipePermissions();
 
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
@@ -267,7 +267,7 @@ public void leftRotationStopper(int i)
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                            ResetSwipePermissions();
+                           // ResetSwipePermissions();
 
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
@@ -283,7 +283,7 @@ public void leftRotationStopper(int i)
                 leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
                 leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
                 
-                leftRotationStopper(i); // check for swipe permissions at new position
+                //leftRotationStopper(i); // check for swipe permissions at new position
 
                 // --- YOUR LOGIC: Check & Lock Slider Directions ---
 
@@ -298,7 +298,7 @@ public void leftRotationStopper(int i)
                         leftflagRadius(i);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSwipePermissions();
+                       // ResetSwipePermissions();
 
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();
@@ -319,7 +319,7 @@ public void leftRotationStopper(int i)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                ResetSwipePermissions();
+               // ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -340,7 +340,7 @@ public void leftRotationStopper(int i)
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                            ResetSwipePermissions();
+                            //ResetSwipePermissions();
 
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
@@ -360,7 +360,7 @@ public void leftRotationStopper(int i)
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                                ResetSwipePermissions();
+                                //ResetSwipePermissions();
 
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
@@ -375,7 +375,7 @@ public void leftRotationStopper(int i)
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 
-                verticalRotationStopper(i); // check for swipe permissions at new position
+               // verticalRotationStopper(i); // check for swipe permissions at new position
 
                 // --- YOUR LOGIC: Check & Lock Slider Directions ---
 
@@ -390,7 +390,7 @@ public void leftRotationStopper(int i)
                         verticalflagRadius(i);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSwipePermissions();
+                       // ResetSwipePermissions();
 
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();

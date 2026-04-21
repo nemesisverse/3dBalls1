@@ -82,78 +82,9 @@ public class T1Movement : MonoBehaviour
     //         swipeInput.canSwipeRight = false;
     // }
 
-    public void rightRotationStopper(int i)
-    {
-        // T1 Right Diagonal is a single block, moving down the right diagonal
+    
 
-        foreach (var direction in allDimensions)
-        {
-            // First, make sure the slot exists and isn't empty
-            if (i >= 0 && i < direction.Count && direction[i] != null)
-            {
-                Vector3 pos = direction[i].transform.position;
-
-                // If a block exists at slot 'i', where is it?
-
-                // 1. Is there a block on the +X / +Z plane? (Blocks DOWN swipe)
-                if (pos.x > 0.1f && pos.z > 0.1f)
-                {
-                    swipeInput.canSwipeDown = false;
-                }
-
-                // 2. Is there a block on the +X / -Z plane? (Blocks UP swipe)
-                if (pos.x > 0.1f && pos.z < -0.1f)
-                {
-                    swipeInput.canSwipeUp = false;
-                }
-
-                // 3. Is there a block on the +Y / +Z plane? (Blocks LEFT swipe)
-                if (pos.y > 0.1f && pos.z > 0.1f)
-                {
-                    swipeInput.canSwipeLeft = false;
-                }
-
-                // 4. Is there a block on the +Y / -Z plane? (Blocks RIGHT swipe)
-                if (pos.y > 0.1f && pos.z < -0.1f)
-                {
-                    swipeInput.canSwipeRight = false;
-                }
-            }
-        }
-    }
-
-
-    public void verticalRotationStopper(int i)
-    {
-        foreach (var direction in allDimensions)
-        {
-            // Check slot i
-            if (direction[i] != null &&
-                Mathf.Abs(direction[i].transform.position.x) < 0.1f &&
-                Mathf.Abs(direction[i].transform.position.y) < 0.1f)
-            {
-                if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-                if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp = false;
-            }
-
-            // Check slot i-1 (guard against index underflow)
-            if (i - 1 >= 0 && direction[i - 1] != null &&
-                Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f &&
-                Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
-            {
-                if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-                if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp = false;
-            }
-
-            if (i - 2 >= 0 && direction[i - 2] != null &&
-                Mathf.Abs(direction[i - 2].transform.position.x) < 0.1f &&
-                Mathf.Abs(direction[i - 2].transform.position.y) < 0.1f)
-            {
-                if (direction[i - 2].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-                if (direction[i - 2].transform.position.z < 0f) swipeInput.canSwipeUp = false;
-            }
-        }
-    }
+    
     // DONT ERASE
      private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
     {
@@ -187,13 +118,7 @@ public class T1Movement : MonoBehaviour
 
 
 
-    public void ResetSwipePermissions()
-    {
-        swipeInput.canSwipeRight = true;
-        swipeInput.canSwipeLeft = true;
-        swipeInput.canSwipeUp = true;
-        swipeInput.canSwipeDown = true;
-    }
+   
 
     int stop = -1;
     int stopperID = 0;
@@ -206,7 +131,7 @@ public class T1Movement : MonoBehaviour
         {
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
-                ResetSwipePermissions();
+                //ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -225,7 +150,7 @@ public class T1Movement : MonoBehaviour
                         {
                             rightflagRadius(i - 2);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            ResetSwipePermissions();
+                           // ResetSwipePermissions();
                             // ResetSliderPermissions(); // Enable slider when done
                             enabled = false;
                             yield break;
@@ -240,7 +165,7 @@ public class T1Movement : MonoBehaviour
                             {
                                 rightflagRadius(i - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                ResetSwipePermissions();
+                                //ResetSwipePermissions();
                                 // ResetSliderPermissions();
                                 yield break;
                             }
@@ -250,7 +175,7 @@ public class T1Movement : MonoBehaviour
                 }
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
-                rightRotationStopper(i - 1); // check for swipe permissions at new position
+                //rightRotationStopper(i - 1); // check for swipe permissions at new position
                 // dont erase this
                 // try { if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1])) { if (stop == -1) { stop = i; stopperID = 2; } } }
                 // catch (System.ArgumentOutOfRangeException)
@@ -279,7 +204,7 @@ public class T1Movement : MonoBehaviour
                     {
                         rightflagRadius(i - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSwipePermissions();
+                        //ResetSwipePermissions();
                         //ResetSliderPermissions();
                         enabled = false;
                     }
@@ -297,7 +222,7 @@ public class T1Movement : MonoBehaviour
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                ResetSwipePermissions();
+                //ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -319,7 +244,7 @@ public class T1Movement : MonoBehaviour
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                            ResetSwipePermissions();
+                           // ResetSwipePermissions();
                             //ResetSliderPermissions(); // Enable slider when done
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
@@ -340,7 +265,7 @@ public class T1Movement : MonoBehaviour
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
 
-                                ResetSwipePermissions();
+                               // ResetSwipePermissions();
                                 //ResetSliderPermissions();
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
@@ -355,7 +280,7 @@ public class T1Movement : MonoBehaviour
                 verticalChildObject[0].transform.position = verticalCoordinates[i];
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
-                verticalRotationStopper(i); // check for swipe permissions at new position
+               // verticalRotationStopper(i); // check for swipe permissions at new position
 
                 // --- YOUR LOGIC: Check & Lock Slider Directions ---
 
@@ -372,7 +297,7 @@ public class T1Movement : MonoBehaviour
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        ResetSwipePermissions();
+                       // ResetSwipePermissions();
                         //ResetSliderPermissions(); // Enable slider when done
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();

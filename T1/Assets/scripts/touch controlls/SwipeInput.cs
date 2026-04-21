@@ -15,13 +15,8 @@ public class SwipeInput : MonoBehaviour
     public GameManager gameManager;
     public event Action OnSwipe;
 
-    public bool canSwipeRight = true;
-    public bool canSwipeLeft = true;
-    public bool canSwipeUp = true;
-    public bool canSwipeDown = true;
+    private bool isProcessingSwipe = false; // to stop everything when position comparision is happening
 
-
-private bool isProcessingSwipe = false;// to stop everything when position comparision is happening 
     void Awake()
     {
         touchControl = new TouchControl();
@@ -63,73 +58,35 @@ private bool isProcessingSwipe = false;// to stop everything when position compa
         if (swipe.magnitude < minSwipeDistance)
             return;
 
-
-
         // Logic simplified: We just try to rotate. The checking happens inside ApplyRotationInstant.
         if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
         {
             if (swipe.x > 0)
             {
-                if (canSwipeRight)
-                {
-                    // Swipe Right
-                    ApplyRotationInstant(Vector3.up, -90f);
-                }
-                else
-                {
-                    Debug.Log("Swipe Right blocked by canSwipeRight");
-                }
                 // Swipe Right
-                //ApplyRotationInstant(Vector3.up, -90f);
+                ApplyRotationInstant(Vector3.up, -90f);
             }
             else
             {
-                if (canSwipeLeft)
-                {
-                    // Swipe Left
-                    ApplyRotationInstant(Vector3.up, 90f);
-                }
-                else
-                {
-                    Debug.Log("Swipe Left blocked by canSwipeLeft");
-                }
                 // Swipe Left
-                //ApplyRotationInstant(Vector3.up, 90f);
+                ApplyRotationInstant(Vector3.up, 90f);
             }
         }
         else
         {
             if (swipe.y > 0)
             {
-                if (canSwipeUp)
-                {
-                    // Swipe Up
-                    ApplyRotationInstant(Vector3.right, 90f);
-                }
-                else
-                {
-                    Debug.Log("Swipe Up blocked by canSwipeUp");
-                }
-
                 // Swipe Up
-                //ApplyRotationInstant(Vector3.right, 90f);
+                ApplyRotationInstant(Vector3.right, 90f);
             }
             else
             {
-                if (canSwipeDown)
-                {
-                    // Swipe Down
-                    ApplyRotationInstant(Vector3.right, -90f);
-                }
-                else
-                {
-                    // Debug.Log("Swipe Down blocked by canSwipeDown");
-                }
+                // Swipe Down
+                ApplyRotationInstant(Vector3.right, -90f);
             }
         }
         OnSwipe?.Invoke(); //invoke ke liye check
     }
-
 
     // void ApplyRotationInstant(Vector3 axis, float degrees)
     // {
@@ -146,32 +103,32 @@ private bool isProcessingSwipe = false;// to stop everything when position compa
     // }
 
     void ApplyRotationInstant(Vector3 axis, float degrees)
-{
-    if (isProcessingSwipe) return; // Block double swipes
-    isProcessingSwipe = true;
-    gameManager.isRotating = true; // Pauses falling blocks
-
-    Quaternion oldRotation = gameManager.motherPlatform.transform.rotation;
-
-    gameManager.motherPlatform.transform.rotation =
-        Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
-
-    Physics.SyncTransforms();
-
-    if (CheckOverlapWithFallingBlocks())
     {
-        gameManager.motherPlatform.transform.rotation = oldRotation;
+        if (isProcessingSwipe) return; // Block double swipes
+        isProcessingSwipe = true;
+        gameManager.isRotating = true; // Pauses falling blocks
+
+        Quaternion oldRotation = gameManager.motherPlatform.transform.rotation;
+
+        gameManager.motherPlatform.transform.rotation =
+            Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
+
         Physics.SyncTransforms();
-        Debug.Log("Rotation REVERTED due to overlap");
-    }
-    else
-    {
-        Debug.Log("Rotation Applied");
-    }
 
-    gameManager.isRotating = false; // Resume falling blocks
-    isProcessingSwipe = false; // Allow swipes again
-}
+        if (CheckOverlapWithFallingBlocks())
+        {
+            gameManager.motherPlatform.transform.rotation = oldRotation;
+            Physics.SyncTransforms();
+            Debug.Log("Rotation REVERTED due to overlap");
+        }
+        else
+        {
+            Debug.Log("Rotation Applied");
+        }
+
+        gameManager.isRotating = false; // Resume falling blocks
+        isProcessingSwipe = false; // Allow swipes again
+    }
 
     bool CheckOverlapWithFallingBlocks()
     {
