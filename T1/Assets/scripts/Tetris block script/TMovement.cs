@@ -61,114 +61,114 @@ public class TMovement : MonoBehaviour
 
 
     public void leftRotationStopper(int i)
-{
-    // The falling block is at leftDiagonalCoordinates[i]
-    // Check what position it would move TO if each swipe happened
-    
-    Vector3 currentPos = leftDiagonalCoordinates[i];
-    
-    // Simulate swipe up rotation (Vector3.right, 90f)
-    Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
-        swipeInput.canSwipeUp = false;
-
-    // Simulate swipe down rotation (Vector3.right, -90f)
-    Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
-        swipeInput.canSwipeDown = false;
-
-    // Simulate swipe left rotation (Vector3.up, 90f)
-    Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
-        swipeInput.canSwipeLeft = false;
-
-    // Simulate swipe right rotation (Vector3.up, -90f)
-    Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
-        swipeInput.canSwipeRight = false;
-}
-
-public void rightRotationStopper(int i)
-{
-    Vector3 currentPos = rightDiagonalCoordinates[i];
-
-    Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
-        swipeInput.canSwipeUp = false;
-
-    Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
-        swipeInput.canSwipeDown = false;
-
-    Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
-        swipeInput.canSwipeLeft = false;
-
-    Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
-        swipeInput.canSwipeRight = false;
-}
-
-
- public void verticalRotationStopper(int i)
-{
-    foreach (var direction in allDimensions)
     {
-        // Check slot i
-        if (direction[i] != null && 
-            Mathf.Abs(direction[i].transform.position.x) < 0.1f && 
-            Mathf.Abs(direction[i].transform.position.y) < 0.1f)
-        {
-            if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-            if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp   = false;
-        }
+        // The falling block is at leftDiagonalCoordinates[i]
+        // Check what position it would move TO if each swipe happened
 
-        // Check slot i-1 (guard against index underflow)
-        if (i - 1 >= 0 && direction[i - 1] != null && 
-            Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f && 
-            Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
+        Vector3 currentPos = leftDiagonalCoordinates[i];
+
+        // Simulate swipe up rotation (Vector3.right, 90f)
+        Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
+            swipeInput.canSwipeUp = false;
+
+        // Simulate swipe down rotation (Vector3.right, -90f)
+        Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
+            swipeInput.canSwipeDown = false;
+
+        // Simulate swipe left rotation (Vector3.up, 90f)
+        Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
+            swipeInput.canSwipeLeft = false;
+
+        // Simulate swipe right rotation (Vector3.up, -90f)
+        Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
+            swipeInput.canSwipeRight = false;
+    }
+
+    public void rightRotationStopper(int i)
+    {
+        Vector3 currentPos = rightDiagonalCoordinates[i];
+
+        Vector3 posAfterUp = RotatePoint(currentPos, Vector3.right, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
+            swipeInput.canSwipeUp = false;
+
+        Vector3 posAfterDown = RotatePoint(currentPos, Vector3.right, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
+            swipeInput.canSwipeDown = false;
+
+        Vector3 posAfterLeft = RotatePoint(currentPos, Vector3.up, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
+            swipeInput.canSwipeLeft = false;
+
+        Vector3 posAfterRight = RotatePoint(currentPos, Vector3.up, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
+            swipeInput.canSwipeRight = false;
+    }
+
+
+    public void verticalRotationStopper(int i)
+    {
+        foreach (var direction in allDimensions)
         {
-            if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
-            if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp   = false;
+            // Check slot i
+            if (direction[i] != null &&
+                Mathf.Abs(direction[i].transform.position.x) < 0.1f &&
+                Mathf.Abs(direction[i].transform.position.y) < 0.1f)
+            {
+                if (direction[i].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+                if (direction[i].transform.position.z < 0f) swipeInput.canSwipeUp = false;
+            }
+
+            // Check slot i-1 (guard against index underflow)
+            if (i - 1 >= 0 && direction[i - 1] != null &&
+                Mathf.Abs(direction[i - 1].transform.position.x) < 0.1f &&
+                Mathf.Abs(direction[i - 1].transform.position.y) < 0.1f)
+            {
+                if (direction[i - 1].transform.position.z > 0f) swipeInput.canSwipeDown = false;
+                if (direction[i - 1].transform.position.z < 0f) swipeInput.canSwipeUp = false;
+            }
         }
     }
-}
 
-// Checks all 4 swipe directions for a given world position
-private void CheckSwipeCollision(Vector3 worldPos)
-{
-    Vector3 posAfterUp = RotatePoint(worldPos, Vector3.right, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
-        swipeInput.canSwipeUp = false;
+    // Checks all 4 swipe directions for a given world position
+    private void CheckSwipeCollision(Vector3 worldPos)
+    {
+        Vector3 posAfterUp = RotatePoint(worldPos, Vector3.right, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterUp))
+            swipeInput.canSwipeUp = false;
 
-    Vector3 posAfterDown = RotatePoint(worldPos, Vector3.right, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
-        swipeInput.canSwipeDown = false;
+        Vector3 posAfterDown = RotatePoint(worldPos, Vector3.right, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterDown))
+            swipeInput.canSwipeDown = false;
 
-    Vector3 posAfterLeft = RotatePoint(worldPos, Vector3.up, 90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
-        swipeInput.canSwipeLeft = false;
+        Vector3 posAfterLeft = RotatePoint(worldPos, Vector3.up, 90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterLeft))
+            swipeInput.canSwipeLeft = false;
 
-    Vector3 posAfterRight = RotatePoint(worldPos, Vector3.up, -90f);
-    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
-        swipeInput.canSwipeRight = false;
-}
+        Vector3 posAfterRight = RotatePoint(worldPos, Vector3.up, -90f);
+        if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, posAfterRight))
+            swipeInput.canSwipeRight = false;
+    }
 
-// Rotates a world-space point around the motherPlatform's center
-private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
-{
-    Vector3 pivot = gameManager.motherPlatform.transform.position;
-    return Quaternion.AngleAxis(degrees, axis) * (worldPoint - pivot) + pivot;
-}
+    // Rotates a world-space point around the motherPlatform's center
+    private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
+    {
+        Vector3 pivot = gameManager.motherPlatform.transform.position;
+        return Quaternion.AngleAxis(degrees, axis) * (worldPoint - pivot) + pivot;
+    }
 
 
     public void ResetSwipePermissions()
-{
-    swipeInput.canSwipeRight = true;
-    swipeInput.canSwipeLeft = true;
-    swipeInput.canSwipeUp = true;
-    swipeInput.canSwipeDown = true;
-}
+    {
+        swipeInput.canSwipeRight = true;
+        swipeInput.canSwipeLeft = true;
+        swipeInput.canSwipeUp = true;
+        swipeInput.canSwipeDown = true;
+    }
     int stop = -1;
     int stopperID = 0;
 
@@ -207,8 +207,8 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             leftflagRadius(i - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSwipePermissions();
-                        
-                            
+
+
                             enabled = false;
                             yield break;
                         }
@@ -224,7 +224,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSwipePermissions();
-                                
+
                                 yield break;
                             }
                             yield return null;
@@ -246,11 +246,14 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         leftflagRadius(i);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
-                        
+
                         enabled = false;
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -283,7 +286,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             rightflagRadius(i - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             ResetSwipePermissions();
-                            
+
                             enabled = false;
                             yield break;
                         }
@@ -298,7 +301,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 rightflagRadius(i - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 ResetSwipePermissions();
-                                
+
                                 yield break;
                             }
                             yield return null;
@@ -322,6 +325,8 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -334,7 +339,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
-                 ResetSwipePermissions();
+                ResetSwipePermissions();
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -356,7 +361,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                             ResetSwipePermissions();
-                            
+
                             gameManager.checkRingToDestroy();
                             gameManager.checkYZRingToDestroy();
                             gameManager.checkXZRingToDestroy();
@@ -376,7 +381,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                                 ResetSwipePermissions();
-                               
+
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
                                 gameManager.checkXZRingToDestroy();
@@ -405,7 +410,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         ResetSwipePermissions();
-                        
+
                         gameManager.checkRingToDestroy();
                         gameManager.checkYZRingToDestroy();
                         gameManager.checkXZRingToDestroy();
@@ -413,6 +418,8 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -741,125 +748,125 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
 // Helper method to check position with tolerance
 
 
-    // public void leftRotationStopper(int i)
-    // //while writing this imagine block is moving left diognally [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         //Vector3 a = direction[i].transform.position;
-    //         //Vector3 b = leftChildObject[0].transform.position;
-    //         //apply if conditions 
-    //         if (direction[i] != null  && direction[i].transform.position.x < 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.x < 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
+// public void leftRotationStopper(int i)
+// //while writing this imagine block is moving left diognally [ONLY]
+// {
+//     foreach (var direction in allDimensions)
+//     {
+//         //Vector3 a = direction[i].transform.position;
+//         //Vector3 b = leftChildObject[0].transform.position;
+//         //apply if conditions 
+//         if (direction[i] != null  && direction[i].transform.position.x < 0f && direction[i].transform.position.z < 0f)
+//         {
+//             swipeInput.canSwipeUp = false;
+//             //return true;
+//             //avoid swipe up
+//         }
+//         if (direction[i] != null && direction[i].transform.position.x < 0f && direction[i].transform.position.z > 0f)
+//         {
+//             swipeInput.canSwipeDown = false;
+//             //return true;
+//             //avoid swipe down
+//         }
 
 
 
-    //         if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.y > 0f)
-    //         {
-    //             swipeInput.canSwipeLeft = false;
-    //             //return true;
-    //             //avoid swipe left
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.y > 0f)
-    //         {
-    //             swipeInput.canSwipeRight = false;
-    //             //return true;
-    //             //avoid swipe right
-    //         }
+//         if (direction[i] != null && direction[i].transform.position.z < 0f && direction[i].transform.position.y > 0f)
+//         {
+//             swipeInput.canSwipeLeft = false;
+//             //return true;
+//             //avoid swipe left
+//         }
+//         if (direction[i] != null && direction[i].transform.position.z > 0f && direction[i].transform.position.y > 0f)
+//         {
+//             swipeInput.canSwipeRight = false;
+//             //return true;
+//             //avoid swipe right
+//         }
 
-    //         //yaha par i-1 ka bhi check karta agar left side par i-1 par bhi block hota
-
-
-
-    //     }
-        
-    // }
-
-    // public void rightRotationStopper(int i)
-    // //while writing this imagine block is moving right diognally [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeLeft = false;
-    //             //return true;
-    //             //avoid swipe left
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeRight = false;
-    //             //return true;
-    //             //avoid swipe right
-    //         }
-    //     }
+//         //yaha par i-1 ka bhi check karta agar left side par i-1 par bhi block hota
 
 
 
-    //     //return false;
-    //     // Similar logic can be applied here for right rotation stopper if needed
-    // }
+//     }
+
+// }
+
+// public void rightRotationStopper(int i)
+// //while writing this imagine block is moving right diognally [ONLY]
+// {
+//     foreach (var direction in allDimensions)
+//     {
+//         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z > 0f)
+//         {
+//             swipeInput.canSwipeDown = false;
+//             //return true;
+//             //avoid swipe down
+//         }
+//         if (direction[i] != null && direction[i].transform.position.x > 0f && direction[i].transform.position.z < 0f)
+//         {
+//             swipeInput.canSwipeUp = false;
+//             //return true;
+//             //avoid swipe up
+//         }
+//         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z > 0f)
+//         {
+//             swipeInput.canSwipeLeft = false;
+//             //return true;
+//             //avoid swipe left
+//         }
+//         if (direction[i] != null && direction[i].transform.position.y > 0f && direction[i].transform.position.z < 0f)
+//         {
+//             swipeInput.canSwipeRight = false;
+//             //return true;
+//             //avoid swipe right
+//         }
+//     }
+
+
+
+//     //return false;
+//     // Similar logic can be applied here for right rotation stopper if needed
+// }
 
 
 
 
-    // public void verticalRotationStopper(int i)
-    // //while writing this imagine block is moving vertically [ONLY]
-    // {
-    //     foreach (var direction in allDimensions)
-    //     {
-    //         if (direction[i] != null && direction[i].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i] != null && direction[i].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up    
-    //         }
+// public void verticalRotationStopper(int i)
+// //while writing this imagine block is moving vertically [ONLY]
+// {
+//     foreach (var direction in allDimensions)
+//     {
+//         if (direction[i] != null && direction[i].transform.position.z > 0f)
+//         {
+//             swipeInput.canSwipeDown = false;
+//             //return true;
+//             //avoid swipe down
+//         }
+//         if (direction[i] != null && direction[i].transform.position.z < 0f)
+//         {
+//             swipeInput.canSwipeUp = false;
+//             //return true;
+//             //avoid swipe up    
+//         }
 
 
-            
-    //         if (direction[i-1] != null && direction[i-1].transform.position.z > 0f)
-    //         {
-    //             swipeInput.canSwipeDown = false;
-    //             //return true;
-    //             //avoid swipe down
-    //         }
-    //         if (direction[i-1] != null && direction[i-1].transform.position.z < 0f)
-    //         {
-    //             swipeInput.canSwipeUp = false;
-    //             //return true;
-    //             //avoid swipe up
-    //         }
-    //     }
-    //     //return false;
-    // }
+
+//         if (direction[i-1] != null && direction[i-1].transform.position.z > 0f)
+//         {
+//             swipeInput.canSwipeDown = false;
+//             //return true;
+//             //avoid swipe down
+//         }
+//         if (direction[i-1] != null && direction[i-1].transform.position.z < 0f)
+//         {
+//             swipeInput.canSwipeUp = false;
+//             //return true;
+//             //avoid swipe up
+//         }
+//     }
+//     //return false;
+// }
 
 //void verticalflagRadius(int i)
 //     {
@@ -891,7 +898,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
 //             else if(gameManager.plusXplusYDimension[i - 1] == null){gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1];}
 //             else if(gameManager.minusXminusYDimension[i - 1] == null){ gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1];}
 //             else if(gameManager.plusXminusYDimension[i - 1] == null){gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
-        
+
 
 
 
@@ -988,7 +995,7 @@ private Vector3 RotatePoint(Vector3 worldPoint, Vector3 axis, float degrees)
 //             else if(gameManager.plusYDimension[i - 1] == null){gameManager.plusYDimension[i - 1] = verticalChildObject[1];}
 //             else if(gameManager.minusXDimension[i - 1] == null){ gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
 //             else if(gameManager.minusYDimension[i - 1] == null){gameManager.minusYDimension[i - 1] = verticalChildObject[1];}
-            
+
 //             else if(gameManager.minusXplusYDimension[i - 1] == null){ gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1];}
 //             else if(gameManager.plusXplusYDimension[i - 1] == null){gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1];}
 //             else if(gameManager.minusXminusYDimension[i - 1] == null){ gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1];}

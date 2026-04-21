@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System; 
+using System;
 
 public class SwipeInput : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class SwipeInput : MonoBehaviour
 
     // REMOVED: public bool canSwipeDown, canSwipeUp, etc. 
     // We no longer limit these; we try to rotate and revert if it fails.
-   
+
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
     public event Action OnSwipe;
@@ -20,6 +20,8 @@ public class SwipeInput : MonoBehaviour
     public bool canSwipeUp = true;
     public bool canSwipeDown = true;
 
+
+private bool isProcessingSwipe = false;// to stop everything when position comparision is happening 
     void Awake()
     {
         touchControl = new TouchControl();
@@ -61,7 +63,7 @@ public class SwipeInput : MonoBehaviour
         if (swipe.magnitude < minSwipeDistance)
             return;
 
-       
+
 
         // Logic simplified: We just try to rotate. The checking happens inside ApplyRotationInstant.
         if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
@@ -98,7 +100,7 @@ public class SwipeInput : MonoBehaviour
         else
         {
             if (swipe.y > 0)
-            {   
+            {
                 if (canSwipeUp)
                 {
                     // Swipe Up
@@ -121,23 +123,81 @@ public class SwipeInput : MonoBehaviour
                 }
                 else
                 {
-                   // Debug.Log("Swipe Down blocked by canSwipeDown");
+                    // Debug.Log("Swipe Down blocked by canSwipeDown");
                 }
             }
         }
-         OnSwipe?.Invoke(); //invoke ke liye check
+        OnSwipe?.Invoke(); //invoke ke liye check
     }
 
-   
-void ApplyRotationInstant(Vector3 axis, float degrees)
+
+    // void ApplyRotationInstant(Vector3 axis, float degrees)
+    // {
+    //     gameManager.isRotating = true; // //to stop the for loop to cause the movemennt to falling block when rotation is made 
+    //                                    // 1. Calculate and apply the new rotation directly
+    //     gameManager.motherPlatform.transform.rotation =
+    //         Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
+
+    //     // 2. (Optional) Sync if you have other logic checking collisions immediately after
+    //     Physics.SyncTransforms();
+    //     gameManager.isRotating = false; //to stop the for loop to cause the movemennt to falling block when rotation is made 
+
+    //     Debug.Log("Rotation Applied");
+    // }
+
+    void ApplyRotationInstant(Vector3 axis, float degrees)
 {
-    // 1. Calculate and apply the new rotation directly
-    gameManager.motherPlatform.transform.rotation = 
+    if (isProcessingSwipe) return; // Block double swipes
+    isProcessingSwipe = true;
+    gameManager.isRotating = true; // Pauses falling blocks
+
+    Quaternion oldRotation = gameManager.motherPlatform.transform.rotation;
+
+    gameManager.motherPlatform.transform.rotation =
         Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
 
-    // 2. (Optional) Sync if you have other logic checking collisions immediately after
-    Physics.SyncTransforms(); 
+    Physics.SyncTransforms();
 
-    Debug.Log("Rotation Applied");
+    if (CheckOverlapWithFallingBlocks())
+    {
+        gameManager.motherPlatform.transform.rotation = oldRotation;
+        Physics.SyncTransforms();
+        Debug.Log("Rotation REVERTED due to overlap");
+    }
+    else
+    {
+        Debug.Log("Rotation Applied");
+    }
+
+    gameManager.isRotating = false; // Resume falling blocks
+    isProcessingSwipe = false; // Allow swipes again
 }
+
+    bool CheckOverlapWithFallingBlocks()
+    {
+        TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
+
+        foreach (TMovement block in fallingBlocks)
+        {
+            if (!block.enabled) continue;
+
+            foreach (Transform fallingChild in block.transform)
+            {
+                Vector3 fallingPos = fallingChild.position;
+
+                foreach (Transform motherChild in gameManager.motherPlatform.transform)
+                {
+                    Vector3 motherPos = motherChild.position;
+
+                    bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
+                    bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
+                    bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
+
+                    if (xMatch && yMatch && zMatch)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
 }
