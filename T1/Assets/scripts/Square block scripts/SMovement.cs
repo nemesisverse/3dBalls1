@@ -307,6 +307,8 @@ public class SMovement : MonoBehaviour
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -399,6 +401,8 @@ public class SMovement : MonoBehaviour
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }

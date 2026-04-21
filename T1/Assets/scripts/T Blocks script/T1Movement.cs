@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Android.Gradle;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-public class T1Movement : MonoBehaviour
+public class T1Movement : MonoBehaviour , IFallingBlock
 {
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
@@ -210,6 +210,8 @@ public class T1Movement : MonoBehaviour
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -306,6 +308,8 @@ public class T1Movement : MonoBehaviour
                     }
                     yield break;
                 }
+                while (gameManager.isRotating)
+                    yield return null;  // Pause here until rotation finishes
                 yield return new WaitForSeconds(moveSpeed);
             }
         }

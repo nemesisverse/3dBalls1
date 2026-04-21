@@ -638,6 +638,7 @@ MonoBehaviour:
   plusXplusYDimension: []
   minusXminusYDimension: []
   plusXminusYDimension: []
+  isRotating: 0
 --- !u!4 &197269483
 Transform:
   m_ObjectHideFlags: 0
@@ -2924,10 +2925,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SwipeInput
   minSwipeDistance: 100
   gameManager: {fileID: 0}
-  canSwipeRight: 1
-  canSwipeLeft: 1
-  canSwipeUp: 1
-  canSwipeDown: 1
 --- !u!114 &1227501325
 MonoBehaviour:
   m_ObjectHideFlags: 0

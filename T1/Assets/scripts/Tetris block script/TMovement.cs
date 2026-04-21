@@ -4,7 +4,7 @@ using Unity.Android.Gradle;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
-public class TMovement : MonoBehaviour
+public class TMovement : MonoBehaviour , IFallingBlock
 {
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;

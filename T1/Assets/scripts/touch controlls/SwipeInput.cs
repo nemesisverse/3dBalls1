@@ -130,31 +130,107 @@ public class SwipeInput : MonoBehaviour
         isProcessingSwipe = false; // Allow swipes again
     }
 
+
     bool CheckOverlapWithFallingBlocks()
     {
-        TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
+        MonoBehaviour[] allBlocks = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
 
-        foreach (TMovement block in fallingBlocks)
+        foreach (MonoBehaviour block in allBlocks)
         {
-            if (!block.enabled) continue;
-
-            foreach (Transform fallingChild in block.transform)
+            if (block is IFallingBlock fallingBlock)
             {
-                Vector3 fallingPos = fallingChild.position;
-
-                foreach (Transform motherChild in gameManager.motherPlatform.transform)
-                {
-                    Vector3 motherPos = motherChild.position;
-
-                    bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
-                    bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
-                    bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
-
-                    if (xMatch && yMatch && zMatch)
-                        return true;
-                }
+                if (!fallingBlock.enabled) continue;
+                if (CheckBlockOverlap(fallingBlock.transform)) return true;
             }
         }
         return false;
     }
+
+    bool CheckBlockOverlap(Transform blockTransform)
+    {
+        foreach (Transform fallingChild in blockTransform)
+        {
+            Vector3 fallingPos = fallingChild.position;
+            foreach (Transform motherChild in gameManager.motherPlatform.transform)
+            {
+                Vector3 motherPos = motherChild.position;
+
+                bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
+                bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
+                bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
+
+                if (xMatch && yMatch && zMatch)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    // bool CheckOverlapWithFallingBlocks()
+    // {
+    //     TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
+
+    //     foreach (TMovement block in fallingBlocks)
+    //     {
+    //         if (!block.enabled) continue;
+
+    //         foreach (Transform fallingChild in block.transform)
+    //         {
+    //             Vector3 fallingPos = fallingChild.position;
+
+    //             foreach (Transform motherChild in gameManager.motherPlatform.transform)
+    //             {
+    //                 Vector3 motherPos = motherChild.position;
+
+    //                 bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
+    //                 bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
+    //                 bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
+
+    //                 if (xMatch && yMatch && zMatch)
+    //                     return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+    // bool CheckOverlapWithFallingBlocks()
+    // {
+    //     // Check TMovement blocks
+    //     TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
+    //     foreach (TMovement block in fallingBlocks)
+    //     {
+    //         if (!block.enabled) continue;
+    //         if (CheckBlockOverlap(block.transform)) return true;
+    //     }
+
+    //     // Check T1Movement blocks
+    //     T1Movement[] fallingBlocks1 = FindObjectsByType<T1Movement>(FindObjectsSortMode.None);
+    //     foreach (T1Movement block in fallingBlocks1)
+    //     {
+    //         if (!block.enabled) continue;
+    //         if (CheckBlockOverlap(block.transform)) return true;
+    //     }
+
+    //     return false;
+    // }
+
+    // bool CheckBlockOverlap(Transform blockTransform)
+    // {
+    //     foreach (Transform fallingChild in blockTransform)
+    //     {
+    //         Vector3 fallingPos = fallingChild.position;
+    //         foreach (Transform motherChild in gameManager.motherPlatform.transform)
+    //         {
+    //             Vector3 motherPos = motherChild.position;
+
+    //             bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
+    //             bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
+    //             bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
+
+    //             if (xMatch && yMatch && zMatch)
+    //                 return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 }
