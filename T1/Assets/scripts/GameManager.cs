@@ -90,11 +90,18 @@ public class GameManager : MonoBehaviour
 public bool isRotating = false;
 
 
+    [Header("Grid System")]
+    public SphericalGrid sphericalGrid;
+
+
     void Awake()
     {
         //Instance = this;
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        if (sphericalGrid == null)
+            sphericalGrid = FindFirstObjectByType<SphericalGrid>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
         {
