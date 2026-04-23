@@ -49,17 +49,17 @@ public class T2Movement : MonoBehaviour , IFallingBlock
         countChildren();
         CheckChildrenWorldX();
         // Initialize the Grid List ONCE to save performance
-        allDimensions = new List<List<GameObject>>
-        {
-            gameManager.plusXDimension, gameManager.plusYDimension, gameManager.plusZDimension,
-            gameManager.minusXDimension, gameManager.minusYDimension, gameManager.minusZDimension,
-            gameManager.plusYplusZDimension, gameManager.plusYminusZDimension,
-            gameManager.minusYplusZDimension, gameManager.minusYminusZDimension,
-            gameManager.minusXminusZDimension, gameManager.minusXplusZDimension,
-            gameManager.plusXminusZDimension, gameManager.plusXplusZDimension,
-            gameManager.minusXplusYDimension, gameManager.plusXplusYDimension,
-            gameManager.minusXminusYDimension, gameManager.plusXminusYDimension
-        };
+        // allDimensions = new List<List<GameObject>>
+        // {
+        //     gameManager.plusXDimension, gameManager.plusYDimension, gameManager.plusZDimension,
+        //     gameManager.minusXDimension, gameManager.minusYDimension, gameManager.minusZDimension,
+        //     gameManager.plusYplusZDimension, gameManager.plusYminusZDimension,
+        //     gameManager.minusYplusZDimension, gameManager.minusYminusZDimension,
+        //     gameManager.minusXminusZDimension, gameManager.minusXplusZDimension,
+        //     gameManager.plusXminusZDimension, gameManager.plusXplusZDimension,
+        //     gameManager.minusXplusYDimension, gameManager.plusXplusYDimension,
+        //     gameManager.minusXminusYDimension, gameManager.plusXminusYDimension
+        // };
 
     }
 //     public void leftRotationStopper(int i)
@@ -253,7 +253,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i - 1]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            leftflagRadius(i - 2);
+                           // leftflagRadius(i - 2);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                            // ResetSwipePermissions();
 
@@ -268,7 +268,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         {
                             if (!enabled)
                             {
-                                leftflagRadius(i - 2);
+                               // leftflagRadius(i - 2);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //ResetSwipePermissions();
 
@@ -307,7 +307,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                 {
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
-                        leftflagRadius(i - 1);
+                        //leftflagRadius(i - 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //ResetSwipePermissions();
 
@@ -345,7 +345,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i - 1]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            rightflagRadius(i - 2);
+                           // rightflagRadius(i - 2);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             //ResetSwipePermissions();
 
@@ -360,7 +360,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         {
                             if (!enabled)
                             {
-                                rightflagRadius(i - 2);
+                               // rightflagRadius(i - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                // ResetSwipePermissions();
 
@@ -399,7 +399,7 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
-                        rightflagRadius(i - 1);
+                       // rightflagRadius(i - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //ResetSwipePermissions();
 
@@ -438,15 +438,15 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            verticalflagRadius(i - 1);
+                           //verticalflagRadius(i - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                            // ResetSwipePermissions();
 
-                            gameManager.checkRingToDestroy();
-                            gameManager.checkYZRingToDestroy();
-                            gameManager.checkXZRingToDestroy();
+                            //gameManager.checkRingToDestroy();
+                           // gameManager.checkYZRingToDestroy();
+                            //gameManager.checkXZRingToDestroy();
                             enabled = false;
                             yield break;
                         }
@@ -458,15 +458,15 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                         {
                             if (!enabled)
                             {
-                                verticalflagRadius(i - 1);
+                                //verticalflagRadius(i - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
 
                                 //ResetSwipePermissions();
 
-                                gameManager.checkRingToDestroy();
-                                gameManager.checkYZRingToDestroy();
-                                gameManager.checkXZRingToDestroy();
+                               // gameManager.checkRingToDestroy();
+                                //gameManager.checkYZRingToDestroy();
+                                ////gameManager.checkXZRingToDestroy();
                                 yield break;
                             }
                             yield return null;
@@ -488,14 +488,14 @@ public class T2Movement : MonoBehaviour , IFallingBlock
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        verticalflagRadius(i);
+                       // verticalflagRadius(i);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                        // ResetSwipePermissions();
 
-                        gameManager.checkRingToDestroy();
-                        gameManager.checkYZRingToDestroy();
-                        gameManager.checkXZRingToDestroy();
+                       // gameManager.checkRingToDestroy();
+                       // gameManager.checkYZRingToDestroy();
+                       // gameManager.checkXZRingToDestroy();
                         enabled = false;
                     }
                     yield break;
@@ -529,294 +529,294 @@ public class T2Movement : MonoBehaviour , IFallingBlock
         }
     }
 
-    void leftflagRadius(int i)
-    {
+    // void leftflagRadius(int i)
+    // {
 
-        // 1. Check if Local XY Plane is the one aligned
-        // The Normal of Local XY is Local Forward (Z)
-        if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
-        {
-            Debug.Log("left Aligned Plane: Local XY (Axes: Right & Up) with XY");
-            if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
-            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
-            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = leftChildObject[0];
-            else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = leftChildObject[0];
-            else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = leftChildObject[0];
+    //     // 1. Check if Local XY Plane is the one aligned
+    //     // The Normal of Local XY is Local Forward (Z)
+    //     if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
+    //     {
+    //         Debug.Log("left Aligned Plane: Local XY (Axes: Right & Up) with XY");
+    //         if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = leftChildObject[0];
 
-        }
+    //     }
 
-        // 2. Check if Local YZ Plane is the one aligned with XY
-        // The Normal of Local YZ is Local Right (X)
-        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
-        {
-            Debug.Log("left Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
-            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
-            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
-            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
-            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
-            else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = leftChildObject[0];
-            else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = leftChildObject[0];
-            else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = leftChildObject[0];
-            else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = leftChildObject[0];
-        }
-
-
-        // 3. Check if Local ZX Plane is the one aligned
-        // The Normal of Local ZX is Local Up (Y)
-        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
-        {
-            Debug.Log("left Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
-            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
-            else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
-            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = leftChildObject[0];
-            else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = leftChildObject[0];
-            else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = leftChildObject[0];
-            else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = leftChildObject[0];
-        }
+    //     // 2. Check if Local YZ Plane is the one aligned with XY
+    //     // The Normal of Local YZ is Local Right (X)
+    //     else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
+    //     {
+    //         Debug.Log("left Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
+    //         if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = leftChildObject[0];
+    //     }
 
 
-
-
-    }
-
-    void rightflagRadius(int i)
-    {
-
-        // 1. Check if Local XY Plane is the one aligned
-        // The Normal of Local XY is Local Forward (Z)
-        if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
-        {
-
-            Debug.Log("right Aligned Plane: Local XY (Axes: Right & Up) with XY");
-            if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
-            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
-            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = rightChildObject[0];
-            else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = rightChildObject[0];
-            else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = rightChildObject[0];
-        }
-        // 2. Check if Local YZ Plane is the one aligned
-        // The Normal of Local YZ is Local Right (X)
-        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
-        {
-            Debug.Log("right Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
-            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
-            else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
-            else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
-            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
-            else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = rightChildObject[0];
-            else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = rightChildObject[0];
-            else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = rightChildObject[0];
-            else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = rightChildObject[0];
-
-        }
-
-        // 3. Check if Local ZX Plane is the one aligned
-        // The Normal of Local ZX is Local Up (Y)
-        else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
-        {
-            Debug.Log("right Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
-            if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
-            else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
-            else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = rightChildObject[0];
-            else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = rightChildObject[0];
-            else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = rightChildObject[0];
-            else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = rightChildObject[0];
-        }
-
-    }
-
-    void verticalflagRadius(int i)
-    {
-        //local XY parallel against global XY
-
-
-        if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
-        {
-            // add block in local XY and local zx plane ring
-
-            //adding in XY ring 
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
-
-
-            // adding in ZX plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
-
-        }
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
-        {
-            // add block in local XY and local yz  plane ring 
-
-            //Block in XY plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
-
-            // Block in YZ local plane
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
-
-        }
-        //
-
-
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
-        {
-            // add block in local YZ and local XY plane ring 
-
-            //Block in XY
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
-
-            //Block in YZ local
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
-
-
-        }
-
-
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
-        {
-            // add block in local YZ and local XZ plane ring
-
-            //Block in YZ
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
-
-            //Block in XZ ring
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
-        }
-        //
-
-
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
-        {
-            // add block in  local XZ plane and local XY 1
-            //Block in XZ plane 
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
-
-            //Block in XY
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
-        }
-        else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
-        {
-            // add block in local XZ and local YZ plane
-
-            //Block in XZ plane
-            if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
-
-            //Block in YZ plane
-
-            if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
-
-            else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
-            else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
-        }
-        else
-        {
-            Debug.LogError("vertical flag radius failed");
-        }
+    //     // 3. Check if Local ZX Plane is the one aligned
+    //     // The Normal of Local ZX is Local Up (Y)
+    //     else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
+    //     {
+    //         Debug.Log("left Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
+    //         if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = leftChildObject[0];
+    //         else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = leftChildObject[0];
+    //     }
 
 
 
-    }
+
+    // }
+
+    // void rightflagRadius(int i)
+    // {
+
+    //     // 1. Check if Local XY Plane is the one aligned
+    //     // The Normal of Local XY is Local Forward (Z)
+    //     if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f)
+    //     {
+
+    //         Debug.Log("right Aligned Plane: Local XY (Axes: Right & Up) with XY");
+    //         if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXplusYDimension[i] == null) gameManager.minusXplusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusXplusYDimension[i] == null) gameManager.plusXplusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXminusYDimension[i] == null) gameManager.minusXminusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusXminusYDimension[i] == null) gameManager.plusXminusYDimension[i] = rightChildObject[0];
+    //     }
+    //     // 2. Check if Local YZ Plane is the one aligned
+    //     // The Normal of Local YZ is Local Right (X)
+    //     else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f)
+    //     {
+    //         Debug.Log("right Aligned Plane: Local YZ (Axes: Up & Forward) with XY");
+    //         if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusYDimension[i] == null) gameManager.minusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusYDimension[i] == null) gameManager.plusYDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusYplusZDimension[i] == null) gameManager.plusYplusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusYminusZDimension[i] == null) gameManager.plusYminusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusYplusZDimension[i] == null) gameManager.minusYplusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusYminusZDimension[i] == null) gameManager.minusYminusZDimension[i] = rightChildObject[0];
+
+    //     }
+
+    //     // 3. Check if Local ZX Plane is the one aligned
+    //     // The Normal of Local ZX is Local Up (Y)
+    //     else if (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f)
+    //     {
+    //         Debug.Log("right Aligned Plane: Local ZX (Axes: Right & Forward) with XY");
+    //         if (gameManager.minusZDimension[i] == null) gameManager.minusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusXDimension[i] == null) gameManager.plusXDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXDimension[i] == null) gameManager.minusXDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusZDimension[i] == null) gameManager.plusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXminusZDimension[i] == null) gameManager.minusXminusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.minusXplusZDimension[i] == null) gameManager.minusXplusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusXminusZDimension[i] == null) gameManager.plusXminusZDimension[i] = rightChildObject[0];
+    //         else if (gameManager.plusXplusZDimension[i] == null) gameManager.plusXplusZDimension[i] = rightChildObject[0];
+    //     }
+
+    // }
+
+    // void verticalflagRadius(int i)
+    // {
+    //     //local XY parallel against global XY
+
+
+    //     if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in local XY and local zx plane ring
+
+    //         //adding in XY ring 
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
+
+
+    //         // adding in ZX plane
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //     }
+    //     else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in local XY and local yz  plane ring 
+
+    //         //Block in XY plane
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         // Block in YZ local plane
+    //         if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //     }
+    //     //
+
+
+    //     else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in local YZ and local XY plane ring 
+
+    //         //Block in XY
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         //Block in YZ local
+    //         if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
+
+
+    //     }
+
+
+    //     else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in local YZ and local XZ plane ring
+
+    //         //Block in YZ
+    //         if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         //Block in XZ ring
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
+    //     }
+    //     //
+
+
+    //     else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.forward, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in  local XZ plane and local XY 1
+    //         //Block in XZ plane 
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         //Block in XY
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXplusYDimension[i] == null && gameManager.minusXplusYDimension[i - 1] == null) { gameManager.minusXplusYDimension[i] = verticalChildObject[0]; gameManager.minusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusYDimension[i] == null && gameManager.plusXplusYDimension[i - 1] == null) { gameManager.plusXplusYDimension[i] = verticalChildObject[0]; gameManager.plusXplusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXminusYDimension[i] == null && gameManager.minusXminusYDimension[i - 1] == null) { gameManager.minusXminusYDimension[i] = verticalChildObject[0]; gameManager.minusXminusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusYDimension[i] == null && gameManager.plusXminusYDimension[i - 1] == null) { gameManager.plusXminusYDimension[i] = verticalChildObject[0]; gameManager.plusXminusYDimension[i - 1] = verticalChildObject[1]; }
+    //     }
+    //     else if ((Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.up, globalNormalZ)) > 0.99f) && (Mathf.Abs(Vector3.Dot(gameManager.motherPlatform.transform.right, globalNormalX)) > 0.99f))
+    //     {
+    //         // add block in local XZ and local YZ plane
+
+    //         //Block in XZ plane
+    //         if (gameManager.plusXDimension[i] == null && gameManager.plusXDimension[i - 1] == null) { gameManager.plusXDimension[i] = verticalChildObject[0]; gameManager.plusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXDimension[i] == null && gameManager.minusXDimension[i - 1] == null) { gameManager.minusXDimension[i] = verticalChildObject[0]; gameManager.minusXDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.minusXminusZDimension[i] == null && gameManager.minusXminusZDimension[i - 1] == null) { gameManager.minusXminusZDimension[i] = verticalChildObject[0]; gameManager.minusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusXplusZDimension[i] == null && gameManager.minusXplusZDimension[i - 1] == null) { gameManager.minusXplusZDimension[i] = verticalChildObject[0]; gameManager.minusXplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXminusZDimension[i] == null && gameManager.plusXminusZDimension[i - 1] == null) { gameManager.plusXminusZDimension[i] = verticalChildObject[0]; gameManager.plusXminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusXplusZDimension[i] == null && gameManager.plusXplusZDimension[i - 1] == null) { gameManager.plusXplusZDimension[i] = verticalChildObject[0]; gameManager.plusXplusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         //Block in YZ plane
+
+    //         if (gameManager.plusYDimension[i] == null && gameManager.plusYDimension[i - 1] == null) { gameManager.plusYDimension[i] = verticalChildObject[0]; gameManager.plusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusZDimension[i] == null && gameManager.plusZDimension[i - 1] == null) { gameManager.plusZDimension[i] = verticalChildObject[0]; gameManager.plusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYDimension[i] == null && gameManager.minusYDimension[i - 1] == null) { gameManager.minusYDimension[i] = verticalChildObject[0]; gameManager.minusYDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusZDimension[i] == null && gameManager.minusZDimension[i - 1] == null) { gameManager.minusZDimension[i] = verticalChildObject[0]; gameManager.minusZDimension[i - 1] = verticalChildObject[1]; }
+
+    //         else if (gameManager.plusYplusZDimension[i] == null && gameManager.plusYplusZDimension[i - 1] == null) { gameManager.plusYplusZDimension[i] = verticalChildObject[0]; gameManager.plusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.plusYminusZDimension[i] == null && gameManager.plusYminusZDimension[i - 1] == null) { gameManager.plusYminusZDimension[i] = verticalChildObject[0]; gameManager.plusYminusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYplusZDimension[i] == null && gameManager.minusYplusZDimension[i - 1] == null) { gameManager.minusYplusZDimension[i] = verticalChildObject[0]; gameManager.minusYplusZDimension[i - 1] = verticalChildObject[1]; }
+    //         else if (gameManager.minusYminusZDimension[i] == null && gameManager.minusYminusZDimension[i - 1] == null) { gameManager.minusYminusZDimension[i] = verticalChildObject[0]; gameManager.minusYminusZDimension[i - 1] = verticalChildObject[1]; }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("vertical flag radius failed");
+    //     }
+
+
+
+    // }
 
 
 }
