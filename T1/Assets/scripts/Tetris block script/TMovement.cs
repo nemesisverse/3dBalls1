@@ -172,8 +172,14 @@ public class TMovement : MonoBehaviour , IFallingBlock
     int stop = -1;
     int stopperID = 0;
 
-
-
+    //remove the empty gameobject after parenting 
+    void TryDestroySelf()
+{
+    if (transform.childCount == 0)
+    {
+        Destroy(gameObject);
+    }
+}
 
 
     // 4 jagah resetSwipe karo ek move function me
@@ -210,6 +216,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
 
 
                             enabled = false;
+                            TryDestroySelf(); //1
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -224,7 +231,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                                 leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //ResetSwipePermissions();
-
+                                TryDestroySelf(); //2
                                 yield break;
                             }
                             yield return null;
@@ -248,6 +255,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                         //ResetSwipePermissions();
 
                         enabled = false;
+                        TryDestroySelf(); //3
                     }
                     yield break;
                 }
@@ -288,6 +296,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                             //ResetSwipePermissions();
 
                             enabled = false;
+                            TryDestroySelf(); //4
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -301,7 +310,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                                 rightflagRadius(i - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //ResetSwipePermissions();
-
+                                  TryDestroySelf();
                                 yield break;
                             }
                             yield return null;
@@ -322,6 +331,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                         //ResetSwipePermissions();
                         //ResetSliderPermissions(); // Enable slider when done
                         enabled = false;
+                        TryDestroySelf();
                     }
                     yield break;
                 }
@@ -366,6 +376,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                             gameManager.checkYZRingToDestroy();
                             gameManager.checkXZRingToDestroy();
                             enabled = false;
+                            TryDestroySelf();
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -385,6 +396,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                                 gameManager.checkRingToDestroy();
                                 gameManager.checkYZRingToDestroy();
                                 gameManager.checkXZRingToDestroy();
+                                TryDestroySelf(); //6
                                 yield break;
                             }
                             yield return null;
@@ -415,6 +427,7 @@ public class TMovement : MonoBehaviour , IFallingBlock
                         gameManager.checkYZRingToDestroy();
                         gameManager.checkXZRingToDestroy();
                         enabled = false;
+                        TryDestroySelf(); //6
                     }
                     yield break;
                 }
