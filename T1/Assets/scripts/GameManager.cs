@@ -26,11 +26,12 @@ public class GameManager : MonoBehaviour
     }
 
     // ----------------------------------------------------------------
-    //  RING DETECTION — replaces checkRingToDestroy + checkYZRing + checkXZRing
+    //  RING DETECTION
     // ----------------------------------------------------------------
 
     /// <summary>
     /// Call this after any block is placed. Checks all 3 planes × all radius levels.
+    /// Logs completed rings but does NOT destroy them — implement your own logic later.
     /// </summary>
     public void CheckAndDestroyRings()
     {
@@ -38,10 +39,6 @@ public class GameManager : MonoBehaviour
         foreach (var ring in completed)
         {
             Debug.Log($"<color=green> Spherical Grid RING COMPLETE:</color> {ring}");
-            //sphericalGrid.DestroyRing(ring.Plane, ring.RadiusIndex);
-
-            // Uncomment if you want blocks above a destroyed ring to fall inward:
-            // sphericalGrid.ShiftBlocksInward(ring.Plane, ring.RadiusIndex);
         }
     }
 
