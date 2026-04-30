@@ -150,19 +150,7 @@ public class SphericalGrid : MonoBehaviour
     }
 
     // ================================================================
-    //  POSITION-AWARE PLACEMENT (THE FIX)
-    //
-    //  OLD BUG: PlaceBlockAtRadius found the FIRST EMPTY slot on any
-    //  active plane. A block at (-v,v,0) that belongs in XY slot 3
-    //  could end up in YZ slot 0 — completely wrong.
-    //
-    //  FIX: Convert block position to motherPlatform's LOCAL space,
-    //  then dot-product against each slot direction to find the
-    //  correct slot on each matching plane.
-    //
-    //  - Diagonal blocks (e.g. -X+Y) match exactly 1 plane (XY)
-    //  - Cardinal blocks (e.g. +X) match exactly 2 planes (XY + XZ)
-    //    because the axis is shared between those planes.
+    //  POSITION-AWARE PLACEMENT
     // ================================================================
 
     public bool PlaceBlockByWorldPosition(Vector3 blockWorldPos, int radiusIndex,
@@ -170,7 +158,6 @@ public class SphericalGrid : MonoBehaviour
     {
         if (!IsValidCell(0, 0, radiusIndex)) return false;
 
-        // Convert to motherPlatform's local space so rotation doesn't matter
         Vector3 localPos = motherPlatform.InverseTransformPoint(blockWorldPos);
         Vector3 localDir = localPos.normalized;
 
@@ -192,7 +179,6 @@ public class SphericalGrid : MonoBehaviour
                 }
             }
 
-            // >0.95 ensures we only place on planes where the block actually sits
             if (bestDot > 0.95f && bestSlot >= 0 && grid[p, bestSlot, radiusIndex] == null)
             {
                 grid[p, bestSlot, radiusIndex] = block;
@@ -207,9 +193,6 @@ public class SphericalGrid : MonoBehaviour
         return placedAny;
     }
 
-    /// <summary>
-    /// Place two vertical blocks at adjacent radius levels using their positions.
-    /// </summary>
     public bool PlaceVerticalBlockByPosition(Vector3 block0WorldPos, Vector3 block1WorldPos,
         int radiusIndex, GameObject block0, GameObject block1, Transform motherPlatform)
     {
@@ -235,7 +218,6 @@ public class SphericalGrid : MonoBehaviour
                 for (int s = 0; s < SLOTS_PER_RING; s++)
                     if (grid[p, s, r] != null) filled++;
 
-                // Show progress so you can debug which slots are missing
                 if (filled > 0)
                     Debug.Log($"[Ring] {planeNames[p]} radius {r}: {filled}/{SLOTS_PER_RING}");
 
@@ -255,6 +237,46 @@ public class SphericalGrid : MonoBehaviour
         return true;
     }
 
+    // ================================================================
+    //  RING COLLECTION — reparenting variant (no Destroy)
+    //
+    //  Gathers unique blocks from the completed ring, clears ALL
+    //  grid entries referencing those blocks (including shared cardinal
+    //  slots on other planes), and returns the block list so the
+    //  caller can reparent them to "DeletedRing".
+    // ================================================================
+
+    /// <summary>
+    /// Collects the unique GameObjects that fill the ring at [plane, radiusIndex],
+    /// removes every grid reference to those objects (across all planes),
+    /// and returns the list for reparenting.
+    /// Does NOT destroy anything — the caller decides what to do next.
+    /// </summary>
+    public List<GameObject> CollectRingBlocks(int plane, int radiusIndex)
+    {
+        // Step 1: gather unique blocks from this ring
+        var uniqueBlocks = new HashSet<GameObject>();
+        for (int s = 0; s < SLOTS_PER_RING; s++)
+        {
+            GameObject block = grid[plane, s, radiusIndex];
+            if (block != null)
+                uniqueBlocks.Add(block);   // HashSet deduplicates shared cardinal blocks
+        }
+
+        // Step 2: clear every grid cell that references any of these blocks
+        // (cardinal blocks appear in 2 planes, so we must sweep all planes)
+        foreach (GameObject block in uniqueBlocks)
+            ClearBlockFromAllPlanes(block);
+
+        Debug.Log($"[Grid] CollectRingBlocks — plane={plane} radius={radiusIndex} → {uniqueBlocks.Count} unique blocks removed from grid");
+
+        return new List<GameObject>(uniqueBlocks);
+    }
+
+    // ================================================================
+    //  RING DESTRUCTION (kept for reference — uses Destroy)
+    // ================================================================
+
     public void DestroyRing(int plane, int radiusIndex)
     {
         for (int s = 0; s < SLOTS_PER_RING; s++)
@@ -262,17 +284,12 @@ public class SphericalGrid : MonoBehaviour
             GameObject block = grid[plane, s, radiusIndex];
             if (block != null)
             {
-                // Cardinal blocks exist on 2 planes — clear from ALL planes
                 ClearBlockFromAllPlanes(block);
                 Destroy(block);
             }
         }
     }
 
-    /// <summary>
-    /// Remove a block from every plane/slot/radius it appears in.
-    /// Needed because cardinal blocks are registered on 2 planes.
-    /// </summary>
     void ClearBlockFromAllPlanes(GameObject block)
     {
         for (int p = 0; p < PLANE_COUNT; p++)

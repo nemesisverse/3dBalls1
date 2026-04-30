@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour
     [Header("Grid System")]
     public SphericalGrid sphericalGrid;
 
+    [Header("Ring Collection")]
+    // Assign this in the Inspector — an empty GameObject named "DeletedRing"
+    public Transform deletedRingContainer;
+
     // Flag to pause falling blocks during rotation
     public bool isRotating = false;
 
@@ -23,28 +27,59 @@ public class GameManager : MonoBehaviour
 
         if (sphericalGrid == null)
             sphericalGrid = FindFirstObjectByType<SphericalGrid>();
-    }
 
-    // ----------------------------------------------------------------
-    //  RING DETECTION
-    // ----------------------------------------------------------------
-
-    /// <summary>
-    /// Call this after any block is placed. Checks all 3 planes × all radius levels.
-    /// Logs completed rings but does NOT destroy them — implement your own logic later.
-    /// </summary>
-    public void CheckAndDestroyRings()
-    {
-        var completed = sphericalGrid.CheckAllRings();
-        foreach (var ring in completed)
+        // Auto-find DeletedRing if not assigned in Inspector
+        if (deletedRingContainer == null)
         {
-            Debug.Log($"<color=green> Spherical Grid RING COMPLETE:</color> {ring}");
+            GameObject found = GameObject.Find("DeletedRing");
+            if (found != null)
+                deletedRingContainer = found.transform;
+            else
+                Debug.LogWarning("[GameManager] No 'DeletedRing' GameObject found in scene. Please create one.");
         }
     }
 
     // ----------------------------------------------------------------
-    //  COLLISION CHECK — kept temporarily for TMovement falling logic
-    //  TODO: Replace with sphericalGrid.IsOccupied() calls in TMovement
+    //  RING DETECTION + REPARENTING
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// Call this after any block is placed.
+    /// Checks all 3 planes × all radius levels.
+    /// On completion: moves ring blocks out of motherPlatform and into
+    /// the DeletedRing container, then clears those cells from the grid.
+    /// </summary>
+    public void CheckAndDestroyRings()
+    {
+        if (deletedRingContainer == null)
+        {
+            Debug.LogError("[GameManager] deletedRingContainer is null — cannot reparent ring blocks.");
+            return;
+        }
+
+        var completed = sphericalGrid.CheckAllRings();
+
+        foreach (var ring in completed)
+        {
+            Debug.Log($"<color=green>Ring COMPLETE:</color> {ring}");
+
+            // Collect the blocks from the grid and clear those cells
+            List<GameObject> ringBlocks = sphericalGrid.CollectRingBlocks(ring.Plane, ring.RadiusIndex);
+
+            foreach (GameObject block in ringBlocks)
+            {
+                if (block == null) continue;
+
+                // Move block out of motherPlatform, preserve world position
+                block.transform.SetParent(deletedRingContainer, worldPositionStays: true);
+
+                Debug.Log($"[GameManager] Reparented '{block.name}' → DeletedRing");
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------
+    //  COLLISION CHECK
     // ----------------------------------------------------------------
 
     public bool HasChildAtPosition(Transform parent, Vector3 targetPosition)
