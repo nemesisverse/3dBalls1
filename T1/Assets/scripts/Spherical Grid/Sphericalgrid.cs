@@ -239,32 +239,18 @@ public class SphericalGrid : MonoBehaviour
 
     // ================================================================
     //  RING COLLECTION — reparenting variant (no Destroy)
-    //
-    //  Gathers unique blocks from the completed ring, clears ALL
-    //  grid entries referencing those blocks (including shared cardinal
-    //  slots on other planes), and returns the block list so the
-    //  caller can reparent them to "DeletedRing".
     // ================================================================
 
-    /// <summary>
-    /// Collects the unique GameObjects that fill the ring at [plane, radiusIndex],
-    /// removes every grid reference to those objects (across all planes),
-    /// and returns the list for reparenting.
-    /// Does NOT destroy anything — the caller decides what to do next.
-    /// </summary>
     public List<GameObject> CollectRingBlocks(int plane, int radiusIndex)
     {
-        // Step 1: gather unique blocks from this ring
         var uniqueBlocks = new HashSet<GameObject>();
         for (int s = 0; s < SLOTS_PER_RING; s++)
         {
             GameObject block = grid[plane, s, radiusIndex];
             if (block != null)
-                uniqueBlocks.Add(block);   // HashSet deduplicates shared cardinal blocks
+                uniqueBlocks.Add(block);
         }
 
-        // Step 2: clear every grid cell that references any of these blocks
-        // (cardinal blocks appear in 2 planes, so we must sweep all planes)
         foreach (GameObject block in uniqueBlocks)
             ClearBlockFromAllPlanes(block);
 
@@ -310,6 +296,75 @@ public class SphericalGrid : MonoBehaviour
 
                 if (grid[plane, s, r] != null)
                     grid[plane, s, r].transform.position = positions[plane, s, r];
+            }
+        }
+    }
+
+    // ================================================================
+    //  TETRIS INWARD SHIFT
+    //
+    //  For each remaining block on this plane, counts how many of the
+    //  deletedRadii are strictly below it — that is its shift distance.
+    //  Processes ascending so vacated cells are always ready for the
+    //  next block.  alreadyMoved prevents shared cardinal blocks (which
+    //  exist on two planes) from being repositioned twice.
+    // ================================================================
+
+    /// <summary>
+    /// Shifts blocks inward on <paramref name="plane"/> using proper Tetris logic.
+    /// Each block moves inward by the number of deleted radii that lie below it.
+    /// Call once per plane, passing the same <paramref name="alreadyMoved"/> set
+    /// across all planes so shared cardinal blocks are not double-moved.
+    /// </summary>
+    public void ShiftBlocksInwardTetris(int plane, List<int> deletedRadii,
+                                        HashSet<GameObject> alreadyMoved)
+    {
+        if (deletedRadii == null || deletedRadii.Count == 0) return;
+
+        // Work on a sorted copy so the "count below" logic is clean
+        var sorted = new List<int>(deletedRadii);
+        sorted.Sort();
+
+        string[] planeNames = { "XY", "YZ", "XZ" };
+
+        // Ascending: inner blocks move first, vacating cells for the next ones
+        for (int r = 0; r < RADIUS_LEVELS; r++)
+        {
+            // Skip cells that were just deleted — they are (or will be) empty
+            if (sorted.Contains(r)) continue;
+
+            // How many deleted radii are strictly below r?
+            int shiftSteps = 0;
+            foreach (int dr in sorted)
+                if (dr < r) shiftSteps++;
+
+            if (shiftSteps == 0) continue;
+
+            int newR = r - shiftSteps;
+
+            for (int s = 0; s < SLOTS_PER_RING; s++)
+            {
+                GameObject block = grid[plane, s, r];
+                if (block == null) continue;
+
+                // Always vacate the old cell
+                grid[plane, s, r] = null;
+
+                if (alreadyMoved.Contains(block))
+                {
+                    // Cardinal block already repositioned by another plane —
+                    // just update this plane's grid reference to the new radius.
+                    grid[plane, s, newR] = block;
+                    continue;
+                }
+
+                // Move the block to the new cell and update world position
+                grid[plane, s, newR] = block;
+                block.transform.position = positions[plane, s, newR];
+                alreadyMoved.Add(block);
+
+                Debug.Log($"[Grid] ShiftTetris {planeNames[plane]} slot={s}: " +
+                          $"r={r} → r={newR}  (steps={shiftSteps})  pos={positions[plane, s, newR]}");
             }
         }
     }
