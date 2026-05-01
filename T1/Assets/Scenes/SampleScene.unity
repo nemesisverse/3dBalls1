@@ -686,6 +686,7 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   motherPlatform: {fileID: 1227501322}
   sphericalGrid: {fileID: 1422114571}
+  deletedRingContainer: {fileID: 0}
   isRotating: 0
 --- !u!4 &197269483
 Transform:
@@ -1966,6 +1967,50 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
+--- !u!1 &510366128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 510366129}
+  - component: {fileID: 510366130}
+  m_Layer: 0
+  m_Name: DeletedRing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &510366129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510366128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.44068, y: 0.58956, z: 1.85963}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &510366130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510366128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb8cc8b4a359b4d56b4d8352d0f1f5c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1001 &580876776
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5288,3 +5333,4 @@ SceneRoots:
   - {fileID: 5546640292613946759}
   - {fileID: 1832545376}
   - {fileID: 1422114572}
+  - {fileID: 510366129}

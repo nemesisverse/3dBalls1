@@ -14,11 +14,25 @@ public class GameManager : MonoBehaviour
     public SphericalGrid sphericalGrid;
 
     [Header("Ring Collection")]
-    // Assign this in the Inspector — an empty GameObject named "DeletedRing"
+    // Assign in Inspector — empty GameObject named "DeletedRing"
     public Transform deletedRingContainer;
+
+    // Assign in Inspector — empty GameObject named "RingTraversal"
+    // Receives all non-ring motherPlatform children that lie on the
+    // same local plane as a just-completed ring.
+    public Transform ringTraversalContainer;
 
     // Flag to pause falling blocks during rotation
     public bool isRotating = false;
+
+    // Tolerance (local units) used to decide whether a block's
+    // "flat" coordinate is close enough to zero to be on a plane.
+    // Cardinal/diagonal grid positions are exact multiples, so 0.1 is safe.
+    private const float PLANE_THRESHOLD = 0.1f;
+
+    // ----------------------------------------------------------------
+    //  INIT
+    // ----------------------------------------------------------------
 
     void Awake()
     {
@@ -28,7 +42,7 @@ public class GameManager : MonoBehaviour
         if (sphericalGrid == null)
             sphericalGrid = FindFirstObjectByType<SphericalGrid>();
 
-        // Auto-find DeletedRing if not assigned in Inspector
+        // Auto-find containers if not assigned in Inspector
         if (deletedRingContainer == null)
         {
             GameObject found = GameObject.Find("DeletedRing");
@@ -37,6 +51,15 @@ public class GameManager : MonoBehaviour
             else
                 Debug.LogWarning("[GameManager] No 'DeletedRing' GameObject found in scene. Please create one.");
         }
+
+        if (ringTraversalContainer == null)
+        {
+            GameObject found = GameObject.Find("RingTraversal");
+            if (found != null)
+                ringTraversalContainer = found.transform;
+            else
+                Debug.LogWarning("[GameManager] No 'RingTraversal' GameObject found in scene. Please create one.");
+        }
     }
 
     // ----------------------------------------------------------------
@@ -44,38 +67,126 @@ public class GameManager : MonoBehaviour
     // ----------------------------------------------------------------
 
     /// <summary>
-    /// Call this after any block is placed.
-    /// Checks all 3 planes × all radius levels.
-    /// On completion: moves ring blocks out of motherPlatform and into
-    /// the DeletedRing container, then clears those cells from the grid.
+    /// Call this after any block lands / is placed.
+    ///
+    /// For every completed ring:
+    ///   1. Ring blocks        → reparented to DeletedRing
+    ///   2. Coplanar blocks    → reparented to RingTraversal
+    ///      (all other motherPlatform direct children whose local
+    ///       "flat" coordinate is ≈ 0 for the ring's plane,
+    ///       excluding the ring blocks themselves)
     /// </summary>
     public void CheckAndDestroyRings()
     {
         if (deletedRingContainer == null)
         {
-            Debug.LogError("[GameManager] deletedRingContainer is null — cannot reparent ring blocks.");
+            Debug.LogError("[GameManager] deletedRingContainer is null — cannot process rings.");
             return;
         }
 
-        var completed = sphericalGrid.CheckAllRings();
+        List<CompletedRing> completed = sphericalGrid.CheckAllRings();
+        if (completed.Count == 0) return;
+
+        // Track blocks already sent to RingTraversal so that multiple
+        // rings completing on different planes in the same frame don't
+        // double-reparent a shared cardinal block.
+        var alreadyRerouted = new HashSet<GameObject>();
 
         foreach (var ring in completed)
         {
-            Debug.Log($"<color=green>Ring COMPLETE:</color> {ring}");
+            Debug.Log($"<color=green>[GameManager] Ring COMPLETE:</color> {ring}");
 
-            // Collect the blocks from the grid and clear those cells
+            // --- Step 1: collect ring blocks, clear them from the grid ---
             List<GameObject> ringBlocks = sphericalGrid.CollectRingBlocks(ring.Plane, ring.RadiusIndex);
+            var ringBlockSet = new HashSet<GameObject>(ringBlocks);
 
+            // --- Step 2: snapshot coplanar children BEFORE reparenting ring blocks ---
+            // (ring blocks are still children of motherPlatform at this point)
+            List<Transform> coplanar = GetCoplanarChildren(ring.Plane, ringBlockSet, alreadyRerouted);
+
+            // --- Step 3: send ring blocks → DeletedRing ---
             foreach (GameObject block in ringBlocks)
             {
                 if (block == null) continue;
-
-                // Move block out of motherPlatform, preserve world position
                 block.transform.SetParent(deletedRingContainer, worldPositionStays: true);
+                Debug.Log($"[GameManager]   '{block.name}' → DeletedRing");
+            }
 
-                Debug.Log($"[GameManager] Reparented '{block.name}' → DeletedRing");
+            // --- Step 4: send coplanar blocks → RingTraversal ---
+            if (ringTraversalContainer != null)
+            {
+                foreach (Transform t in coplanar)
+                {
+                    if (t == null) continue;
+                    t.SetParent(ringTraversalContainer, worldPositionStays: true);
+                    alreadyRerouted.Add(t.gameObject);
+                    Debug.Log($"[GameManager]   '{t.name}' → RingTraversal");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] ringTraversalContainer is null — coplanar blocks not reparented.");
             }
         }
+    }
+
+    // ----------------------------------------------------------------
+    //  COPLANAR CHILD SEARCH
+    // ----------------------------------------------------------------
+
+    /// <summary>
+    /// Returns all direct children of motherPlatform whose local position
+    /// has its "flat" component ≈ 0 for the given plane, excluding any
+    /// block already listed in <paramref name="excludeSet"/> or
+    /// <paramref name="alreadyMoved"/>.
+    ///
+    /// Plane membership (in motherPlatform's local space):
+    ///   XY (plane 0) → localPos.z ≈ 0
+    ///   YZ (plane 1) → localPos.x ≈ 0
+    ///   XZ (plane 2) → localPos.y ≈ 0
+    /// </summary>
+    private List<Transform> GetCoplanarChildren(
+        int plane,
+        HashSet<GameObject> excludeSet,
+        HashSet<GameObject> alreadyMoved)
+    {
+        var result = new List<Transform>();
+
+        if (motherPlatform == null)
+        {
+            Debug.LogWarning("[GameManager] motherPlatform is null — cannot find coplanar blocks.");
+            return result;
+        }
+
+        Transform mp = motherPlatform.transform;
+
+        foreach (Transform child in mp)
+        {
+            if (child == null) continue;
+            GameObject go = child.gameObject;
+
+            // Skip the ring blocks themselves
+            if (excludeSet.Contains(go)) continue;
+
+            // Skip blocks already dispatched to RingTraversal this frame
+            if (alreadyMoved.Contains(go)) continue;
+
+            // Convert world position → motherPlatform local space
+            Vector3 localPos = mp.InverseTransformPoint(child.position);
+
+            bool isOnPlane = plane switch
+            {
+                SphericalGrid.XY => Mathf.Abs(localPos.z) < PLANE_THRESHOLD,
+                SphericalGrid.YZ => Mathf.Abs(localPos.x) < PLANE_THRESHOLD,
+                SphericalGrid.XZ => Mathf.Abs(localPos.y) < PLANE_THRESHOLD,
+                _                => false
+            };
+
+            if (isOnPlane)
+                result.Add(child);
+        }
+
+        return result;
     }
 
     // ----------------------------------------------------------------
