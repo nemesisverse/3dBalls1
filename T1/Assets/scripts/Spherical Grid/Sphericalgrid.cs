@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class SphericalGrid : MonoBehaviour
 {
-    public const int PLANE_COUNT = 3;
+    public const int PLANE_COUNT    = 3;
     public const int SLOTS_PER_RING = 8;
-    public const int RADIUS_LEVELS = 17;
+    public const int RADIUS_LEVELS  = 17;
 
     public const int XY = 0;
     public const int YZ = 1;
     public const int XZ = 2;
 
     private GameObject[,,] grid;
-    private Vector3[,,] positions;
+    private Vector3[,,]    positions;
 
     private float[] diagonalRadii;
     private float[] cardinalRadii;
@@ -83,7 +83,8 @@ public class SphericalGrid : MonoBehaviour
         cardinalRadii = cardList.ToArray();
 
         if (diagonalRadii.Length != RADIUS_LEVELS || cardinalRadii.Length != RADIUS_LEVELS)
-            Debug.LogWarning($"Radius count mismatch! Diagonal={diagonalRadii.Length}, Cardinal={cardinalRadii.Length}, Expected={RADIUS_LEVELS}");
+            Debug.LogWarning($"Radius count mismatch! Diagonal={diagonalRadii.Length}, " +
+                             $"Cardinal={cardinalRadii.Length}, Expected={RADIUS_LEVELS}");
     }
 
     void BuildNormalizedDirections()
@@ -102,9 +103,9 @@ public class SphericalGrid : MonoBehaviour
         {
             for (int s = 0; s < SLOTS_PER_RING; s++)
             {
-                bool isDiagonal = (s % 2 == 1);
-                float[] radii = isDiagonal ? diagonalRadii : cardinalRadii;
-                Vector3 rawDir = rawDirections[p, s];
+                bool isDiagonal  = (s % 2 == 1);
+                float[] radii    = isDiagonal ? diagonalRadii : cardinalRadii;
+                Vector3 rawDir   = rawDirections[p, s];
 
                 for (int r = 0; r < RADIUS_LEVELS; r++)
                 {
@@ -144,9 +145,47 @@ public class SphericalGrid : MonoBehaviour
 
     bool IsValidCell(int p, int s, int r)
     {
-        return p >= 0 && p < PLANE_COUNT &&
+        return p >= 0 && p < PLANE_COUNT  &&
                s >= 0 && s < SLOTS_PER_RING &&
                r >= 0 && r < RADIUS_LEVELS;
+    }
+
+    // ================================================================
+    //  RADIUS QUERY  (new — used by GameManager for movement filter)
+    // ================================================================
+
+    /// <summary>
+    /// Returns the actual 3-D distance from origin for any block at
+    /// <paramref name="radiusIndex"/>.
+    ///
+    /// Cardinal positions at index r have magnitude = cardinalRadii[r].
+    /// Diagonal positions have magnitude = diagonalRadii[r] × √2,
+    /// which equals cardinalRadii[r] by construction, so one value
+    /// covers both slot types.
+    /// </summary>
+    public float GetRingRadius(int radiusIndex)
+    {
+        if (radiusIndex < 0 || radiusIndex >= RADIUS_LEVELS)
+        {
+            Debug.LogWarning($"[SphericalGrid] GetRingRadius: invalid index {radiusIndex}");
+            return 0f;
+        }
+        return cardinalRadii[radiusIndex];
+    }
+
+    // ================================================================
+    //  GRID CLEARING  (new public wrapper — used when blocks leave motherPlatform)
+    // ================================================================
+
+    /// <summary>
+    /// Removes every grid entry that references <paramref name="block"/>
+    /// across all planes, slots, and radius levels.
+    /// Call this before reparenting a block out of the active play field.
+    /// </summary>
+    public void ClearBlockFromGrid(GameObject block)
+    {
+        if (block == null) return;
+        ClearBlockFromAllPlanes(block);
     }
 
     // ================================================================
@@ -166,24 +205,21 @@ public class SphericalGrid : MonoBehaviour
 
         for (int p = 0; p < PLANE_COUNT; p++)
         {
-            float bestDot = -1f;
-            int bestSlot = -1;
+            float bestDot  = -1f;
+            int   bestSlot = -1;
 
             for (int s = 0; s < SLOTS_PER_RING; s++)
             {
                 float dot = Vector3.Dot(localDir, normalizedDirections[p, s]);
-                if (dot > bestDot)
-                {
-                    bestDot = dot;
-                    bestSlot = s;
-                }
+                if (dot > bestDot) { bestDot = dot; bestSlot = s; }
             }
 
             if (bestDot > 0.95f && bestSlot >= 0 && grid[p, bestSlot, radiusIndex] == null)
             {
                 grid[p, bestSlot, radiusIndex] = block;
                 placedAny = true;
-                Debug.Log($"[Grid] Placed on {planeNames[p]} slot {bestSlot} radius {radiusIndex} (dot={bestDot:F3})");
+                Debug.Log($"[Grid] Placed on {planeNames[p]} slot {bestSlot} " +
+                          $"radius {radiusIndex} (dot={bestDot:F3})");
             }
         }
 
@@ -196,7 +232,7 @@ public class SphericalGrid : MonoBehaviour
     public bool PlaceVerticalBlockByPosition(Vector3 block0WorldPos, Vector3 block1WorldPos,
         int radiusIndex, GameObject block0, GameObject block1, Transform motherPlatform)
     {
-        bool placed0 = PlaceBlockByWorldPosition(block0WorldPos, radiusIndex, block0, motherPlatform);
+        bool placed0 = PlaceBlockByWorldPosition(block0WorldPos, radiusIndex,     block0, motherPlatform);
         bool placed1 = PlaceBlockByWorldPosition(block1WorldPos, radiusIndex - 1, block1, motherPlatform);
         return placed0 && placed1;
     }
@@ -239,36 +275,22 @@ public class SphericalGrid : MonoBehaviour
 
     // ================================================================
     //  RING COLLECTION — reparenting variant (no Destroy)
-    //
-    //  Gathers unique blocks from the completed ring, clears ALL
-    //  grid entries referencing those blocks (including shared cardinal
-    //  slots on other planes), and returns the block list so the
-    //  caller can reparent them to "DeletedRing".
     // ================================================================
 
-    /// <summary>
-    /// Collects the unique GameObjects that fill the ring at [plane, radiusIndex],
-    /// removes every grid reference to those objects (across all planes),
-    /// and returns the list for reparenting.
-    /// Does NOT destroy anything — the caller decides what to do next.
-    /// </summary>
     public List<GameObject> CollectRingBlocks(int plane, int radiusIndex)
     {
-        // Step 1: gather unique blocks from this ring
         var uniqueBlocks = new HashSet<GameObject>();
         for (int s = 0; s < SLOTS_PER_RING; s++)
         {
             GameObject block = grid[plane, s, radiusIndex];
-            if (block != null)
-                uniqueBlocks.Add(block);   // HashSet deduplicates shared cardinal blocks
+            if (block != null) uniqueBlocks.Add(block);
         }
 
-        // Step 2: clear every grid cell that references any of these blocks
-        // (cardinal blocks appear in 2 planes, so we must sweep all planes)
         foreach (GameObject block in uniqueBlocks)
             ClearBlockFromAllPlanes(block);
 
-        Debug.Log($"[Grid] CollectRingBlocks — plane={plane} radius={radiusIndex} → {uniqueBlocks.Count} unique blocks removed from grid");
+        Debug.Log($"[Grid] CollectRingBlocks — plane={plane} radius={radiusIndex} " +
+                  $"→ {uniqueBlocks.Count} unique blocks removed from grid");
 
         return new List<GameObject>(uniqueBlocks);
     }
@@ -305,7 +327,7 @@ public class SphericalGrid : MonoBehaviour
         {
             for (int s = 0; s < SLOTS_PER_RING; s++)
             {
-                grid[plane, s, r] = grid[plane, s, r - 1];
+                grid[plane, s, r]     = grid[plane, s, r - 1];
                 grid[plane, s, r - 1] = null;
 
                 if (grid[plane, s, r] != null)
@@ -325,14 +347,12 @@ public class SphericalGrid : MonoBehaviour
         {
             for (int r = 0; r < RADIUS_LEVELS; r++)
             {
-                int filled = 0;
-                string slotInfo = "";
+                int filled = 0; string slotInfo = "";
                 for (int s = 0; s < SLOTS_PER_RING; s++)
                 {
                     if (grid[p, s, r] != null) { filled++; slotInfo += $"[{s}]"; }
                     else slotInfo += "[ ]";
                 }
-
                 if (filled > 0)
                     Debug.Log($"[Grid] {planeNames[p]} r={r}: {slotInfo} ({filled}/8)");
             }
@@ -347,7 +367,7 @@ public struct CompletedRing
 
     public CompletedRing(int plane, int radiusIndex)
     {
-        Plane = plane;
+        Plane       = plane;
         RadiusIndex = radiusIndex;
     }
 
