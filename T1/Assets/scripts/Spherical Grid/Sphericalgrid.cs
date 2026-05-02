@@ -150,6 +150,31 @@ public class SphericalGrid : MonoBehaviour
     }
 
     // ================================================================
+    //  RADIUS INDEX LOOKUP
+    // ================================================================
+
+    /// <summary>
+    /// Returns the radius index of a block currently registered in the grid,
+    /// or -1 if the block is not found in any cell.
+    ///
+    /// Index 0  = outermost ring (cardinal radius 18.5)
+    /// Index 16 = innermost ring (cardinal radius 2.5)
+    /// Smaller index → further from centre → "higher radius".
+    /// </summary>
+    public int GetRadiusIndexForBlock(GameObject block)
+    {
+        if (block == null) return -1;
+
+        for (int p = 0; p < PLANE_COUNT; p++)
+            for (int s = 0; s < SLOTS_PER_RING; s++)
+                for (int r = 0; r < RADIUS_LEVELS; r++)
+                    if (ReferenceEquals(grid[p, s, r], block))
+                        return r;
+
+        return -1; // block not registered in grid
+    }
+
+    // ================================================================
     //  POSITION-AWARE PLACEMENT
     // ================================================================
 
@@ -239,32 +264,18 @@ public class SphericalGrid : MonoBehaviour
 
     // ================================================================
     //  RING COLLECTION — reparenting variant (no Destroy)
-    //
-    //  Gathers unique blocks from the completed ring, clears ALL
-    //  grid entries referencing those blocks (including shared cardinal
-    //  slots on other planes), and returns the block list so the
-    //  caller can reparent them to "DeletedRing".
     // ================================================================
 
-    /// <summary>
-    /// Collects the unique GameObjects that fill the ring at [plane, radiusIndex],
-    /// removes every grid reference to those objects (across all planes),
-    /// and returns the list for reparenting.
-    /// Does NOT destroy anything — the caller decides what to do next.
-    /// </summary>
     public List<GameObject> CollectRingBlocks(int plane, int radiusIndex)
     {
-        // Step 1: gather unique blocks from this ring
         var uniqueBlocks = new HashSet<GameObject>();
         for (int s = 0; s < SLOTS_PER_RING; s++)
         {
             GameObject block = grid[plane, s, radiusIndex];
             if (block != null)
-                uniqueBlocks.Add(block);   // HashSet deduplicates shared cardinal blocks
+                uniqueBlocks.Add(block);
         }
 
-        // Step 2: clear every grid cell that references any of these blocks
-        // (cardinal blocks appear in 2 planes, so we must sweep all planes)
         foreach (GameObject block in uniqueBlocks)
             ClearBlockFromAllPlanes(block);
 
