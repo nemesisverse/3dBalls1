@@ -79,7 +79,8 @@ public class GameManager : MonoBehaviour
     ///      (same plane, radius index less than the ring's index)
     ///
     /// After all DeletedRing children are gone a coroutine shifts every
-    /// RingTraversal child inward by (completedRingCount × step).
+    /// RingTraversal child inward by (completedRingCount × step), then
+    /// reparents them back to motherPlatform.
     /// </summary>
     public void CheckAndDestroyRings()
     {
@@ -140,7 +141,8 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Polls every frame until DeletedRing has no children, then moves
-    /// every RingTraversal child inward by (ringCount × step).
+    /// every RingTraversal child inward by (ringCount × step), and finally
+    /// reparents them all back to motherPlatform.
     ///
     /// step per block:
     ///   Cardinal block (1 non-zero world axis)  → 1.000 unity unit per ring
@@ -164,7 +166,7 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Applies the inward positional shift to all current children of
-    /// RingTraversal in world space.
+    /// RingTraversal in world space, then reparents them back to motherPlatform.
     ///
     /// Examples (single ring cleared, ringCount = 1):
     ///   ( 6.009,  6.009, 0) → delta (-0.707, -0.707, 0) → ( 5.302,  5.302, 0)
@@ -225,6 +227,21 @@ public class GameManager : MonoBehaviour
                       $"from {worldPos} " +
                       $"by {stepDelta * ringCount} " +
                       $"(axes={nonZeroAxes}, step={step}, rings={ringCount})");
+        }
+
+        // ── Reparent all shifted blocks back to motherPlatform ───────
+        if (motherPlatform != null)
+        {
+            foreach (Transform child in children)
+            {
+                if (child == null) continue;
+                child.SetParent(motherPlatform.transform, worldPositionStays: true);
+                Debug.Log($"[GameManager]   '{child.name}' → reparented back to motherPlatform");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] motherPlatform is null — could not reparent RingTraversal children.");
         }
     }
 
