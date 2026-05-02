@@ -15,31 +15,17 @@ public class GameManager : MonoBehaviour
     public SphericalGrid sphericalGrid;
 
     [Header("Ring Collection")]
-    // Assign in Inspector — empty GameObject named "DeletedRing"
     public Transform deletedRingContainer;
-
-    // Assign in Inspector — empty GameObject named "RingTraversal"
-    // Receives coplanar blocks that are OUTER than the completed ring.
-    // After all DeletedRing children are destroyed, these blocks shift
-    // inward by (ringCount × step), where step = 1.0 for cardinal blocks
-    // and 0.707 for diagonal blocks.
     public Transform ringTraversalContainer;
 
-    // Flag to pause falling blocks during rotation
     public bool isRotating = false;
 
-    // Flag to lock ALL rotation input during the full ring-clear pipeline:
-    // ring detection → DeletedRing reparenting → custom destruction wait
-    // → inward shift → reparent back to motherPlatform.
-    // Set true at the start of CheckAndDestroyRings, cleared only after
-    // ShiftRingTraversalChildrenInward completes.
+    // True for the entire duration of the ring-clear pipeline
+    // (including any chain reactions). Rotation input and new
+    // block spawning must be gated behind this flag.
     public bool isProcessingRings = false;
 
-    // Tolerance used to decide whether a world-space coordinate is
-    // "effectively zero" (i.e. the block lies on that plane axis).
-    private const float ZERO_THRESHOLD = 0.1f;
-
-    // Tolerance for the coplanar flat-axis check.
+    private const float ZERO_THRESHOLD  = 0.1f;
     private const float PLANE_THRESHOLD = 0.1f;
 
     // ----------------------------------------------------------------
@@ -57,155 +43,152 @@ public class GameManager : MonoBehaviour
         if (deletedRingContainer == null)
         {
             GameObject found = GameObject.Find("DeletedRing");
-            if (found != null)
-                deletedRingContainer = found.transform;
-            else
-                Debug.LogWarning("[GameManager] No 'DeletedRing' GameObject found in scene.");
+            if (found != null) deletedRingContainer = found.transform;
+            else Debug.LogWarning("[GameManager] No 'DeletedRing' GameObject found in scene.");
         }
 
         if (ringTraversalContainer == null)
         {
             GameObject found = GameObject.Find("RingTraversal");
-            if (found != null)
-                ringTraversalContainer = found.transform;
-            else
-                Debug.LogWarning("[GameManager] No 'RingTraversal' GameObject found in scene.");
+            if (found != null) ringTraversalContainer = found.transform;
+            else Debug.LogWarning("[GameManager] No 'RingTraversal' GameObject found in scene.");
         }
     }
 
     // ----------------------------------------------------------------
-    //  RING DETECTION + REPARENTING
+    //  ENTRY POINT — call after any block lands
     // ----------------------------------------------------------------
 
     /// <summary>
-    /// Call this after any block lands / is placed.
-    ///
-    /// For every completed ring:
-    ///   1. Ring blocks                      → reparented to DeletedRing
-    ///   2. Coplanar blocks at OUTER radius  → reparented to RingTraversal
-    ///      (same plane, radius index less than the ring's index)
-    ///
-    /// After all DeletedRing children are gone a coroutine shifts every
-    /// RingTraversal child inward by (completedRingCount × step), then
-    /// reparents them all back to motherPlatform.
-    ///
-    /// isProcessingRings is set true here and cleared only after the full
-    /// pipeline completes — rotation input is blocked for this entire window.
+    /// Kicks off the full ring-clear pipeline, including unlimited chain
+    /// reactions. The pipeline runs until a complete pass finds zero
+    /// completed rings. isProcessingRings stays true for the entire
+    /// duration — no rotation input or spawning should happen while it
+    /// is set.
     /// </summary>
     public void CheckAndDestroyRings()
     {
         if (deletedRingContainer == null)
         {
-            Debug.LogError("[GameManager] deletedRingContainer is null — cannot process rings.");
+            Debug.LogError("[GameManager] deletedRingContainer is null.");
             return;
         }
 
-        List<CompletedRing> completed = sphericalGrid.CheckAllRings();
-        if (completed.Count == 0) return;
+        // Quick pre-check so we don't start a coroutine on every block land
+        List<CompletedRing> initial = sphericalGrid.CheckAllRings();
+        if (initial.Count == 0) return;
 
-        isProcessingRings = true; // Lock rotation for entire pipeline
+        isProcessingRings = true;
+        StartCoroutine(RingClearPipeline(initial));
+    }
 
-        var alreadyRerouted = new HashSet<GameObject>();
+    // ----------------------------------------------------------------
+    //  CHAIN-REACTION PIPELINE
+    // ----------------------------------------------------------------
 
-        foreach (var ring in completed)
+    /// <summary>
+    /// Core loop — runs one pass per iteration, chains until no rings remain:
+    ///
+    ///   1. For every completed ring this pass:
+    ///        a. Ring blocks           → DeletedRing
+    ///        b. Outer coplanar blocks → RingTraversal
+    ///   2. Wait until DeletedRing is empty (your custom destruction runs here).
+    ///   3. Shift every RingTraversal child inward, update the grid,
+    ///      reparent back to motherPlatform.
+    ///   4. Yield one frame so Unity propagates the new transforms.
+    ///   5. Re-check for newly completed rings.
+    ///        Rings found  → loop back to step 1  (chain reaction continues)
+    ///        No rings     → exit, clear isProcessingRings
+    /// </summary>
+    private IEnumerator RingClearPipeline(List<CompletedRing> firstPass)
+    {
+        List<CompletedRing> completed = firstPass;
+        int chainDepth = 0;
+
+        while (completed.Count > 0)
         {
-            Debug.Log($"<color=green>[GameManager] Ring COMPLETE:</color> {ring}");
+            chainDepth++;
+            Debug.Log($"<color=cyan>[GameManager] Chain pass {chainDepth} — {completed.Count} ring(s).</color>");
 
-            List<GameObject> ringBlocks = sphericalGrid.CollectRingBlocks(ring.Plane, ring.RadiusIndex);
-            var ringBlockSet = new HashSet<GameObject>(ringBlocks);
+            var alreadyRerouted = new HashSet<GameObject>();
 
-            List<Transform> outerCoplanar = GetOuterCoplanarChildren(
-                ring.Plane, ring.RadiusIndex, ringBlockSet, alreadyRerouted);
-
-            // Ring blocks → DeletedRing
-            foreach (GameObject block in ringBlocks)
+            // ── Step 1: reparent ring blocks + outer coplanar blocks ─────
+            foreach (var ring in completed)
             {
-                if (block == null) continue;
-                block.transform.SetParent(deletedRingContainer, worldPositionStays: true);
-                Debug.Log($"[GameManager]   '{block.name}' → DeletedRing");
-            }
+                Debug.Log($"<color=green>[GameManager] Ring COMPLETE:</color> {ring}");
 
-            // Outer coplanar blocks → RingTraversal
-            if (ringTraversalContainer != null)
-            {
-                foreach (Transform t in outerCoplanar)
+                List<GameObject> ringBlocks = sphericalGrid.CollectRingBlocks(ring.Plane, ring.RadiusIndex);
+                var ringBlockSet = new HashSet<GameObject>(ringBlocks);
+
+                List<Transform> outerCoplanar = GetOuterCoplanarChildren(
+                    ring.Plane, ring.RadiusIndex, ringBlockSet, alreadyRerouted);
+
+                foreach (GameObject block in ringBlocks)
                 {
-                    if (t == null) continue;
-                    t.SetParent(ringTraversalContainer, worldPositionStays: true);
-                    alreadyRerouted.Add(t.gameObject);
-                    Debug.Log($"[GameManager]   '{t.name}' → RingTraversal (outer of ring r={ring.RadiusIndex})");
+                    if (block == null) continue;
+                    block.transform.SetParent(deletedRingContainer, worldPositionStays: true);
+                    Debug.Log($"[GameManager]   '{block.name}' → DeletedRing");
+                }
+
+                if (ringTraversalContainer != null)
+                {
+                    foreach (Transform t in outerCoplanar)
+                    {
+                        if (t == null) continue;
+                        t.SetParent(ringTraversalContainer, worldPositionStays: true);
+                        alreadyRerouted.Add(t.gameObject);
+                        Debug.Log($"[GameManager]   '{t.name}' → RingTraversal (outer of ring r={ring.RadiusIndex})");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[GameManager] ringTraversalContainer is null.");
                 }
             }
-            else
-            {
-                Debug.LogWarning("[GameManager] ringTraversalContainer is null — outer coplanar blocks not reparented.");
-            }
-        }
 
-        // Launch the wait-then-shift coroutine once for all rings cleared this frame.
-        // completed.Count is the number of rings simultaneously destroyed.
-        // isProcessingRings is cleared inside the coroutine after shift completes.
-        StartCoroutine(WaitForDeletionThenShift(completed.Count));
-    }
+            // ── Step 2: wait for your custom destruction to empty DeletedRing
+            Debug.Log("[GameManager] Waiting for DeletedRing to empty...");
+            while (deletedRingContainer.childCount > 0)
+                yield return null;
 
-    // ----------------------------------------------------------------
-    //  INWARD SHIFT — triggered after DeletedRing is emptied
-    // ----------------------------------------------------------------
+            // ── Step 3: shift inward, sync grid, reparent to motherPlatform
+            ShiftRingTraversalChildrenInward(completed.Count);
 
-    /// <summary>
-    /// Polls every frame until DeletedRing has no children, then moves
-    /// every RingTraversal child inward by (ringCount × step), and finally
-    /// reparents them all back to motherPlatform.
-    ///
-    /// isProcessingRings is cleared only after reparenting completes,
-    /// so rotation input stays blocked for the full duration.
-    ///
-    /// step per block:
-    ///   Cardinal block (1 non-zero world axis)  → 1.000 unity unit per ring
-    ///   Diagonal block (2 non-zero world axes)  → 0.707 unity units per ring
-    ///
-    /// "Inward" means toward zero on each non-zero world-space axis:
-    ///   positive coordinate → subtract step
-    ///   negative coordinate → add    step
-    ///   coordinate ≈ 0     → unchanged
-    /// </summary>
-    private IEnumerator WaitForDeletionThenShift(int ringCount)
-    {
-        if (deletedRingContainer == null)
-        {
-            isProcessingRings = false;
-            yield break;
-        }
-
-        // Wait until your custom destruction logic has emptied DeletedRing
-        while (deletedRingContainer.childCount > 0)
+            // ── Step 4: one frame so Unity propagates the new transforms ─
             yield return null;
 
-        ShiftRingTraversalChildrenInward(ringCount);
+            // ── Step 5: check for chain-reaction rings ───────────────────
+            completed = sphericalGrid.CheckAllRings();
 
-        isProcessingRings = false; // Unlock rotation — pipeline fully complete
+            if (completed.Count > 0)
+                Debug.Log($"<color=yellow>[GameManager] Chain reaction! {completed.Count} new ring(s).</color>");
+            else
+                Debug.Log("<color=green>[GameManager] No further chain — pipeline complete.</color>");
+        }
+
+        isProcessingRings = false;
+        Debug.Log($"[GameManager] Pipeline done after {chainDepth} pass(es).");
     }
 
-    /// <summary>
-    /// Applies the inward positional shift to all current children of
-    /// RingTraversal in world space, then reparents them back to motherPlatform.
-    ///
-    /// Examples (single ring cleared, ringCount = 1):
-    ///   ( 6.009,  6.009, 0) → delta (-0.707, -0.707, 0) → ( 5.302,  5.302, 0)
-    ///   (-4.595,  4.595, 0) → delta ( 0.707, -0.707, 0) → (-3.888,  3.888, 0)
-    ///   ( 7.000,  0.000, 0) → delta (-1.000,  0.000, 0) → ( 6.000,  0.000, 0)
-    ///   ( 0.000, -6.009, 6.009) in YZ plane
-    ///                       → delta ( 0.000,  0.707,-0.707) → (0, -5.302, 5.302)
-    /// </summary>
+    // ----------------------------------------------------------------
+    //  INWARD SHIFT
+    // ----------------------------------------------------------------
+
     private void ShiftRingTraversalChildrenInward(int ringCount)
     {
         if (ringTraversalContainer == null) return;
         if (ringCount <= 0) return;
+        if (motherPlatform == null)
+        {
+            Debug.LogWarning("[GameManager] motherPlatform is null — cannot shift.");
+            return;
+        }
 
-        Debug.Log($"[GameManager] Shifting RingTraversal children inward × {ringCount} ring(s).");
+        Debug.Log($"[GameManager] Shifting RingTraversal children inward × {ringCount}.");
 
-        // Snapshot children first — modifying the hierarchy during
-        // iteration can cause skips.
+        Transform mp = motherPlatform.transform;
+
+        // Snapshot — modifying hierarchy during iteration causes skips
         var children = new List<Transform>();
         foreach (Transform child in ringTraversalContainer)
             if (child != null) children.Add(child);
@@ -214,56 +197,38 @@ public class GameManager : MonoBehaviour
         {
             if (child == null) continue;
 
-            Vector3 worldPos = child.position;
+            // LOCAL space — world space is incorrect after sphere rotation
+            Vector3 localPos = mp.InverseTransformPoint(child.position);
 
-            // ── Determine block type ─────────────────────────────────
-            // Cardinal: exactly 1 world-space axis is non-zero  → step 1.000
-            // Diagonal: exactly 2 world-space axes are non-zero → step 0.707
-            //
-            // We count non-zero axes from the world position.
-            // Blocks that were reparented with worldPositionStays=true retain
-            // their correct world positions regardless of sphere rotation.
             int nonZeroAxes = 0;
-            if (Mathf.Abs(worldPos.x) > ZERO_THRESHOLD) nonZeroAxes++;
-            if (Mathf.Abs(worldPos.y) > ZERO_THRESHOLD) nonZeroAxes++;
-            if (Mathf.Abs(worldPos.z) > ZERO_THRESHOLD) nonZeroAxes++;
+            if (Mathf.Abs(localPos.x) > ZERO_THRESHOLD) nonZeroAxes++;
+            if (Mathf.Abs(localPos.y) > ZERO_THRESHOLD) nonZeroAxes++;
+            if (Mathf.Abs(localPos.z) > ZERO_THRESHOLD) nonZeroAxes++;
 
             float step = (nonZeroAxes == 1) ? 1.000f : 0.707f;
 
-            // ── Build per-step inward delta ──────────────────────────
-            // Each non-zero coordinate moves toward zero:
-            //   positive → subtract step
-            //   negative → add    step
-            Vector3 stepDelta = Vector3.zero;
-            if (Mathf.Abs(worldPos.x) > ZERO_THRESHOLD)
-                stepDelta.x = (worldPos.x > 0f) ? -step : step;
-            if (Mathf.Abs(worldPos.y) > ZERO_THRESHOLD)
-                stepDelta.y = (worldPos.y > 0f) ? -step : step;
-            if (Mathf.Abs(worldPos.z) > ZERO_THRESHOLD)
-                stepDelta.z = (worldPos.z > 0f) ? -step : step;
+            Vector3 localDelta = Vector3.zero;
+            if (Mathf.Abs(localPos.x) > ZERO_THRESHOLD)
+                localDelta.x = (localPos.x > 0f) ? -step : step;
+            if (Mathf.Abs(localPos.y) > ZERO_THRESHOLD)
+                localDelta.y = (localPos.y > 0f) ? -step : step;
+            if (Mathf.Abs(localPos.z) > ZERO_THRESHOLD)
+                localDelta.z = (localPos.z > 0f) ? -step : step;
 
-            // ── Apply full shift (step × rings cleared simultaneously) ──
-            child.position = worldPos + stepDelta * ringCount;
+            child.position += mp.TransformDirection(localDelta * ringCount);
 
             Debug.Log($"[GameManager]   Shifted '{child.name}' " +
-                      $"from {worldPos} " +
-                      $"by {stepDelta * ringCount} " +
-                      $"(axes={nonZeroAxes}, step={step}, rings={ringCount})");
+                      $"localPos={localPos} delta={localDelta * ringCount} " +
+                      $"(axes={nonZeroAxes}, step={step})");
+
+            sphericalGrid.ShiftBlockInward(child.gameObject, ringCount);
         }
 
-        // ── Reparent all shifted blocks back to motherPlatform ───────
-        if (motherPlatform != null)
+        foreach (Transform child in children)
         {
-            foreach (Transform child in children)
-            {
-                if (child == null) continue;
-                child.SetParent(motherPlatform.transform, worldPositionStays: true);
-                Debug.Log($"[GameManager]   '{child.name}' → reparented back to motherPlatform");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("[GameManager] motherPlatform is null — could not reparent RingTraversal children.");
+            if (child == null) continue;
+            child.SetParent(mp, worldPositionStays: true);
+            Debug.Log($"[GameManager]   '{child.name}' → motherPlatform");
         }
     }
 
@@ -271,14 +236,6 @@ public class GameManager : MonoBehaviour
     //  OUTER COPLANAR CHILD SEARCH
     // ----------------------------------------------------------------
 
-    /// <summary>
-    /// Returns direct children of motherPlatform that satisfy ALL of:
-    ///   1. Lie on <paramref name="plane"/> (flat coord ≈ 0 in local space)
-    ///   2. Are registered in the grid at a radius index LESS THAN
-    ///      <paramref name="ringRadiusIndex"/> (further from centre)
-    ///   3. Are not in <paramref name="excludeSet"/> (the ring blocks)
-    ///   4. Have not yet been moved this frame (<paramref name="alreadyMoved"/>)
-    /// </summary>
     private List<Transform> GetOuterCoplanarChildren(
         int plane,
         int ringRadiusIndex,
@@ -289,7 +246,7 @@ public class GameManager : MonoBehaviour
 
         if (motherPlatform == null)
         {
-            Debug.LogWarning("[GameManager] motherPlatform is null — cannot find coplanar blocks.");
+            Debug.LogWarning("[GameManager] motherPlatform is null.");
             return result;
         }
 
@@ -303,7 +260,6 @@ public class GameManager : MonoBehaviour
             if (excludeSet.Contains(go)) continue;
             if (alreadyMoved.Contains(go)) continue;
 
-            // ── Plane check ──────────────────────────────────────────
             Vector3 localPos = mp.InverseTransformPoint(child.position);
 
             bool isOnPlane = plane switch
@@ -316,19 +272,18 @@ public class GameManager : MonoBehaviour
 
             if (!isOnPlane) continue;
 
-            // ── Radius check ─────────────────────────────────────────
             int blockRadiusIndex = sphericalGrid.GetRadiusIndexForBlock(go);
 
             if (blockRadiusIndex < 0)
             {
-                Debug.LogWarning($"[GameManager] Coplanar block '{go.name}' not in grid — skipping.");
+                Debug.LogWarning($"[GameManager] '{go.name}' not in grid — skipping.");
                 continue;
             }
 
-            // Smaller index = further from centre = outer
+            // Smaller index = further from centre = outer = needs to shift in
             if (blockRadiusIndex >= ringRadiusIndex)
             {
-                Debug.Log($"[GameManager]   Skipping '{go.name}' (blockR={blockRadiusIndex} >= ringR={ringRadiusIndex})");
+                Debug.Log($"[GameManager]   Skip '{go.name}' (r={blockRadiusIndex} >= ringR={ringRadiusIndex})");
                 continue;
             }
 
@@ -349,11 +304,9 @@ public class GameManager : MonoBehaviour
             Vector3 a = child.position;
             Vector3 b = targetPosition;
 
-            bool xMatch = Mathf.Round(a.x * 100f) == Mathf.Round(b.x * 100f);
-            bool yMatch = Mathf.Round(a.y * 100f) == Mathf.Round(b.y * 100f);
-            bool zMatch = Mathf.Round(a.z * 100f) == Mathf.Round(b.z * 100f);
-
-            if (xMatch && yMatch && zMatch)
+            if (Mathf.Round(a.x * 100f) == Mathf.Round(b.x * 100f) &&
+                Mathf.Round(a.y * 100f) == Mathf.Round(b.y * 100f) &&
+                Mathf.Round(a.z * 100f) == Mathf.Round(b.z * 100f))
                 return true;
         }
         return false;
@@ -369,8 +322,6 @@ public class GameManager : MonoBehaviour
 
         int randomIndex = UnityEngine.Random.Range(0, objectsToSpawn.Count);
         GameObject prefab = objectsToSpawn[randomIndex];
-        Vector3 spawnPos = new Vector3(0f, 16.5f, 0f);
-
-        Instantiate(prefab, spawnPos, Quaternion.identity);
+        Instantiate(prefab, new Vector3(0f, 16.5f, 0f), Quaternion.identity);
     }
 }

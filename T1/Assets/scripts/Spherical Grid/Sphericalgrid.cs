@@ -171,7 +171,7 @@ public class SphericalGrid : MonoBehaviour
                     if (ReferenceEquals(grid[p, s, r], block))
                         return r;
 
-        return -1; // block not registered in grid
+        return -1;
     }
 
     // ================================================================
@@ -323,6 +323,73 @@ public class SphericalGrid : MonoBehaviour
                     grid[plane, s, r].transform.position = positions[plane, s, r];
             }
         }
+    }
+
+    // ================================================================
+    //  GRID SHIFT — for RingTraversal blocks after ring is cleared
+    // ================================================================
+
+    /// <summary>
+    /// Returns all (plane, slot, radiusIndex) cells where this block is registered.
+    /// A cardinal block appears in two planes; a pure-diagonal block appears in one.
+    /// </summary>
+    public List<(int plane, int slot, int radius)> GetBlockEntries(GameObject block)
+    {
+        var entries = new List<(int, int, int)>();
+        if (block == null) return entries;
+
+        for (int p = 0; p < PLANE_COUNT; p++)
+            for (int s = 0; s < SLOTS_PER_RING; s++)
+                for (int r = 0; r < RADIUS_LEVELS; r++)
+                    if (ReferenceEquals(grid[p, s, r], block))
+                        entries.Add((p, s, r));
+
+        return entries;
+    }
+
+    /// <summary>
+    /// Moves every grid registration for <paramref name="block"/> inward by
+    /// <paramref name="steps"/> radius levels (index += steps, because higher
+    /// index = closer to centre).
+    ///
+    /// Call this AFTER updating the block's world-space position so that both
+    /// the visual and the logical grid stay in sync.
+    ///
+    /// Returns true if the block was found and all new cells were in range.
+    /// </summary>
+    public bool ShiftBlockInward(GameObject block, int steps)
+    {
+        if (block == null || steps <= 0) return false;
+
+        var entries = GetBlockEntries(block);
+        if (entries.Count == 0)
+        {
+            Debug.LogWarning($"[Grid] ShiftBlockInward: '{block.name}' not found in grid — skipping.");
+            return false;
+        }
+
+        // Step 1 — clear all current registrations so we don't collide with ourselves
+        foreach (var (p, s, r) in entries)
+            grid[p, s, r] = null;
+
+        // Step 2 — write to new radius positions
+        bool allValid = true;
+        foreach (var (p, s, r) in entries)
+        {
+            int newR = r + steps;
+            if (IsValidCell(p, s, newR))
+            {
+                grid[p, s, newR] = block;
+                Debug.Log($"[Grid] ShiftBlockInward '{block.name}': ({p},{s},{r}) → ({p},{s},{newR})");
+            }
+            else
+            {
+                Debug.LogWarning($"[Grid] ShiftBlockInward '{block.name}': target r={newR} out of range (max={RADIUS_LEVELS - 1}) — block dropped from grid.");
+                allValid = false;
+            }
+        }
+
+        return allValid;
     }
 
     // ================================================================
