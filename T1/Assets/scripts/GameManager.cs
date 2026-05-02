@@ -28,6 +28,13 @@ public class GameManager : MonoBehaviour
     // Flag to pause falling blocks during rotation
     public bool isRotating = false;
 
+    // Flag to lock ALL rotation input during the full ring-clear pipeline:
+    // ring detection → DeletedRing reparenting → custom destruction wait
+    // → inward shift → reparent back to motherPlatform.
+    // Set true at the start of CheckAndDestroyRings, cleared only after
+    // ShiftRingTraversalChildrenInward completes.
+    public bool isProcessingRings = false;
+
     // Tolerance used to decide whether a world-space coordinate is
     // "effectively zero" (i.e. the block lies on that plane axis).
     private const float ZERO_THRESHOLD = 0.1f;
@@ -80,7 +87,10 @@ public class GameManager : MonoBehaviour
     ///
     /// After all DeletedRing children are gone a coroutine shifts every
     /// RingTraversal child inward by (completedRingCount × step), then
-    /// reparents them back to motherPlatform.
+    /// reparents them all back to motherPlatform.
+    ///
+    /// isProcessingRings is set true here and cleared only after the full
+    /// pipeline completes — rotation input is blocked for this entire window.
     /// </summary>
     public void CheckAndDestroyRings()
     {
@@ -92,6 +102,8 @@ public class GameManager : MonoBehaviour
 
         List<CompletedRing> completed = sphericalGrid.CheckAllRings();
         if (completed.Count == 0) return;
+
+        isProcessingRings = true; // Lock rotation for entire pipeline
 
         var alreadyRerouted = new HashSet<GameObject>();
 
@@ -132,6 +144,7 @@ public class GameManager : MonoBehaviour
 
         // Launch the wait-then-shift coroutine once for all rings cleared this frame.
         // completed.Count is the number of rings simultaneously destroyed.
+        // isProcessingRings is cleared inside the coroutine after shift completes.
         StartCoroutine(WaitForDeletionThenShift(completed.Count));
     }
 
@@ -144,6 +157,9 @@ public class GameManager : MonoBehaviour
     /// every RingTraversal child inward by (ringCount × step), and finally
     /// reparents them all back to motherPlatform.
     ///
+    /// isProcessingRings is cleared only after reparenting completes,
+    /// so rotation input stays blocked for the full duration.
+    ///
     /// step per block:
     ///   Cardinal block (1 non-zero world axis)  → 1.000 unity unit per ring
     ///   Diagonal block (2 non-zero world axes)  → 0.707 unity units per ring
@@ -155,13 +171,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private IEnumerator WaitForDeletionThenShift(int ringCount)
     {
-        if (deletedRingContainer == null) yield break;
+        if (deletedRingContainer == null)
+        {
+            isProcessingRings = false;
+            yield break;
+        }
 
         // Wait until your custom destruction logic has emptied DeletedRing
         while (deletedRingContainer.childCount > 0)
             yield return null;
 
         ShiftRingTraversalChildrenInward(ringCount);
+
+        isProcessingRings = false; // Unlock rotation — pipeline fully complete
     }
 
     /// <summary>

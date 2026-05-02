@@ -105,6 +105,15 @@ public class SwipeInput : MonoBehaviour
     void ApplyRotationInstant(Vector3 axis, float degrees)
     {
         if (isProcessingSwipe) return; // Block double swipes
+
+        // Block rotation while the ring-clear pipeline is running:
+        // covers reparenting → destruction wait → inward shift → re-parent to motherPlatform
+        if (gameManager.isProcessingRings)
+        {
+            Debug.Log("[SwipeInput] Rotation blocked — ring pipeline in progress.");
+            return;
+        }
+
         isProcessingSwipe = true;
         gameManager.isRotating = true; // Pauses falling blocks
 
