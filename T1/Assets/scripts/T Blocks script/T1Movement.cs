@@ -60,6 +60,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
+            //
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
                 if (stop == -1)
@@ -108,6 +109,8 @@ public class T1Movement : MonoBehaviour, IFallingBlock
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
 
+
+                // if gamemanager 
                 if (i + 1 < rightDiagonalCoordinates.Count)
                 {
                     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]))
@@ -200,7 +203,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
-                try
+                try  
                 {
                     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
                     {
