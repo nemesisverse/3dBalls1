@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Android.Gradle;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class T2Movement : MonoBehaviour, IFallingBlock
