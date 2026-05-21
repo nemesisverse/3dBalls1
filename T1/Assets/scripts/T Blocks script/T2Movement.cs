@@ -4,6 +4,19 @@ using UnityEngine;
 
 public class T2Movement : MonoBehaviour, IFallingBlock
 {
+    // ================================================================
+    //  IFallingBlock implementation  ← NEW
+    // ================================================================
+
+    public int StartIndex { get; set; } = 2;
+    public int CurrentIndex { get; private set; } = 2;
+
+    // Per-track index snapshots for StopMovement accuracy.
+    // T2 positions children at [i-1], so the grid index is [i-2] at landing.
+    int _leftI = 2, _rightI = 2, _vertI = 2;
+
+    // ================================================================
+
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
@@ -42,8 +55,86 @@ public class T2Movement : MonoBehaviour, IFallingBlock
     void Start()
     {
         countChildren();
+        SetInitialPositions();   // ← NEW
         CheckChildrenWorldX();
+    }
 
+    // ================================================================
+    //  NEW — snap children to StartIndex on spawn.
+    //  T2 left/right diagonal positions at [i-1], so initial pos is [si-1].
+    //  T2 vertical has 2 children: [si], [si-1].
+    // ================================================================
+    void SetInitialPositions()
+    {
+        int si = Mathf.Clamp(StartIndex, 2, Mathf.Min(
+            leftDiagonalCoordinates.Count  - 1,
+            Mathf.Min(rightDiagonalCoordinates.Count - 1,
+                      verticalCoordinates.Count      - 1)));
+
+        // T2 diagonals move position to [i-1] each step
+        if (leftChildObject.Count > 0 && si - 1 >= 0)
+            leftChildObject[0].transform.position = leftDiagonalCoordinates[si - 1];
+
+        if (rightChildObject.Count > 0 && si - 1 >= 0)
+            rightChildObject[0].transform.position = rightDiagonalCoordinates[si - 1];
+
+        // T2 vertical: 2 stacked children
+        if (verticalChildObject.Count > 0)
+            verticalChildObject[0].transform.position = verticalCoordinates[si];
+        if (verticalChildObject.Count > 1 && si - 1 >= 0)
+            verticalChildObject[1].transform.position = verticalCoordinates[si - 1];
+    }
+
+    // ================================================================
+    //  NEW — IFallingBlock.StopMovement
+    // ================================================================
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        enabled = false;
+
+        // --- left children (T2 positions at [i-1], flags at [i-2]) ---
+        foreach (var go in leftChildObject)
+        {
+            if (go != null && go.transform.parent == transform)
+            {
+                int idx = Mathf.Max(2, _leftI - 2);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        // --- right children ---
+        foreach (var go in rightChildObject)
+        {
+            if (go != null && go.transform.parent == transform)
+            {
+                int idx = Mathf.Max(2, _rightI - 2);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        // --- vertical children (child[j] is at _vertI - j) ---
+        for (int j = 0; j < verticalChildObject.Count; j++)
+        {
+            var go = verticalChildObject[j];
+            if (go != null && go.transform.parent == transform)
+            {
+                int idx = Mathf.Max(2, _vertI - j);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        gameManager.CheckAndDestroyRings();
+        TryDestroySelf();
     }
 
     void TryDestroySelf()
@@ -57,8 +148,10 @@ public class T2Movement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, leftDiagonalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < leftDiagonalCoordinates.Count; i++)
             {
+                _leftI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
 
                 if (stop == -1)
                 {
@@ -133,13 +226,17 @@ public class T2Movement : MonoBehaviour, IFallingBlock
             }
         }
     }
+
     IEnumerator moveRightDiognal(Transform child, int childCount)
     {
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, rightDiagonalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < rightDiagonalCoordinates.Count; i++)
             {
+                _rightI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;                                                                                       //not i
@@ -217,8 +314,11 @@ public class T2Movement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, verticalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < verticalCoordinates.Count; i++)
             {
+                _vertI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 //  ResetSwipePermissions();
                 if (stop == -1)
                 {
@@ -305,6 +405,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
         Debug.Log(verticalCount);
 
     }
+
     void CheckChildrenWorldX()
     {
         bool rightStarted = false, verticalStarted = false, leftStarted = false;

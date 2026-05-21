@@ -3,7 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SMovement : MonoBehaviour, IFallingBlock
-{
+{ // ── IFallingBlock ────────────────────────────────────────────────
+    public int StartIndex  { get; set; } = 2;
+    public int CurrentIndex { get; private set; } = 2;
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        enabled = false;
+    }
+    // ────────────────────────────────────────────────────────────────
+
+    // ... rest of existing code unchanged
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;

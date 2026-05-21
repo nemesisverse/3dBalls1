@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class T1Movement : MonoBehaviour, IFallingBlock
 {
+    // ================================================================
+    //  IFallingBlock implementation  ← NEW
+    // ================================================================
+
+    public int StartIndex { get; set; } = 2;
+    public int CurrentIndex { get; private set; } = 2;
+
+    // Per-track index snapshots for StopMovement accuracy
+    int _rightI = 2, _vertI = 2;
+
+    // ================================================================
+
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
@@ -42,7 +54,72 @@ public class T1Movement : MonoBehaviour, IFallingBlock
     void Start()
     {
         countChildren();
+        SetInitialPositions();   // ← NEW
         CheckChildrenWorldX();
+    }
+
+    // ================================================================
+    //  NEW — snap children to StartIndex on spawn.
+    //  T1 right diagonal positions at [i-1], so initial pos uses [si-1].
+    //  T1 vertical has 3 children: [si], [si-1], [si-2].
+    // ================================================================
+    void SetInitialPositions()
+    {
+        int si = Mathf.Clamp(StartIndex, 2, Mathf.Min(
+            rightDiagonalCoordinates.Count - 1,
+            verticalCoordinates.Count      - 1));
+
+        // T1 right diagonal moves position to [i-1] each step
+        if (rightChildObject.Count > 0 && si - 1 >= 0)
+            rightChildObject[0].transform.position = rightDiagonalCoordinates[si - 1];
+
+        // T1 vertical: 3 stacked children
+        if (verticalChildObject.Count > 0)
+            verticalChildObject[0].transform.position = verticalCoordinates[si];
+        if (verticalChildObject.Count > 1 && si - 1 >= 0)
+            verticalChildObject[1].transform.position = verticalCoordinates[si - 1];
+        if (verticalChildObject.Count > 2 && si - 2 >= 0)
+            verticalChildObject[2].transform.position = verticalCoordinates[si - 2];
+    }
+
+    // ================================================================
+    //  NEW — IFallingBlock.StopMovement
+    // ================================================================
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        enabled = false;
+
+        // --- right children ---
+        foreach (var go in rightChildObject)
+        {
+            if (go != null && go.transform.parent == transform)
+            {
+                // T1 right is displayed at [i-1], flag at [i-2] → freeze at _rightI - 2
+                int idx = Mathf.Max(2, _rightI - 2);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        // --- vertical children (3 stacked: child[j] is at _vertI - j) ---
+        for (int j = 0; j < verticalChildObject.Count; j++)
+        {
+            var go = verticalChildObject[j];
+            if (go != null && go.transform.parent == transform)
+            {
+                int idx = Mathf.Max(2, _vertI - j);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        gameManager.CheckAndDestroyRings();
+        TryDestroySelf();
     }
 
     void TryDestroySelf()
@@ -53,6 +130,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  RIGHT DIAGONAL — T1 offset: position at [i-1], flagRadius at [i-2]
+    //  CHANGED: loop starts at StartIndex; per-iteration index tracking.
     // ================================================================
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
@@ -60,9 +138,11 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            //
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, rightDiagonalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < rightDiagonalCoordinates.Count; i++)
             {
+                _rightI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -142,6 +222,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  VERTICAL — 3 children (T1-specific)
+    //  CHANGED: loop starts at StartIndex; per-iteration index tracking.
     // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
@@ -149,8 +230,11 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 3)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, verticalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < verticalCoordinates.Count; i++)
             {
+                _vertI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;

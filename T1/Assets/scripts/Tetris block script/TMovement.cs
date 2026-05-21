@@ -4,6 +4,24 @@ using UnityEngine;
 
 public class TMovement : MonoBehaviour, IFallingBlock
 {
+    // ================================================================
+    //  IFallingBlock implementation  ← NEW
+    // ================================================================
+
+    // BlockCycler sets this BEFORE Start() so coroutines resume at the
+    // correct radius index instead of always starting from index 2.
+    public int StartIndex { get; set; } = 2;
+
+    // Highest loop-index reached across all three tracks.
+    // BlockCycler reads this on tap to hand off to the next block.
+    public int CurrentIndex { get; private set; } = 2;
+
+    // Per-track index snapshots used by StopMovement() to know which
+    // radius level to register each frozen child in the grid.
+    int _leftI = 2, _rightI = 2, _vertI = 2;
+
+    // ================================================================
+
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
@@ -42,7 +60,85 @@ public class TMovement : MonoBehaviour, IFallingBlock
     void Start()
     {
         countChildren();
+        SetInitialPositions();   // ← NEW: snap children to StartIndex before coroutines run
         CheckChildrenWorldX();
+    }
+
+    // ================================================================
+    //  NEW — snap children to StartIndex on spawn so there is no
+    //  one-frame jump when the block is cycled in mid-fall.
+    // ================================================================
+    void SetInitialPositions()
+    {
+        int si = Mathf.Clamp(StartIndex, 2, Mathf.Min(
+            leftDiagonalCoordinates.Count  - 1,
+            Mathf.Min(rightDiagonalCoordinates.Count - 1,
+                      verticalCoordinates.Count      - 1)));
+
+        if (leftChildObject.Count > 0)
+            leftChildObject[0].transform.position = leftDiagonalCoordinates[si];
+
+        if (rightChildObject.Count > 0)
+            rightChildObject[0].transform.position = rightDiagonalCoordinates[si];
+
+        if (verticalChildObject.Count > 0)
+            verticalChildObject[0].transform.position = verticalCoordinates[si];
+
+        if (verticalChildObject.Count > 1 && si - 1 >= 0)
+            verticalChildObject[1].transform.position = verticalCoordinates[si - 1];
+    }
+
+    // ================================================================
+    //  NEW — IFallingBlock.StopMovement
+    //  Called by BlockCycler on tap.
+    //  Stops all coroutines and freezes every still-falling child
+    //  onto motherPlatform at its current world position.
+    // ================================================================
+    public void StopMovement()
+    {
+        StopAllCoroutines();
+        enabled = false;
+
+        // --- left children ---
+        foreach (var go in leftChildObject)
+        {
+            if (go != null && go.transform.parent == transform)
+            {
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, _leftI,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        // --- right children ---
+        foreach (var go in rightChildObject)
+        {
+            if (go != null && go.transform.parent == transform)
+            {
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, _rightI,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        // --- vertical children (child[0] is at _vertI, child[1] at _vertI-1) ---
+        for (int j = 0; j < verticalChildObject.Count; j++)
+        {
+            var go = verticalChildObject[j];
+            if (go != null && go.transform.parent == transform)
+            {
+                int idx = Mathf.Max(2, _vertI - j);
+                sphericalGrid.PlaceBlockByWorldPosition(
+                    go.transform.position, idx,
+                    go, gameManager.motherPlatform.transform);
+                go.transform.SetParent(gameManager.motherPlatform.transform, true);
+            }
+        }
+
+        gameManager.CheckAndDestroyRings();
+        TryDestroySelf();
     }
 
     void TryDestroySelf()
@@ -53,6 +149,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  LEFT DIAGONAL — 3 landing spots, all now have ring check
+    //  CHANGED: loop starts at StartIndex; per-iteration index tracking.
     // ================================================================
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
@@ -60,8 +157,11 @@ public class TMovement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, leftDiagonalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < leftDiagonalCoordinates.Count; i++)
             {
+                _leftI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -139,6 +239,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  RIGHT DIAGONAL — 3 landing spots, all now have ring check
+    //  CHANGED: loop starts at StartIndex; per-iteration index tracking.
     // ================================================================
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
@@ -146,8 +247,11 @@ public class TMovement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, rightDiagonalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < rightDiagonalCoordinates.Count; i++)
             {
+                _rightI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -225,6 +329,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  VERTICAL — already had ring checks (3 landing spots)
+    //  CHANGED: loop starts at StartIndex; per-iteration index tracking.
     // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
@@ -232,8 +337,11 @@ public class TMovement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            int loopStart = Mathf.Clamp(StartIndex, 2, verticalCoordinates.Count - 1); // ← NEW
+            for (int i = loopStart; i < verticalCoordinates.Count; i++)
             {
+                _vertI = i; if (i > CurrentIndex) CurrentIndex = i;  // ← NEW
+
                 if (stop == -1)
                 {
                     bool blocked = false;
