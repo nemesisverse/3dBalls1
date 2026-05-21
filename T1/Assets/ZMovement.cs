@@ -178,9 +178,9 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             rightflagRadius(i - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            gameManager.CheckAndDestroyRings();
+                            //gameManager.CheckAndDestroyRings();
                             enabled = false;
-                            TryDestroySelf();
+                            //TryDestroySelf();
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -193,8 +193,8 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             {
                                 rightflagRadius(i - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                gameManager.CheckAndDestroyRings();
-                                TryDestroySelf();
+                                //gameManager.CheckAndDestroyRings();
+                                //TryDestroySelf();
                                 yield break;
                             }
                             yield return null;
@@ -264,9 +264,9 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             verticalflagRadius(i - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            gameManager.CheckAndDestroyRings();
+                            //gameManager.CheckAndDestroyRings();
                             enabled = false;
-                            TryDestroySelf();
+                            //TryDestroySelf();
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -280,8 +280,8 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                                 verticalflagRadius(i - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                gameManager.CheckAndDestroyRings();
-                                TryDestroySelf();
+                                //gameManager.CheckAndDestroyRings();
+                                //TryDestroySelf();
                                 yield break;
                             }
                             yield return null;

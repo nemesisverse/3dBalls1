@@ -80,9 +80,9 @@ public class L2Movement : MonoBehaviour
                             leftflagRadius(i - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            gameManager.CheckAndDestroyRings();
+                            //gameManager.CheckAndDestroyRings();
                             enabled = false;
-                            TryDestroySelf();
+                            //TryDestroySelf();
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -97,8 +97,8 @@ public class L2Movement : MonoBehaviour
                                 leftflagRadius(i - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                gameManager.CheckAndDestroyRings();
-                                TryDestroySelf();
+                                //gameManager.CheckAndDestroyRings();
+                                //TryDestroySelf();
                                 yield break;
                             }
                             yield return null;
