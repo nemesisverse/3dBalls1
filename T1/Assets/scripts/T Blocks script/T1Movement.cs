@@ -221,9 +221,9 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        gameManager.CheckAndDestroyRings();
+                        //gameManager.CheckAndDestroyRings();
                         enabled = false;
-                        TryDestroySelf();
+                        //TryDestroySelf();
                     }
                     yield break;
                 }
