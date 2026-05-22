@@ -118,6 +118,15 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Tap"",
+                    ""type"": ""Button"",
+                    ""id"": ""f45557ea-9212-4889-b303-1952eb4e2a19"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -153,6 +162,17 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
                     ""action"": ""Press"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c5188af-2c93-4706-8fba-840b923ab612"",
+                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""interactions"": ""Tap"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tap"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
         m_Touch_Press = m_Touch.FindAction("Press", throwIfNotFound: true);
         m_Touch_Position = m_Touch.FindAction("Position", throwIfNotFound: true);
         m_Touch_Delta = m_Touch.FindAction("Delta", throwIfNotFound: true);
+        m_Touch_Tap = m_Touch.FindAction("Tap", throwIfNotFound: true);
     }
 
     ~@TouchControl()
@@ -247,6 +268,7 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
     private readonly InputAction m_Touch_Press;
     private readonly InputAction m_Touch_Position;
     private readonly InputAction m_Touch_Delta;
+    private readonly InputAction m_Touch_Tap;
     /// <summary>
     /// Provides access to input actions defined in input action map "Touch".
     /// </summary>
@@ -270,6 +292,10 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Touch/Delta".
         /// </summary>
         public InputAction @Delta => m_Wrapper.m_Touch_Delta;
+        /// <summary>
+        /// Provides access to the underlying input action "Touch/Tap".
+        /// </summary>
+        public InputAction @Tap => m_Wrapper.m_Touch_Tap;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -305,6 +331,9 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
             @Delta.started += instance.OnDelta;
             @Delta.performed += instance.OnDelta;
             @Delta.canceled += instance.OnDelta;
+            @Tap.started += instance.OnTap;
+            @Tap.performed += instance.OnTap;
+            @Tap.canceled += instance.OnTap;
         }
 
         /// <summary>
@@ -325,6 +354,9 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
             @Delta.started -= instance.OnDelta;
             @Delta.performed -= instance.OnDelta;
             @Delta.canceled -= instance.OnDelta;
+            @Tap.started -= instance.OnTap;
+            @Tap.performed -= instance.OnTap;
+            @Tap.canceled -= instance.OnTap;
         }
 
         /// <summary>
@@ -386,5 +418,12 @@ public partial class @TouchControl: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDelta(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Tap" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTap(InputAction.CallbackContext context);
     }
 }

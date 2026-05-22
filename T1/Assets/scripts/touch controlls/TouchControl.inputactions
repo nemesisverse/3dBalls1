@@ -32,6 +32,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Tap",
+                    "type": "Button",
+                    "id": "f45557ea-9212-4889-b303-1952eb4e2a19",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -65,6 +74,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Press",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4c5188af-2c93-4706-8fba-840b923ab612",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
