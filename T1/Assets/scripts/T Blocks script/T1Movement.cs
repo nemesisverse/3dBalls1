@@ -64,7 +64,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (childCount == 1)
         {
             //left wala bhi iss chain  me handle hoga
-                index.indexCountLeft =index.indexCountLeft -1;
+            index.indexCountLeft =index.indexCountLeft -1;
             for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
                 //left wala bhi iss chain  me handle hoga
@@ -90,6 +90,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             index.indexCountRight = 2;
+                            index.indexCountLeft = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -105,8 +106,9 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                                 // LANDING SPOT 2
                                 rightflagRadius(index.indexCountRight - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                index.indexCountRight = 2;
                                 gameManager.CheckAndDestroyRings();
+                                index.indexCountRight = 2;
+                                index.indexCountLeft = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -134,6 +136,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         index.indexCountRight = 2;
+                        index.indexCountLeft = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -184,7 +187,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             //gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             enabled = false;
-                            //TryDestroySelf();
+                            TryDestroySelf();
                             yield break;
                         }
                         else { stop = -1; stopperID = 0; }
@@ -202,7 +205,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //gameManager.CheckAndDestroyRings();
                                  index.indexCountVertical = 2;
-                                //TryDestroySelf();
+                                TryDestroySelf();
                                 yield break;
                             }
                             yield return null;
@@ -233,9 +236,9 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //gameManager.CheckAndDestroyRings();
-                         index.indexCountVertical = 2;
+                        index.indexCountVertical = 2;
                         enabled = false;
-                        //TryDestroySelf();
+                        TryDestroySelf();
                     }
                     yield break;
                 }

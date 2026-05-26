@@ -62,10 +62,10 @@ public class S1Movement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            index.indexCountVertical = index.indexCountVertical-1;
+            
             for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
-                index.indexCountVertical++;
+               
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -159,8 +159,10 @@ public class S1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
+            index.indexCountVertical = index.indexCountVertical-1;
             for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
+                index.indexCountVertical++;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -183,6 +185,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                             rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             index.indexCountRight = 2;
+                            index.indexCountVertical = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -201,6 +204,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                                 rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountRight = 2;
+                                index.indexCountVertical = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -230,6 +234,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                         rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         index.indexCountRight = 2;
+                        index.indexCountVertical = 2;
                         enabled = false;
                         TryDestroySelf();
                     }

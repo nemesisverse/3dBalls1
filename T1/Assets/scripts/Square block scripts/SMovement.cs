@@ -62,10 +62,10 @@ public class SMovement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            index.indexCountRight = index.indexCountRight -1;
+            
             for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
-                index.indexCountRight++;
+                
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -88,6 +88,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
+                           
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -106,6 +107,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
+                               
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -135,6 +137,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
+                        
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -157,10 +160,12 @@ public class SMovement : MonoBehaviour, IFallingBlock
     IEnumerator moveVertical(Transform child, int childCount)
     {
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
+        index.indexCountRight = index.indexCountRight -1;
         if (childCount == 2)
         {
             for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
+                index.indexCountRight++;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -183,6 +188,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
+                            index.indexCountRight = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -201,6 +207,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
+                                index.indexCountRight = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -230,6 +237,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
+                        index.indexCountRight = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
