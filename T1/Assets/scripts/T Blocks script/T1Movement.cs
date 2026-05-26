@@ -63,8 +63,12 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
+            //left wala bhi iss chain  me handle hoga
+                index.indexCountLeft =index.indexCountLeft -1;
             for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
+                //left wala bhi iss chain  me handle hoga
+                index.indexCountLeft++;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -112,6 +116,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                 }
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[index.indexCountRight - 1];
+                
 
                 if (index.indexCountRight + 1 < rightDiagonalCoordinates.Count)
                 {
