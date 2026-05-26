@@ -272,6 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80938cd944a0d4caca5501806e3cdee1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T2Movement
+  index: {fileID: 0}
   gameManager: {fileID: 0}
   swipeInput: {fileID: 0}
 --- !u!1 &811111912984018729

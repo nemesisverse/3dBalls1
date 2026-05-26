@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class T1Movement : MonoBehaviour, IFallingBlock
 {
+     public IndexManager index;
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
@@ -30,6 +31,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (gameManager == null) gameManager = FindFirstObjectByType<GameManager>();
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
+            if (index == null) index = FindFirstObjectByType<IndexManager>(); // ← ADD THIS
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -61,28 +63,29 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (childCount == 1)
         {
             //
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            for (; index.indexCount < rightDiagonalCoordinates.Count; index.indexCount++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i - 1]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 2; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCount - 1]); } catch { }
+                    if (blocked) { stop = index.indexCount - 1; stopperID = 2; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCount > stop)
                 {
                     if (stopperID == 2)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i - 1]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCount - 1]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
-                            rightflagRadius(i - 2);
+                            rightflagRadius(index.indexCount - 2);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCount = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -96,9 +99,11 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                rightflagRadius(i - 2);
+                                rightflagRadius(index.indexCount - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                 index.indexCount = 2;
                                 gameManager.CheckAndDestroyRings();
+                               
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -107,15 +112,15 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                     }
                 }
 
-                rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[index.indexCount - 1];
 
 
                 // if gamemanager 
-                if (i + 1 < rightDiagonalCoordinates.Count)
+                if (index.indexCount + 1 < rightDiagonalCoordinates.Count)
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCount]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 2; }
+                        if (stop == -1) { stop = index.indexCount; stopperID = 2; }
                     }
                 }
                 else
@@ -123,9 +128,10 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
                         // LANDING SPOT 3
-                        rightflagRadius(i - 1);
+                        rightflagRadius(index.indexCount - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
+                         index.indexCount = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -149,26 +155,26 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 3)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            for (; index.indexCount < rightDiagonalCoordinates.Count; index.indexCount++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 3; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCount]); } catch { }
+                    if (blocked) { stop = index.indexCount - 1; stopperID = 3; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCount > stop)
                 {
                     if (stopperID == 3)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCount]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
                             // LANDING SPOT 4
-                            verticalflagRadius(i - 1);
+                            verticalflagRadius(index.indexCount - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -186,7 +192,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 5
-                                verticalflagRadius(i - 1);
+                                verticalflagRadius(index.indexCount - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -199,15 +205,15 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                     }
                 }
 
-                verticalChildObject[0].transform.position = verticalCoordinates[i];
-                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
-                verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
+                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCount];
+                verticalChildObject[1].transform.position = verticalCoordinates[index.indexCount - 1];
+                verticalChildObject[2].transform.position = verticalCoordinates[index.indexCount - 2];
 
                 try  
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCount + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 3; }
+                        if (stop == -1) { stop = index.indexCount; stopperID = 3; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -217,7 +223,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 6
-                        verticalflagRadius(i);
+                        verticalflagRadius(index.indexCount);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);

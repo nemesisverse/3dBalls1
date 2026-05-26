@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 3654477547795228865}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.09924, y: -1.11885, z: 0.47542}
+  m_LocalPosition: {x: 0, y: -1.11885, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -140,7 +140,7 @@ Transform:
   m_GameObject: {fileID: 3664379318914316459}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.09924, y: -0.11885, z: 0.47542}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -252,7 +252,7 @@ Transform:
   m_GameObject: {fileID: 4294152700568805599}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.90076, y: -0.11885, z: 0.47542}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -364,7 +364,7 @@ Transform:
   m_GameObject: {fileID: 5784804262846998992}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.09924, y: 0.88115, z: 0.47542}
+  m_LocalPosition: {x: 0, y: 0.88115, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -496,5 +496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 768d15d3111ff426abce013a64ce6587, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::T1Movement
+  index: {fileID: 0}
   gameManager: {fileID: 0}
   swipeInput: {fileID: 0}
