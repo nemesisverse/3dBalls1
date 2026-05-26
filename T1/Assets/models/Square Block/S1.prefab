@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e565baf35abae4d2c9cabeb3747c9b66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  index: {fileID: 0}
   gameManager: {fileID: 0}
   swipeInput: {fileID: 0}
 --- !u!1 &3142522974692280931
