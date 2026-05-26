@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class T1Movement : MonoBehaviour, IFallingBlock
+public class T1Movement : MonoBehaviour, IFallingBlock, ISwitchable
 {
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
@@ -21,15 +21,31 @@ public class T1Movement : MonoBehaviour, IFallingBlock
     public SwipeInput swipeInput;
 
     private SphericalGrid sphericalGrid;
+    private BlockSwitcher blockSwitcher;
 
     int stop = -1;
     int stopperID = 0;
 
+    // ── ISwitchable ────────────────────────────────────────────────────────
+    [HideInInspector] public int  savedIndex = 2;
+    [HideInInspector] public bool isPaused   = false;
+
+    public bool IsPaused   { get => isPaused;   set => isPaused = value; }
+    public int  SavedIndex => savedIndex;
+
+    // ── Reset helper — call just before every SetParent ───────────────────
+    void NotifyLanded()
+    {
+        savedIndex = 2;
+        blockSwitcher?.UnregisterBlock(this);
+    }
+
     void Awake()
     {
-        if (gameManager == null) gameManager = FindFirstObjectByType<GameManager>();
-        if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
+        if (gameManager   == null) gameManager   = FindFirstObjectByType<GameManager>();
+        if (swipeInput    == null) swipeInput    = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
+        if (blockSwitcher == null) blockSwitcher = FindFirstObjectByType<BlockSwitcher>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -41,6 +57,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
 
     void Start()
     {
+        blockSwitcher?.RegisterBlock(this);   // ← register with switcher
         countChildren();
         CheckChildrenWorldX();
     }
@@ -60,9 +77,13 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            //
             for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
             {
+                // ── save index + pause point ────────────────────────
+                savedIndex = i;
+                while (isPaused) yield return null;
+                // ───────────────────────────────────────────────────
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -81,6 +102,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         {
                             // LANDING SPOT 1
                             rightflagRadius(i - 2);
+                            NotifyLanded();
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             enabled = false;
@@ -97,6 +119,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             {
                                 // LANDING SPOT 2
                                 rightflagRadius(i - 2);
+                                NotifyLanded();
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
                                 TryDestroySelf();
@@ -109,8 +132,6 @@ public class T1Movement : MonoBehaviour, IFallingBlock
 
                 rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
 
-
-                // if gamemanager 
                 if (i + 1 < rightDiagonalCoordinates.Count)
                 {
                     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]))
@@ -124,6 +145,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                     {
                         // LANDING SPOT 3
                         rightflagRadius(i - 1);
+                        NotifyLanded();
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         enabled = false;
@@ -151,6 +173,11 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         {
             for (int i = 2; i < verticalCoordinates.Count; i++)
             {
+                // ── save index + pause point ────────────────────────
+                savedIndex = i;
+                while (isPaused) yield return null;
+                // ───────────────────────────────────────────────────
+
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -169,6 +196,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         {
                             // LANDING SPOT 4
                             verticalflagRadius(i - 1);
+                            NotifyLanded();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -187,6 +215,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             {
                                 // LANDING SPOT 5
                                 verticalflagRadius(i - 1);
+                                NotifyLanded();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -203,7 +232,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                 verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
                 verticalChildObject[2].transform.position = verticalCoordinates[i - 2];
 
-                try  
+                try
                 {
                     if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
                     {
@@ -218,6 +247,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                     {
                         // LANDING SPOT 6
                         verticalflagRadius(i);
+                        NotifyLanded();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -257,22 +287,13 @@ public class T1Movement : MonoBehaviour, IFallingBlock
         foreach (Transform child in transform)
         {
             float worldX = child.position.x;
-            if (worldX > 0f && !rightStarted)
-            {
-                StartCoroutine(moveRightDiognal(child, rightDiagonalCount));
-                rightStarted = true;
-            }
-            else if (worldX == 0f && !verticalStarted)
-            {
-                StartCoroutine(moveVertical(child, verticalCount));
-                verticalStarted = true;
-            }
+            if      (worldX > 0f && !rightStarted)     { StartCoroutine(moveRightDiognal(child, rightDiagonalCount)); rightStarted    = true; }
+            else if (worldX == 0f && !verticalStarted) { StartCoroutine(moveVertical(child, verticalCount));          verticalStarted = true; }
         }
     }
 
     // ================================================================
-    //  FLAG RADIUS — position-aware placement via SphericalGrid
-    //  T1 vertical places 3 blocks at i, i-1, i-2
+    //  FLAG RADIUS
     // ================================================================
 
     void rightflagRadius(int i)
