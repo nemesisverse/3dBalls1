@@ -21,6 +21,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
     public GameManager gameManager;
     public SwipeInput swipeInput;
     private SphericalGrid sphericalGrid;
+    private BlockSInstantiator blockSInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -31,6 +32,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (blockSInstantiator == null) blockSInstantiator = FindFirstObjectByType<BlockSInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -54,7 +56,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  LEFT DIAGONAL — uses index.indexCountLeft throughout
-    //  (previously used undefined bare variable 'i' — now fixed)
     // ================================================================
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
@@ -62,10 +63,8 @@ public class S1Movement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            
             for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
-               
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -82,7 +81,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -100,7 +98,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -129,7 +126,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] &&
                         leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
-                        // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -143,6 +139,8 @@ public class S1Movement : MonoBehaviour, IFallingBlock
 
                 while (gameManager.isRotating)
                     yield return null;
+                while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
+                    yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
             }
@@ -151,7 +149,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  RIGHT DIAGONAL — uses index.indexCountRight throughout
-    //  (previously used undefined bare variable 'i' — now fixed)
     // ================================================================
 
     IEnumerator moveRightDiognal(Transform child, int childCount)
@@ -159,7 +156,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            index.indexCountVertical = index.indexCountVertical-1;
+            index.indexCountVertical = index.indexCountVertical - 1;
             for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
                 index.indexCountVertical++;
@@ -179,7 +176,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            // LANDING SPOT 4
                             rightflagRadius(index.indexCountRight - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -198,7 +194,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                // LANDING SPOT 5
                                 rightflagRadius(index.indexCountRight - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -228,7 +223,6 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1] &&
                         rightChildObject[1].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
-                        // LANDING SPOT 6
                         rightflagRadius(index.indexCountRight);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         rightChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -242,6 +236,8 @@ public class S1Movement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+                while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
@@ -284,7 +280,7 @@ public class S1Movement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
-    //  FLAG RADIUS — 2-block placement for both spokes
+    //  FLAG RADIUS
     // ================================================================
 
     void leftflagRadius(int i)

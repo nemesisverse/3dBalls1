@@ -21,6 +21,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
     public GameManager gameManager;
     public SwipeInput swipeInput;
     private SphericalGrid sphericalGrid;
+    private BlockSInstantiator blockSInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -31,6 +32,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (blockSInstantiator == null) blockSInstantiator = FindFirstObjectByType<BlockSInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -54,7 +56,6 @@ public class SMovement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  LEFT DIAGONAL — uses index.indexCountLeft throughout
-    //  (previously used undefined bare variable 'i' — now fixed)
     // ================================================================
 
     IEnumerator moveLeftDiognal(Transform child, int childCount)
@@ -62,10 +63,8 @@ public class SMovement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            
             for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
-                
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -82,13 +81,11 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
-                           
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -101,13 +98,11 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
-                               
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -131,13 +126,11 @@ public class SMovement : MonoBehaviour, IFallingBlock
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 1] &&
                         leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
-                        // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
-                        
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -145,6 +138,8 @@ public class SMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+                while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
@@ -154,13 +149,12 @@ public class SMovement : MonoBehaviour, IFallingBlock
 
     // ================================================================
     //  VERTICAL — uses index.indexCountVertical throughout
-    //  (previously used undefined bare variable 'i' — now fixed)
     // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
-        index.indexCountRight = index.indexCountRight -1;
+        index.indexCountRight = index.indexCountRight - 1;
         if (childCount == 2)
         {
             for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
@@ -182,7 +176,6 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            // LANDING SPOT 4
                             verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -201,7 +194,6 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                // LANDING SPOT 5
                                 verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -231,7 +223,6 @@ public class SMovement : MonoBehaviour, IFallingBlock
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        // LANDING SPOT 6
                         verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -245,6 +236,8 @@ public class SMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+                while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
@@ -287,7 +280,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
-    //  FLAG RADIUS — 2-block placement for both spokes
+    //  FLAG RADIUS
     // ================================================================
 
     void leftflagRadius(int i)
