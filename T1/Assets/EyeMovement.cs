@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EyeMovement : MonoBehaviour, IFallingBlock
 {
-     public IndexManager index;
+    public IndexManager index;
     int verticalCount = 0;
     float moveSpeed = 1f;
 
@@ -14,6 +14,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
     public GameManager gameManager;
     public SwipeInput swipeInput;
     private SphericalGrid sphericalGrid;
+    private BlockEyeInstantiator eyeInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -24,6 +25,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (eyeInstantiator == null) eyeInstantiator = FindFirstObjectByType<BlockEyeInstantiator>();
 
         for (float v = 18.5f; v >= 2.5f; v -= 1f)
             verticalCoordinates.Add(new Vector3(0f, v, 0f));
@@ -46,32 +48,85 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
     // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
-{
-    if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
-    if (childCount == 3)
     {
-        index.indexCountLeft = index.indexCountLeft - 1;
-        for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
+        if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
+        if (childCount == 3)
         {
-            index.indexCountLeft++;
-            if (stop == -1)
+            index.indexCountLeft = index.indexCountLeft - 1;
+            for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
-                bool blocked = false;
-                try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { }
-                if (blocked) { stop = index.indexCountVertical - 1; stopperID = 3; }
-            }
-            yield return null;
-
-            if (stop != -1 && index.indexCountVertical > stop)
-            {
-                if (stopperID == 3)
+                index.indexCountLeft++;
+                if (stop == -1)
                 {
-                    bool stillBlocked = false;
-                    try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { stillBlocked = false; }
-                    if (stillBlocked)
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { }
+                    if (blocked) { stop = index.indexCountVertical - 1; stopperID = 3; }
+                }
+                yield return null;
+
+                if (stop != -1 && index.indexCountVertical > stop)
+                {
+                    if (stopperID == 3)
                     {
-                        // LANDING SPOT 1
-                        verticalflagRadius(index.indexCountVertical - 1);
+                        bool stillBlocked = false;
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { stillBlocked = false; }
+                        if (stillBlocked)
+                        {
+                            // LANDING SPOT 1
+                            verticalflagRadius(index.indexCountVertical - 1);
+                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            gameManager.CheckAndDestroyRings();
+                            index.indexCountLeft = 2;
+                            index.indexCountVertical = 2;
+                            enabled = false;
+                            TryDestroySelf();
+                            yield break;
+                        }
+                        else { stop = -1; stopperID = 0; }
+                    }
+                    else
+                    {
+                        while (stop != -1 && stopperID != 3)
+                        {
+                            if (!enabled)
+                            {
+                                // LANDING SPOT 2
+                                verticalflagRadius(index.indexCountVertical - 1);
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                gameManager.CheckAndDestroyRings();
+                                index.indexCountLeft = 2;
+                                index.indexCountVertical = 2;
+                                TryDestroySelf();
+                                yield break;
+                            }
+                            yield return null;
+                        }
+                    }
+                }
+
+                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical];
+                verticalChildObject[1].transform.position = verticalCoordinates[index.indexCountVertical - 1];
+                verticalChildObject[2].transform.position = verticalCoordinates[index.indexCountVertical - 2];
+
+                try
+                {
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical + 1]))
+                    {
+                        if (stop == -1) { stop = index.indexCountVertical; stopperID = 3; }
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
+                        verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] &&
+                        verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
+                    {
+                        // LANDING SPOT 3
+                        verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -80,70 +135,22 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                         index.indexCountVertical = 2;
                         enabled = false;
                         TryDestroySelf();
-                        yield break;
                     }
-                    else { stop = -1; stopperID = 0; }
+                    yield break;
                 }
-                else
-                {
-                    while (stop != -1 && stopperID != 3)
-                    {
-                        if (!enabled)
-                        {
-                            // LANDING SPOT 2
-                            verticalflagRadius(index.indexCountVertical - 1);
-                            verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                            gameManager.CheckAndDestroyRings();
-                            index.indexCountLeft = 2;
-                            index.indexCountVertical = 2;
-                            TryDestroySelf();
-                            yield break;
-                        }
+
+                while (gameManager.isRotating)
+                    yield return null;
+
+                // freeze during swap-check
+                if (eyeInstantiator != null)
+                    while (eyeInstantiator.isCheckingSwap)
                         yield return null;
-                    }
-                }
+
+                yield return new WaitForSeconds(moveSpeed);
             }
-
-            verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical];
-            verticalChildObject[1].transform.position = verticalCoordinates[index.indexCountVertical - 1];
-            verticalChildObject[2].transform.position = verticalCoordinates[index.indexCountVertical - 2];
-
-            try
-            {
-                if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical + 1]))
-                {
-                    if (stop == -1) { stop = index.indexCountVertical; stopperID = 3; }
-                }
-            }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
-                    verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2] &&
-                    verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
-                {
-                    // LANDING SPOT 3
-                    verticalflagRadius(index.indexCountVertical);
-                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    gameManager.CheckAndDestroyRings();
-                    index.indexCountLeft = 2;
-                    index.indexCountVertical = 2;
-                    enabled = false;
-                    TryDestroySelf();
-                }
-                yield break;
-            }
-
-            while (gameManager.isRotating)
-                yield return null;
-
-            yield return new WaitForSeconds(moveSpeed);
         }
     }
-}
 
     // ================================================================
     //  HELPERS
