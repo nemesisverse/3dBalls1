@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ZMovement : MonoBehaviour, IFallingBlock
 {
+    public IndexManager index;
     int leftDiagonalCount  = 0;
     int rightDiagonalCount = 0;
     int verticalCount      = 0;
@@ -34,6 +35,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
         if (gameManager  == null) gameManager  = FindFirstObjectByType<GameManager>();
         if (swipeInput   == null) swipeInput   = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
+        if (index == null) index = FindFirstObjectByType<IndexManager>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -66,31 +68,32 @@ public class ZMovement : MonoBehaviour, IFallingBlock
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
                 // Pre-move look-ahead: Z block will land at [i-1], so check [i-1].
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i - 1]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 1; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft - 1]); } catch { }
+                    if (blocked) { stop = index.indexCountLeft - 1; stopperID = 1; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountLeft > stop)
                 {
                     if (stopperID == 1)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i - 1]); }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft - 1]); }
                         catch { stillBlocked = false; }
 
                         if (stillBlocked)
                         {
                             // Block is at [i-2] — land there.
-                            leftflagRadius(i - 2);
+                            leftflagRadius(index.indexCountLeft - 2);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCountLeft = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -103,9 +106,10 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                leftflagRadius(i - 2);
+                                leftflagRadius(index.indexCountLeft - 2);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
+                                index.indexCountLeft = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -115,14 +119,14 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                 }
 
                 // Move to Z position: one step higher than T (i-1 instead of i).
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i - 1];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 1];
 
                 // Look one step ahead: the next position the Z block would occupy is [i].
-                if (i + 1 < leftDiagonalCoordinates.Count)
+                if (index.indexCountLeft + 1 < leftDiagonalCoordinates.Count)
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 1; }
+                        if (stop == -1) { stop = index.indexCountLeft; stopperID = 1; }
                     }
                 }
                 else
@@ -130,9 +134,10 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     // Reached the innermost Z position (Count-2).
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
-                        leftflagRadius(i - 1);
+                        leftflagRadius(index.indexCountLeft - 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
+                        index.indexCountLeft = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -156,30 +161,31 @@ public class ZMovement : MonoBehaviour, IFallingBlock
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 2; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight]); } catch { }
+                    if (blocked) { stop = index.indexCountRight - 1; stopperID = 2; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountRight > stop)
                 {
                     if (stopperID == 2)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]); }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight]); }
                         catch { stillBlocked = false; }
 
                         if (stillBlocked)
                         {
-                            rightflagRadius(i - 1);
+                            rightflagRadius(index.indexCountRight - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             //gameManager.CheckAndDestroyRings();
                             enabled = false;
+                            index.indexCountRight = 2;
                             //TryDestroySelf();
                             yield break;
                         }
@@ -191,10 +197,11 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                rightflagRadius(i - 1);
+                                rightflagRadius(index.indexCountRight - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //gameManager.CheckAndDestroyRings();
                                 //TryDestroySelf();
+                                index.indexCountRight = 2;
                                 yield break;
                             }
                             yield return null;
@@ -202,23 +209,24 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     }
                 }
 
-                rightChildObject[0].transform.position = rightDiagonalCoordinates[i];
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[index.indexCountRight];
 
                 try
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 2; }
+                        if (stop == -1) { stop = index.indexCountRight; stopperID = 2; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
-                        rightflagRadius(i);
+                        rightflagRadius(index.indexCountRight);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //gameManager.CheckAndDestroyRings();
                         enabled = false;
+                        index.indexCountRight = 2;
                         //TryDestroySelf();
                     }
                     yield break;
@@ -241,31 +249,32 @@ public class ZMovement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 3; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { }
+                    if (blocked) { stop = index.indexCountVertical - 1; stopperID = 3; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountVertical > stop)
                 {
                     if (stopperID == 3)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); }
                         catch { stillBlocked = false; }
 
                         if (stillBlocked)
                         {
-                            verticalflagRadius(i - 1);
+                            verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             //gameManager.CheckAndDestroyRings();
                             enabled = false;
+                            index.indexCountVertical = 2;
                             //TryDestroySelf();
                             yield break;
                         }
@@ -277,10 +286,11 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             if (!enabled)
                             {
-                                verticalflagRadius(i - 1);
+                                verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //gameManager.CheckAndDestroyRings();
+                                index.indexCountVertical = 2;
                                 //TryDestroySelf();
                                 yield break;
                             }
@@ -289,14 +299,14 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     }
                 }
 
-                verticalChildObject[0].transform.position = verticalCoordinates[i];
-                verticalChildObject[1].transform.position = verticalCoordinates[i - 1];
+                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical];
+                verticalChildObject[1].transform.position = verticalCoordinates[index.indexCountVertical - 1];
 
                 try
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 3; }
+                        if (stop == -1) { stop = index.indexCountVertical; stopperID = 3; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -304,10 +314,11 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1] &&
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
-                        verticalflagRadius(i);
+                        verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //gameManager.CheckAndDestroyRings();
+                        index.indexCountVertical = 2;
                         enabled = false;
                         //TryDestroySelf();
                     }
