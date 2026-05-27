@@ -31,9 +31,11 @@ public class BlockSInstantiator : MonoBehaviour
     private BlockType    _activeType;
 
     // ── swap-check pause flag ─────────────────────────────────────
-    // Movement scripts should check this exactly like gameManager.isRotating:
-    //   while (blockSInstantiator.isCheckingSwap) yield return null;
+    // Movement scripts check this to freeze while collision check runs
     [HideInInspector] public bool isCheckingSwap = false;
+
+    // Prevents double-tap while coroutine is in flight
+    private bool _tapInProgress = false;
 
     // ── cycle definition ─────────────────────────────────────────
     private static readonly BlockType[] _cycleOrder =
@@ -80,34 +82,55 @@ public class BlockSInstantiator : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────────────────────
-    //  Tap handler — now with collision guard
+    //  Tap handler — kicks off the coroutine
     // ─────────────────────────────────────────────────────────────
 
     private void HandleTap(Vector2 screenPosition)
     {
         if (_currentBlock == null) return;
+        if (_tapInProgress) return;
 
-        // Don't allow tap while already checking
-        if (isCheckingSwap) return;
+        StartCoroutine(HandleTapCoroutine());
+    }
 
-        // Figure out what the NEXT type would be
-        int nextIndex    = (_currentTypeIndex + 1) % _cycleOrder.Length;
-        BlockType nextType = _cycleOrder[nextIndex];
+    // ─────────────────────────────────────────────────────────────
+    //  The actual swap logic — runs across frames so the pause
+    //  flag is visible to every movement coroutine.
+    //
+    //  Frame 0:  set isCheckingSwap = true
+    //  Frame 1:  all movement coroutines have paused → safe to check
+    //  Frame 1:  collision check runs, swap or reject
+    //  Frame 1:  set isCheckingSwap = false → movement resumes
+    // ─────────────────────────────────────────────────────────────
 
-        // ── PAUSE movement, run collision check ──
+    private IEnumerator HandleTapCoroutine()
+    {
+        _tapInProgress = true;
+
+        // ── FRAME 0: raise the flag ──
         isCheckingSwap = true;
+
+        // ── wait one frame so every movement coroutine hits
+        //    "while (isCheckingSwap) yield return null" and freezes ──
+        yield return null;
+
+        // ── FRAME 1: all blocks are now frozen — safe to read indices ──
+
+        int nextIndex      = (_currentTypeIndex + 1) % _cycleOrder.Length;
+        BlockType nextType = _cycleOrder[nextIndex];
 
         PreviewData preview = GetPreviewForType(nextType);
 
         if (preview != null && IsCollidingWithPlatform(preview))
         {
-            // ── BLOCKED — don't swap, keep current block falling ──
-            isCheckingSwap = false;
-
+            // ── BLOCKED — keep current block, unfreeze, done ──
             if (logSpawnInfo)
                 Debug.Log($"[BlockSInstantiator] Swap to {nextType} BLOCKED — " +
                           $"preview collides with motherPlatform child.");
-            return;
+
+            isCheckingSwap = false;
+            _tapInProgress = false;
+            yield break;
         }
 
         // ── SAFE — proceed with swap ──
@@ -118,7 +141,9 @@ public class BlockSInstantiator : MonoBehaviour
 
         SwapCurrentBlock(nextType);
 
+        // ── unfreeze movement ──
         isCheckingSwap = false;
+        _tapInProgress = false;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -130,14 +155,12 @@ public class BlockSInstantiator : MonoBehaviour
     {
         if (motherPlatform == null) return false;
 
-        // Cache all motherPlatform child positions (rounded)
         Transform platformTransform = motherPlatform.transform;
         int childCount = platformTransform.childCount;
 
-        // Early exit
         if (childCount == 0) return false;
 
-        // Build a HashSet of rounded platform positions for O(1) lookup
+        // Build HashSet of rounded platform positions for O(1) lookup
         HashSet<Vector3> platformPositions = new HashSet<Vector3>();
         for (int c = 0; c < childCount; c++)
         {
@@ -162,10 +185,6 @@ public class BlockSInstantiator : MonoBehaviour
         return false;
     }
 
-    /// <summary>
-    /// Rounds each component to 1 decimal place.
-    /// e.g. (13.079, 13.079, 0) → (13.1, 13.1, 0.0)
-    /// </summary>
     private Vector3 RoundTo1Decimal(Vector3 v)
     {
         return new Vector3(
@@ -221,22 +240,8 @@ public class BlockSInstantiator : MonoBehaviour
 
     // ─────────────────────────────────────────────────────────────
     //  PREVIEW SYSTEM
-    //
-    //  Index cross-sync recap:
-    //    S  active → left arm drives indexCountLeft
-    //                vertical arm drives indexCountVertical
-    //                vertical arm SYNCS indexCountRight++
-    //
-    //    S1 active → left arm drives indexCountLeft
-    //                right arm drives indexCountRight
-    //                right arm SYNCS indexCountVertical++
-    //
-    //  So the "other" block's second-arm index is always ready.
     // ─────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Returns preview for whichever block is NOT currently active.
-    /// </summary>
     public PreviewData GetAlternatePreview()
     {
         if (_index == null) return null;
@@ -247,10 +252,6 @@ public class BlockSInstantiator : MonoBehaviour
             return BuildSPreview();
     }
 
-    /// <summary>
-    /// Returns preview for a specific type (used by HandleTap
-    /// to check the exact type we're about to swap TO).
-    /// </summary>
     private PreviewData GetPreviewForType(BlockType type)
     {
         if (_index == null) return null;
@@ -261,9 +262,6 @@ public class BlockSInstantiator : MonoBehaviour
             return BuildSPreview();
     }
 
-    /// <summary>
-    /// S is falling → where would S1 be?
-    /// </summary>
     private PreviewData BuildS1Preview()
     {
         int iL = _index.indexCountLeft;
@@ -286,9 +284,6 @@ public class BlockSInstantiator : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// S1 is falling → where would S be?
-    /// </summary>
     private PreviewData BuildSPreview()
     {
         int iL = _index.indexCountLeft;
@@ -333,10 +328,6 @@ public class BlockSInstantiator : MonoBehaviour
         S1Block = 1,
     }
 }
-
-// ─────────────────────────────────────────────────────────────
-//  Data container
-// ─────────────────────────────────────────────────────────────
 
 public class PreviewData
 {
