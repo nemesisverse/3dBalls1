@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlock
+public class LMovement : MonoBehaviour, IFallingBlock
 {
+    public IndexManager index;
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
@@ -30,6 +31,7 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
         if (gameManager == null) gameManager = FindFirstObjectByType<GameManager>();
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
+        if (index == null) index = FindFirstObjectByType<IndexManager>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -60,30 +62,34 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 3)
         {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            index.indexCountRight = index.indexCountRight - 1;
+            for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
+                index.indexCountRight++;
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 1; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { }
+                    if (blocked) { stop = index.indexCountLeft - 1; stopperID = 1; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountLeft > stop)
                 {
                     if (stopperID == 1)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
-                            leftflagRadius(i - 1);
+                            leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCountLeft = 2;
+                            index.indexCountRight = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -97,11 +103,13 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                leftflagRadius(i - 1);
+                                leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
+                                index.indexCountLeft = 2;
+                                index.indexCountRight = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -110,15 +118,15 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                     }
                 }
 
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
-                leftChildObject[2].transform.position = leftDiagonalCoordinates[i - 2];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft];
+                leftChildObject[1].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 1];
+                leftChildObject[2].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 2];
 
                 try
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 1; }
+                        if (stop == -1) { stop = index.indexCountLeft; stopperID = 1; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -128,11 +136,13 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                         leftChildObject[2].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 3
-                        leftflagRadius(i);
+                        leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
+                        index.indexCountLeft = 2;
+                        index.indexCountRight = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -156,28 +166,29 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < verticalCoordinates.Count; i++)
+            for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 3; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { }
+                    if (blocked) { stop = index.indexCountVertical - 1; stopperID = 3; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountVertical > stop)
                 {
                     if (stopperID == 3)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
                             // LANDING SPOT 7
-                            verticalflagRadius(i - 1);
+                            verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCountVertical = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -191,9 +202,10 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                             if (!enabled)
                             {
                                 // LANDING SPOT 8
-                                verticalflagRadius(i - 1);
+                                verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 gameManager.CheckAndDestroyRings();
+                                index.indexCountVertical = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -202,13 +214,13 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                     }
                 }
 
-                verticalChildObject[0].transform.position = verticalCoordinates[i];
+                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical];
 
                 try
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 3; }
+                        if (stop == -1) { stop = index.indexCountVertical; stopperID = 3; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -216,9 +228,10 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
                     if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 1])
                     {
                         // LANDING SPOT 9
-                        verticalflagRadius(i);
+                        verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         gameManager.CheckAndDestroyRings();
+                        index.indexCountVertical = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -256,7 +269,7 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
 
     void CheckChildrenWorldX()
     {
-        bool leftStarted = false,  verticalStarted = false;
+        bool leftStarted = false, verticalStarted = false;
         foreach (Transform child in transform)
         {
             float worldX = child.position.x;
@@ -292,7 +305,6 @@ public class LMovement : MonoBehaviour, IFallingBlock   // ← added IFallingBlo
 
     void verticalflagRadius(int i)
     {
-        // ← FIXED: was wrongly using leftChildObject[0]
         sphericalGrid.PlaceBlockByWorldPosition(
             verticalChildObject[0].transform.position, i,
             verticalChildObject[0], gameManager.motherPlatform.transform);

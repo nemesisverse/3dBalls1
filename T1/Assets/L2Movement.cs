@@ -2,34 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class L2Movement : MonoBehaviour
+public class L2Movement : MonoBehaviour, IFallingBlock
 {
-    int leftDiagonalCount = 0;
+    public IndexManager index;
+    int leftDiagonalCount  = 0;
     int rightDiagonalCount = 0;
-    int verticalCount = 0;
+    int verticalCount      = 0;
     float moveSpeed = 1f;
 
-    List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
+    List<Vector3> leftDiagonalCoordinates  = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
-    List<Vector3> verticalCoordinates = new List<Vector3>();
+    List<Vector3> verticalCoordinates      = new List<Vector3>();
 
-    List<GameObject> leftChildObject = new List<GameObject>();
-    List<GameObject> rightChildObject = new List<GameObject>();
+    List<GameObject> leftChildObject     = new List<GameObject>();
+    List<GameObject> rightChildObject    = new List<GameObject>();
     List<GameObject> verticalChildObject = new List<GameObject>();
 
     public GameManager gameManager;
-    public SwipeInput swipeInput;
+    public SwipeInput  swipeInput;
 
     private SphericalGrid sphericalGrid;
 
-    int stop = -1;
-    int stopperID = 0;
+    int stop      = -1;
+    int stopperID =  0;
 
     void Awake()
     {
-        if (gameManager == null) gameManager = FindFirstObjectByType<GameManager>();
-        if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
+        if (gameManager   == null) gameManager   = FindFirstObjectByType<GameManager>();
+        if (swipeInput    == null) swipeInput    = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
+        if (index         == null) index         = FindFirstObjectByType<IndexManager>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -51,36 +53,39 @@ public class L2Movement : MonoBehaviour
             Destroy(gameObject);
     }
 
+    // ================================================================
+    //  LEFT DIAGONAL  —  2 blocks  (standard pattern, block at i and i-1)
+    // ================================================================
 
-
- IEnumerator moveLeftDiognal(Transform child, int childCount)
+    IEnumerator moveLeftDiognal(Transform child, int childCount)
     {
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
         if (childCount == 2)
         {
-            for (int i = 2; i < leftDiagonalCoordinates.Count; i++)
+            for (; index.indexCountLeft < leftDiagonalCoordinates.Count; index.indexCountLeft++)
             {
                 if (stop == -1)
                 {
                     bool blocked = false;
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 1; }
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { }
+                    if (blocked) { stop = index.indexCountLeft - 1; stopperID = 1; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountLeft > stop)
                 {
                     if (stopperID == 1)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
-                            leftflagRadius(i - 1);
+                            leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             //gameManager.CheckAndDestroyRings();
+                            index.indexCountLeft = 2;
                             enabled = false;
                             //TryDestroySelf();
                             yield break;
@@ -94,10 +99,11 @@ public class L2Movement : MonoBehaviour
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                leftflagRadius(i - 1);
+                                leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 //gameManager.CheckAndDestroyRings();
+                                index.indexCountLeft = 2;
                                 //TryDestroySelf();
                                 yield break;
                             }
@@ -106,14 +112,14 @@ public class L2Movement : MonoBehaviour
                     }
                 }
 
-                leftChildObject[0].transform.position = leftDiagonalCoordinates[i];
-                leftChildObject[1].transform.position = leftDiagonalCoordinates[i - 1];
+                leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft];
+                leftChildObject[1].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 1];
 
                 try
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[i + 1]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, leftDiagonalCoordinates[index.indexCountLeft + 1]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 1; }
+                        if (stop == -1) { stop = index.indexCountLeft; stopperID = 1; }
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
@@ -122,10 +128,11 @@ public class L2Movement : MonoBehaviour
                         leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
                         // LANDING SPOT 3
-                        leftflagRadius(i);
+                        leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         //gameManager.CheckAndDestroyRings();
+                        index.indexCountLeft = 2;
                         enabled = false;
                         //TryDestroySelf();
                     }
@@ -140,79 +147,38 @@ public class L2Movement : MonoBehaviour
         }
     }
 
+    // ================================================================
+    //  RIGHT DIAGONAL  —  1 block  (offset pattern: block sits at i-1,
+    //                                lookahead checks i)
+    // ================================================================
 
-    ///////
-    
-
-    void countChildren()
-    {
-        leftDiagonalCount = 0; rightDiagonalCount = 0; verticalCount = 0;
-        foreach (Transform child in transform)
-        {
-            if (child.position.x < 0f) { leftDiagonalCount++; leftChildObject.Add(child.gameObject); }
-        }
-        foreach (Transform child in transform)
-        {
-            if (child.position.x > 0f) { rightDiagonalCount++; rightChildObject.Add(child.gameObject); }
-        }
-        foreach (Transform child in transform)
-        {
-            if (child.position.x == 0f) { verticalCount++; verticalChildObject.Add(child.gameObject); }
-        }
-    }
-
-    void CheckChildrenWorldX()
-    {
-        bool leftStarted = false, rightStarted = false, verticalStarted = false;
-        foreach (Transform child in transform)
-        {
-            float worldX = child.position.x;
-            if (worldX < 0f && !leftStarted)
-            {
-                StartCoroutine(moveLeftDiognal(child, leftDiagonalCount));
-                leftStarted = true;
-            }
-            else if (worldX == 0f && !verticalStarted)
-            {
-                StartCoroutine(moveVertical(child, verticalCount));
-                verticalStarted = true;
-            }
-            else if (worldX > 0f && !rightStarted)
-            {
-                StartCoroutine(moveRightDiognal(child, rightDiagonalCount));
-                rightStarted = true;
-            }
-        }
-    }
-
-
-     IEnumerator moveRightDiognal(Transform child, int childCount)
+    IEnumerator moveRightDiognal(Transform child, int childCount)
     {
         if (rightChildObject == null || rightChildObject.Count == 0) yield break;
         if (childCount == 1)
         {
-            for (int i = 2; i < rightDiagonalCoordinates.Count; i++)
+            for (; index.indexCountRight < rightDiagonalCoordinates.Count; index.indexCountRight++)
             {
                 if (stop == -1)
                 {
-                    bool blocked = false;                                                                                       //not i
-                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i - 1]); } catch { }
-                    if (blocked) { stop = i - 1; stopperID = 2; }
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight - 1]); } catch { }   //not i
+                    if (blocked) { stop = index.indexCountRight - 1; stopperID = 2; }
                 }
                 yield return null;
 
-                if (stop != -1 && i > stop)
+                if (stop != -1 && index.indexCountRight > stop)
                 {
                     if (stopperID == 2)
                     {
                         bool stillBlocked = false;
-                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i - 1]); } catch { stillBlocked = false; }
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight - 1]); } catch { stillBlocked = false; }
                         if (stillBlocked)
                         {
-                            //not i-1
-                            rightflagRadius(i - 2);
+                            rightflagRadius(index.indexCountRight - 2);   //not i-1
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCountRight = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -225,9 +191,10 @@ public class L2Movement : MonoBehaviour
                         {
                             if (!enabled)
                             {
-                                rightflagRadius(i - 2);
+                                rightflagRadius(index.indexCountRight - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                                gameManager.CheckAndDestroyRings();  // ← ADDED
+                                gameManager.CheckAndDestroyRings();
+                                index.indexCountRight = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -236,118 +203,162 @@ public class L2Movement : MonoBehaviour
                     }
                 }
 
-                rightChildObject[0].transform.position = rightDiagonalCoordinates[i - 1];
+                rightChildObject[0].transform.position = rightDiagonalCoordinates[index.indexCountRight - 1];
 
-
-                if (i + 1 < rightDiagonalCoordinates.Count)
+                if (index.indexCountRight + 1 < rightDiagonalCoordinates.Count)
                 {
-                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[i]))
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, rightDiagonalCoordinates[index.indexCountRight]))
                     {
-                        if (stop == -1) { stop = i; stopperID = 2; }
+                        if (stop == -1) { stop = index.indexCountRight; stopperID = 2; }
                     }
                 }
                 else
                 {
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
-                        rightflagRadius(i - 1);
+                        rightflagRadius(index.indexCountRight - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        gameManager.CheckAndDestroyRings();  // ← ADDED
+                        gameManager.CheckAndDestroyRings();
+                        index.indexCountRight = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
                     yield break;
                 }
+
                 while (gameManager.isRotating)
-                    yield return null;  // Pause here until rotation finishes
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
     }
 
+    // ================================================================
+    //  VERTICAL  —  1 block  (offset pattern: block sits at i-1,
+    //                          lookahead checks i)
+    // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
-{
-    if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
-    if (childCount == 1)
     {
-        for (int i = 2; i < verticalCoordinates.Count; i++)
+        if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
+        if (childCount == 1)
         {
-            if (stop == -1)
+            for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
-                bool blocked = false;
-                try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i - 1]); } catch { }
-                if (blocked) { stop = i - 1; stopperID = 3; }
-            }
-            yield return null;
-
-            if (stop != -1 && i > stop)
-            {
-                if (stopperID == 3)
+                if (stop == -1)
                 {
-                    bool stillBlocked = false;
-                    try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i - 1]); } catch { stillBlocked = false; }
-                    if (stillBlocked)
-                    {
-                        verticalflagRadius(i - 2);
-                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                        gameManager.CheckAndDestroyRings();
-                        enabled = false;
-                        TryDestroySelf();
-                        yield break;
-                    }
-                    else { stop = -1; stopperID = 0; }
+                    bool blocked = false;
+                    try { blocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical - 1]); } catch { }
+                    if (blocked) { stop = index.indexCountVertical - 1; stopperID = 3; }
                 }
-                else
+                yield return null;
+
+                if (stop != -1 && index.indexCountVertical > stop)
                 {
-                    while (stop != -1 && stopperID != 3)
+                    if (stopperID == 3)
                     {
-                        if (!enabled)
+                        bool stillBlocked = false;
+                        try { stillBlocked = gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical - 1]); } catch { stillBlocked = false; }
+                        if (stillBlocked)
                         {
-                            verticalflagRadius(i - 2);
+                            verticalflagRadius(index.indexCountVertical - 2);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             gameManager.CheckAndDestroyRings();
+                            index.indexCountVertical = 2;
+                            enabled = false;
                             TryDestroySelf();
                             yield break;
                         }
-                        yield return null;
+                        else { stop = -1; stopperID = 0; }
+                    }
+                    else
+                    {
+                        while (stop != -1 && stopperID != 3)
+                        {
+                            if (!enabled)
+                            {
+                                verticalflagRadius(index.indexCountVertical - 2);
+                                verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                gameManager.CheckAndDestroyRings();
+                                index.indexCountVertical = 2;
+                                TryDestroySelf();
+                                yield break;
+                            }
+                            yield return null;
+                        }
                     }
                 }
-            }
 
-            verticalChildObject[0].transform.position = verticalCoordinates[i - 1];
+                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical - 1];
 
-            if (i + 1 < verticalCoordinates.Count)
-            {
-                if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[i]))
+                if (index.indexCountVertical + 1 < verticalCoordinates.Count)
                 {
-                    if (stop == -1) { stop = i; stopperID = 3; }
+                    if (gameManager.HasChildAtPosition(gameManager.motherPlatform.transform, verticalCoordinates[index.indexCountVertical]))
+                    {
+                        if (stop == -1) { stop = index.indexCountVertical; stopperID = 3; }
+                    }
                 }
-            }
-            else
-            {
-                if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                else
                 {
-                    verticalflagRadius(i - 1);
-                    verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
-                    gameManager.CheckAndDestroyRings();
-                    enabled = false;
-                    TryDestroySelf();
+                    if (verticalChildObject[0].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
+                    {
+                        verticalflagRadius(index.indexCountVertical - 1);
+                        verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        gameManager.CheckAndDestroyRings();
+                        index.indexCountVertical = 2;
+                        enabled = false;
+                        TryDestroySelf();
+                    }
+                    yield break;
                 }
-                yield break;
+
+                while (gameManager.isRotating)
+                    yield return null;
+
+                yield return new WaitForSeconds(moveSpeed);
             }
-
-            while (gameManager.isRotating)
-                yield return null;
-
-            yield return new WaitForSeconds(moveSpeed);
         }
     }
-}
 
+    // ================================================================
+    //  CHILD CLASSIFICATION
+    // ================================================================
 
+    void countChildren()
+    {
+        leftDiagonalCount = 0; rightDiagonalCount = 0; verticalCount = 0;
+        foreach (Transform child in transform)
+        {
+            if (child.position.x < 0f) { leftDiagonalCount++;  leftChildObject.Add(child.gameObject); }
+        }
+        foreach (Transform child in transform)
+        {
+            if (child.position.x > 0f) { rightDiagonalCount++; rightChildObject.Add(child.gameObject); }
+        }
+        foreach (Transform child in transform)
+        {
+            if (child.position.x == 0f) { verticalCount++;     verticalChildObject.Add(child.gameObject); }
+        }
+    }
 
-        void leftflagRadius(int i)
+    void CheckChildrenWorldX()
+    {
+        bool leftStarted = false, rightStarted = false, verticalStarted = false;
+        foreach (Transform child in transform)
+        {
+            float worldX = child.position.x;
+            if      (worldX < 0f  && !leftStarted)     { StartCoroutine(moveLeftDiognal(child,  leftDiagonalCount));  leftStarted     = true; }
+            else if (worldX == 0f && !verticalStarted) { StartCoroutine(moveVertical(child,     verticalCount));       verticalStarted = true; }
+            else if (worldX > 0f  && !rightStarted)    { StartCoroutine(moveRightDiognal(child, rightDiagonalCount)); rightStarted    = true; }
+        }
+    }
+
+    // ================================================================
+    //  GRID REGISTRATION
+    // ================================================================
+
+    void leftflagRadius(int i)
     {
         sphericalGrid.PlaceBlockByWorldPosition(
             leftChildObject[0].transform.position, i,
@@ -357,20 +368,17 @@ public class L2Movement : MonoBehaviour
             leftChildObject[1], gameManager.motherPlatform.transform);
     }
 
-
-        void rightflagRadius(int i)
+    void rightflagRadius(int i)
     {
         sphericalGrid.PlaceBlockByWorldPosition(
             rightChildObject[0].transform.position, i,
             rightChildObject[0], gameManager.motherPlatform.transform);
     }
 
-     void verticalflagRadius(int i)
+    void verticalflagRadius(int i)
     {
         sphericalGrid.PlaceBlockByWorldPosition(
             verticalChildObject[0].transform.position, i,
             verticalChildObject[0], gameManager.motherPlatform.transform);
     }
-
- 
 }
