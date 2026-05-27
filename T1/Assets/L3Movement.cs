@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class L3Movement : MonoBehaviour 
+public class L3Movement : MonoBehaviour , IFallingBlock
 {
     public IndexManager index;
     int leftDiagonalCount = 0;
