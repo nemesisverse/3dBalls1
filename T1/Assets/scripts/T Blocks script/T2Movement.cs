@@ -23,6 +23,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
 
     //I added this code
     private SphericalGrid sphericalGrid;
+    private BlockTInstantiator blockTInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -33,6 +34,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>(); // ← ADD THIS
+        if (blockTInstantiator == null) blockTInstantiator = FindFirstObjectByType<BlockTInstantiator>();
 
         // Populate Coordinates
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f) leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -136,6 +138,11 @@ public class T2Movement : MonoBehaviour, IFallingBlock
 
                 while (gameManager.isRotating)
                     yield return null;  // Pause here until rotation finishes
+
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -222,6 +229,11 @@ public class T2Movement : MonoBehaviour, IFallingBlock
 
                 while (gameManager.isRotating)
                     yield return null;  // Pause here until rotation finishes
+
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -313,6 +325,11 @@ public class T2Movement : MonoBehaviour, IFallingBlock
 
                 while (gameManager.isRotating)
                     yield return null;  // Pause here until rotation finishes
+
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }

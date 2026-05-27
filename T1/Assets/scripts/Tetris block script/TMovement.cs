@@ -22,6 +22,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
     public SwipeInput swipeInput;
 
     private SphericalGrid sphericalGrid;
+    private BlockTInstantiator blockTInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -32,6 +33,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (blockTInstantiator == null) blockTInstantiator = FindFirstObjectByType<BlockTInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -137,6 +139,10 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -224,6 +230,10 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
@@ -318,6 +328,10 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+
+                // Pause while swap-check is running
+                while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
