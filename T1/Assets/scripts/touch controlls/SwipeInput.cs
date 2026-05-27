@@ -8,8 +8,6 @@ public class SwipeInput : MonoBehaviour
     private Vector2 startPos;
     private Vector2 endPos;
 
-    // REMOVED: public bool canSwipeDown, canSwipeUp, etc. 
-    // We no longer limit these; we try to rotate and revert if it fails.
 
     public float minSwipeDistance = 100f;
     public GameManager gameManager;
@@ -88,19 +86,7 @@ public class SwipeInput : MonoBehaviour
         OnSwipe?.Invoke(); //invoke ke liye check
     }
 
-    // void ApplyRotationInstant(Vector3 axis, float degrees)
-    // {
-    //     gameManager.isRotating = true; // //to stop the for loop to cause the movemennt to falling block when rotation is made 
-    //                                    // 1. Calculate and apply the new rotation directly
-    //     gameManager.motherPlatform.transform.rotation =
-    //         Quaternion.AngleAxis(degrees, axis) * gameManager.motherPlatform.transform.rotation;
-
-    //     // 2. (Optional) Sync if you have other logic checking collisions immediately after
-    //     Physics.SyncTransforms();
-    //     gameManager.isRotating = false; //to stop the for loop to cause the movemennt to falling block when rotation is made 
-
-    //     Debug.Log("Rotation Applied");
-    // }
+   
 
     void ApplyRotationInstant(Vector3 axis, float degrees)
     {
@@ -175,71 +161,5 @@ public class SwipeInput : MonoBehaviour
         return false;
     }
 
-    // bool CheckOverlapWithFallingBlocks()
-    // {
-    //     TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
-
-    //     foreach (TMovement block in fallingBlocks)
-    //     {
-    //         if (!block.enabled) continue;
-
-    //         foreach (Transform fallingChild in block.transform)
-    //         {
-    //             Vector3 fallingPos = fallingChild.position;
-
-    //             foreach (Transform motherChild in gameManager.motherPlatform.transform)
-    //             {
-    //                 Vector3 motherPos = motherChild.position;
-
-    //                 bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
-    //                 bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
-    //                 bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
-
-    //                 if (xMatch && yMatch && zMatch)
-    //                     return true;
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-    // bool CheckOverlapWithFallingBlocks()
-    // {
-    //     // Check TMovement blocks
-    //     TMovement[] fallingBlocks = FindObjectsByType<TMovement>(FindObjectsSortMode.None);
-    //     foreach (TMovement block in fallingBlocks)
-    //     {
-    //         if (!block.enabled) continue;
-    //         if (CheckBlockOverlap(block.transform)) return true;
-    //     }
-
-    //     // Check T1Movement blocks
-    //     T1Movement[] fallingBlocks1 = FindObjectsByType<T1Movement>(FindObjectsSortMode.None);
-    //     foreach (T1Movement block in fallingBlocks1)
-    //     {
-    //         if (!block.enabled) continue;
-    //         if (CheckBlockOverlap(block.transform)) return true;
-    //     }
-
-    //     return false;
-    // }
-
-    // bool CheckBlockOverlap(Transform blockTransform)
-    // {
-    //     foreach (Transform fallingChild in blockTransform)
-    //     {
-    //         Vector3 fallingPos = fallingChild.position;
-    //         foreach (Transform motherChild in gameManager.motherPlatform.transform)
-    //         {
-    //             Vector3 motherPos = motherChild.position;
-
-    //             bool xMatch = Mathf.Round(fallingPos.x * 10f) == Mathf.Round(motherPos.x * 10f);
-    //             bool yMatch = Mathf.Round(fallingPos.y * 10f) == Mathf.Round(motherPos.y * 10f);
-    //             bool zMatch = Mathf.Round(fallingPos.z * 10f) == Mathf.Round(motherPos.z * 10f);
-
-    //             if (xMatch && yMatch && zMatch)
-    //                 return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    
 }

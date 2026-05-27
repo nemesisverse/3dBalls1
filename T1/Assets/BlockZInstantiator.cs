@@ -8,33 +8,28 @@ public class BlockZInstantiator : MonoBehaviour
 
     [Header("Spawn Settings")]
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
-    public float spawnInterval = 2f;          // 0 = manual / GameManager-driven only
+    public float spawnInterval = 2f;
 
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
-    // ── internal state ────────────────────────────────────────────
-    private GameObject _currentBlock;         // the block currently falling
-    private int        _currentTypeIndex;     // index into _cycleOrder[]
+    private GameObject _currentBlock;
+    private int        _currentTypeIndex;
     private float      _timer;
 
-    // ── cycle definition ─────────────────────────────────────────
-    // Tap walks forward through this array and wraps around.
-    // Change the order here to change the tap-cycle order globally.
+    private GameManager _gameManager;
+
     private static readonly BlockType[] _cycleOrder =
     {
         BlockType.ZBlock,    // 0
         BlockType.Z1Block,   // 1
     };
 
-    // ─────────────────────────────────────────────────────────────
-    //  Unity lifecycle
-    // ─────────────────────────────────────────────────────────────
-
     private void Start()
     {
+        _gameManager = FindFirstObjectByType<GameManager>();
         _timer = spawnInterval;
-        SpawnNextBlock();                       // spawn one immediately on Start
+        SpawnNextBlock();
     }
 
     private void OnEnable()  => TapInput.OnTap += HandleTap;
@@ -42,9 +37,7 @@ public class BlockZInstantiator : MonoBehaviour
 
     private void Update()
     {
-        if (spawnInterval <= 0f) return;        // manual-only mode
-
-        // Only tick down while there is no live block
+        if (spawnInterval <= 0f) return;
         if (_currentBlock != null) return;
 
         _timer -= Time.deltaTime;
@@ -55,35 +48,76 @@ public class BlockZInstantiator : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Tap handler  — called by TapInput.OnTap event
-    // ─────────────────────────────────────────────────────────────
-
     private void HandleTap(Vector2 screenPosition)
     {
-        // No block alive yet — nothing to cycle
         if (_currentBlock == null) return;
 
-        // Advance one step in the cycle (wraps automatically)
-        _currentTypeIndex = (_currentTypeIndex + 1) % _cycleOrder.Length;
+        int candidateIndex      = (_currentTypeIndex + 1) % _cycleOrder.Length;
+        BlockType candidateType = _cycleOrder[candidateIndex];
 
         if (logSpawnInfo)
-            Debug.Log($"[BlockZInstantiator] Tap → cycling to: {_cycleOrder[_currentTypeIndex]}");
+            Debug.Log($"[BlockZInstantiator] Tap → trying candidate: {candidateType}");
 
-        SwapCurrentBlock(_cycleOrder[_currentTypeIndex]);
+        GameObject prefab = PrefabForType(candidateType);
+        if (prefab == null)
+        {
+            Debug.LogError($"[BlockZInstantiator] Prefab for {candidateType} not assigned.");
+            return;
+        }
+
+        GameObject candidate = Instantiate(prefab, _currentBlock.transform.position, Quaternion.identity);
+        candidate.SetActive(false);
+
+        if (CheckCandidateOverlap(candidate))
+        {
+            // Blocked — discard candidate, current block keeps falling untouched
+            if (logSpawnInfo)
+                Debug.Log($"[BlockZInstantiator] Candidate {candidateType} BLOCKED — keeping current block.");
+
+            Destroy(candidate);
+            return;
+        }
+
+        // Clear — commit the swap
+        _currentTypeIndex = candidateIndex;
+
+        if (logSpawnInfo)
+            Debug.Log($"[BlockZInstantiator] Candidate {candidateType} CLEAR — committing swap.");
+
+        _currentBlock.SetActive(false);
+        Destroy(_currentBlock);
+
+        candidate.SetActive(true);
+        _currentBlock = candidate;
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Core spawn / swap helpers
-    // ─────────────────────────────────────────────────────────────
+    private bool CheckCandidateOverlap(GameObject candidate)
+    {
+        if (_gameManager == null || _gameManager.motherPlatform == null)
+            return false;
 
-    /// <summary>
-    /// Picks a random block type, sets the cycle index to match,
-    /// then instantiates it. Call from GameManager for manual spawning.
-    /// </summary>
+        foreach (Transform candidateChild in candidate.transform)
+        {
+            Vector3 cPos = candidateChild.position;
+
+            foreach (Transform motherChild in _gameManager.motherPlatform.transform)
+            {
+                Vector3 mPos = motherChild.position;
+
+                bool xMatch = Mathf.Round(cPos.x * 10f) == Mathf.Round(mPos.x * 10f);
+                bool yMatch = Mathf.Round(cPos.y * 10f) == Mathf.Round(mPos.y * 10f);
+                bool zMatch = Mathf.Round(cPos.z * 10f) == Mathf.Round(mPos.z * 10f);
+
+                if (xMatch && yMatch && zMatch)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public void SpawnNextBlock()
     {
-        // Randomiser picks the starting type for this piece
         _currentTypeIndex = UnityEngine.Random.Range(0, _cycleOrder.Length);
         BlockType chosen  = _cycleOrder[_currentTypeIndex];
 
@@ -93,28 +127,6 @@ public class BlockZInstantiator : MonoBehaviour
         InstantiateBlock(chosen, spawnPosition);
     }
 
-    /// <summary>
-    /// Destroys the current block and spawns the given type
-    /// at the same world position the old block occupied.
-    /// </summary>
-    private void SwapCurrentBlock(BlockType newType)
-    {
-        Vector3 preservedPosition = _currentBlock != null
-            ? _currentBlock.transform.position
-            : spawnPosition;
-
-        // SetActive(false) stops the old block's scripts + renderer IMMEDIATELY
-        // Destroy() then cleans up the GameObject at end-of-frame
-        _currentBlock.SetActive(false);
-        Destroy(_currentBlock);
-
-        InstantiateBlock(newType, preservedPosition);
-    }
-
-    /// <summary>
-    /// Instantiates the prefab for <paramref name="type"/> at <paramref name="pos"/>
-    /// and stores it as the current live block.
-    /// </summary>
     private void InstantiateBlock(BlockType type, Vector3 pos)
     {
         GameObject prefab = PrefabForType(type);
@@ -131,10 +143,6 @@ public class BlockZInstantiator : MonoBehaviour
             Debug.Log($"[BlockZInstantiator] Instantiated {type} at {pos}");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Randomiser / registry
-    // ─────────────────────────────────────────────────────────────
-
     private GameObject PrefabForType(BlockType type)
     {
         switch (type)
@@ -147,10 +155,6 @@ public class BlockZInstantiator : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Tap cycle order is driven by the _cycleOrder array above.
-    /// To add a new block: add an entry here + a prefab field + a PrefabForType case.
-    /// </summary>
     private enum BlockType
     {
         ZBlock  = 0,
