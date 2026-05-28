@@ -22,6 +22,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
     public SwipeInput  swipeInput;
 
     private SphericalGrid sphericalGrid;
+    private BlockZInstantiator zInstantiator;
 
     int stop      = -1;
     int stopperID =  0;
@@ -32,10 +33,11 @@ public class ZMovement : MonoBehaviour, IFallingBlock
 
     void Awake()
     {
-        if (gameManager  == null) gameManager  = FindFirstObjectByType<GameManager>();
-        if (swipeInput   == null) swipeInput   = FindFirstObjectByType<SwipeInput>();
-        if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
-        if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (gameManager    == null) gameManager    = FindFirstObjectByType<GameManager>();
+        if (swipeInput     == null) swipeInput     = FindFirstObjectByType<SwipeInput>();
+        if (sphericalGrid  == null) sphericalGrid  = FindFirstObjectByType<SphericalGrid>();
+        if (index          == null) index          = FindFirstObjectByType<IndexManager>();
+        if (zInstantiator  == null) zInstantiator  = FindFirstObjectByType<BlockZInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -147,6 +149,10 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
+                // Freeze while BlockZInstantiator is running its swap check
+                while (zInstantiator != null && zInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -233,6 +239,10 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+
+                // Freeze while BlockZInstantiator is running its swap check
+                while (zInstantiator != null && zInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
@@ -326,6 +336,10 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+
+                // Freeze while BlockZInstantiator is running its swap check
+                while (zInstantiator != null && zInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
