@@ -22,6 +22,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
     public SwipeInput swipeInput;
 
     private SphericalGrid sphericalGrid;
+    private BlockLInstantiator lInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -32,6 +33,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
+        if (lInstantiator == null) lInstantiator = FindFirstObjectByType<BlockLInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -152,6 +154,10 @@ public class LMovement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
+                // ── freeze while BlockLInstantiator is checking swap ──
+                while (lInstantiator != null && lInstantiator.isCheckingSwap)
+                    yield return null;
+
                 yield return new WaitForSeconds(moveSpeed);
             }
         }
@@ -239,6 +245,10 @@ public class LMovement : MonoBehaviour, IFallingBlock
                 }
 
                 while (gameManager.isRotating)
+                    yield return null;
+
+                // ── freeze while BlockLInstantiator is checking swap ──
+                while (lInstantiator != null && lInstantiator.isCheckingSwap)
                     yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);

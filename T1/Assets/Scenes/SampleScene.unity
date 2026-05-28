@@ -3170,11 +3170,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70dd13c5e83944145b291b9cee1da50f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  motherPlatform: {fileID: 1227501322}
   eyeBlockPrefab: {fileID: 2751679613155836918, guid: 0340b4dcd2e08468b97c47e67e48a819, type: 3}
   eye1BlockPrefab: {fileID: 30039912126458423, guid: db500dbe5c5de4c2581d2becd6967faf, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
   logSpawnInfo: 1
+  isCheckingSwap: 0
 --- !u!4 &1100209343
 Transform:
   m_ObjectHideFlags: 0
@@ -3295,12 +3297,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 522a06175972b4e81a3ff14743435168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  motherPlatform: {fileID: 1227501322}
   tBlockPrefab: {fileID: 1642180399421770191, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
   t1BlockPrefab: {fileID: 6193181901868784974, guid: 6d56a905b42734a2aad5957137033946, type: 3}
   t2BlockPrefab: {fileID: 486865378013806613, guid: 8117b6d13aa724907acf6fb609204808, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
   logSpawnInfo: 1
+  isCheckingSwap: 0
 --- !u!1 &1227501322 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 072a7aebd982f8840a430f3be728cf1f, type: 3}
@@ -3534,6 +3538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d8e600ae5d6148ffae5e671b739c79c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  motherPlatform: {fileID: 1227501322}
   lBlockPrefab: {fileID: 4286170174838758619, guid: 997d88a09cc4341688cbbcc3392c31fe, type: 3}
   l1BlockPrefab: {fileID: 30181724371523791, guid: b27e8ef44defa46cead215204585f391, type: 3}
   l2BlockPrefab: {fileID: 6149638378701756501, guid: f63c603f99eb149ed8c85d3ed3de0451, type: 3}
@@ -4693,11 +4698,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dac41400bed94e7fa72964619446142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  motherPlatform: {fileID: 1227501322}
   zBlockPrefab: {fileID: 6183826164397899648, guid: 5ceb4ce745b2a4ac2a26764d860139d3, type: 3}
   z1BlockPrefab: {fileID: 8576482779287731194, guid: eac2cae5a39ec4ebfb40d534a4e1c81d, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
   logSpawnInfo: 1
+  isCheckingSwap: 0
 --- !u!4 &2127912968
 Transform:
   m_ObjectHideFlags: 0
