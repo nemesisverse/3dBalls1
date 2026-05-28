@@ -48,6 +48,7 @@ public class BlockEyeInstantiator : MonoBehaviour
 
     void Awake()
     {
+         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
         // Eye1 falls along left-diagonal
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));

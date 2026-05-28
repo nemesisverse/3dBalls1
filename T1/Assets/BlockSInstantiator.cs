@@ -50,6 +50,7 @@ public class BlockSInstantiator : MonoBehaviour
 
     void Awake()
     {
+         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
