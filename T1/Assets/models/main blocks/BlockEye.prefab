@@ -47,6 +47,7 @@ MonoBehaviour:
   motherPlatform: {fileID: 0}
   eyeBlockPrefab: {fileID: 2751679613155836918, guid: 0340b4dcd2e08468b97c47e67e48a819, type: 3}
   eye1BlockPrefab: {fileID: 30039912126458423, guid: db500dbe5c5de4c2581d2becd6967faf, type: 3}
+  eye2BlockPrefab: {fileID: 8484961757703760393, guid: bd6e8734e0601416198e442fa63e3c16, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
   logSpawnInfo: 1

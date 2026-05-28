@@ -22,7 +22,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
     public SwipeInput swipeInput;
 
     private SphericalGrid sphericalGrid;
-    private BlockEyeInstantiator eyeInstantiator;   // ← was BlockTInstantiator blockTInstantiator
+    private BlockEyeInstantiator eyeInstantiator;
 
     int stop = -1;
     int stopperID = 0;
@@ -33,7 +33,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
         if (swipeInput == null) swipeInput = FindFirstObjectByType<SwipeInput>();
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
-        if (eyeInstantiator == null) eyeInstantiator = FindFirstObjectByType<BlockEyeInstantiator>();   // ← fixed
+        if (eyeInstantiator == null) eyeInstantiator = FindFirstObjectByType<BlockEyeInstantiator>();
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -57,7 +57,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
 
     void DestroyInstantiator()
     {
-        if (eyeInstantiator != null)   // ← fixed
+        if (eyeInstantiator != null)
             Destroy(eyeInstantiator.gameObject);
     }
 
@@ -148,7 +148,8 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
-                if (eyeInstantiator != null)           // ← fixed
+                // freeze during swap-check
+                if (eyeInstantiator != null)
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
@@ -244,7 +245,8 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
-                if (eyeInstantiator != null)           // ← fixed
+                // freeze during swap-check
+                if (eyeInstantiator != null)
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
@@ -253,46 +255,9 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
         }
     }
 
-    void countChildren()
-    {
-        leftDiagonalCount = 0; rightDiagonalCount = 0; verticalCount = 0;
-        foreach (Transform child in transform)
-        {
-            if (child.position.x < 0f) { leftDiagonalCount++; leftChildObject.Add(child.gameObject); }
-        }
-        foreach (Transform child in transform)
-        {
-            if (child.position.x > 0f) { rightDiagonalCount++; rightChildObject.Add(child.gameObject); }
-        }
-        foreach (Transform child in transform)
-        {
-            if (child.position.x == 0f) { verticalCount++; verticalChildObject.Add(child.gameObject); }
-        }
-    }
-
-    void CheckChildrenWorldX()
-    {
-        bool leftStarted = false, rightStarted = false, verticalStarted = false;
-        foreach (Transform child in transform)
-        {
-            float worldX = child.position.x;
-            if (worldX < 0f && !leftStarted)
-            {
-                StartCoroutine(moveLeftDiognal(child, leftDiagonalCount));
-                leftStarted = true;
-            }
-            else if (worldX == 0f && !verticalStarted)
-            {
-                StartCoroutine(moveVertical(child, verticalCount));
-                verticalStarted = true;
-            }
-            else if (worldX > 0f && !rightStarted)
-            {
-                StartCoroutine(moveRightDiognal(child, rightDiagonalCount));
-                rightStarted = true;
-            }
-        }
-    }
+    // ================================================================
+    //  VERTICAL — uses index.indexCountVertical throughout
+    // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
@@ -377,11 +342,71 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                 while (gameManager.isRotating)
                     yield return null;
 
-                if (eyeInstantiator != null)           // ← fixed
+                // freeze during swap-check
+                if (eyeInstantiator != null)
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
                 yield return new WaitForSeconds(moveSpeed);
+            }
+        }
+    }
+
+    // ================================================================
+    //  HELPERS
+    // ================================================================
+
+    void countChildren()
+    {
+        leftDiagonalCount = 0; rightDiagonalCount = 0; verticalCount = 0;
+
+        // Tolerance-safe comparisons — avoids floating-point false misses
+        foreach (Transform child in transform)
+        {
+            if (child.position.x < -0.001f)
+            {
+                leftDiagonalCount++;
+                leftChildObject.Add(child.gameObject);
+            }
+        }
+        foreach (Transform child in transform)
+        {
+            if (child.position.x > 0.001f)
+            {
+                rightDiagonalCount++;
+                rightChildObject.Add(child.gameObject);
+            }
+        }
+        foreach (Transform child in transform)
+        {
+            if (Mathf.Abs(child.position.x) < 0.001f)
+            {
+                verticalCount++;
+                verticalChildObject.Add(child.gameObject);
+            }
+        }
+    }
+
+    void CheckChildrenWorldX()
+    {
+        bool leftStarted = false, rightStarted = false, verticalStarted = false;
+        foreach (Transform child in transform)
+        {
+            float worldX = child.position.x;
+            if (worldX < -0.001f && !leftStarted)
+            {
+                StartCoroutine(moveLeftDiognal(child, leftDiagonalCount));
+                leftStarted = true;
+            }
+            else if (Mathf.Abs(worldX) < 0.001f && !verticalStarted)
+            {
+                StartCoroutine(moveVertical(child, verticalCount));
+                verticalStarted = true;
+            }
+            else if (worldX > 0.001f && !rightStarted)
+            {
+                StartCoroutine(moveRightDiognal(child, rightDiagonalCount));
+                rightStarted = true;
             }
         }
     }

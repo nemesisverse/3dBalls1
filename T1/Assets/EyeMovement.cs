@@ -62,10 +62,12 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
         if (verticalChildObject == null || verticalChildObject.Count == 0) yield break;
         if (childCount == 3)
         {
+            index.indexCountRight = index.indexCountRight - 1;
             index.indexCountLeft = index.indexCountLeft - 1;
             for (; index.indexCountVertical < verticalCoordinates.Count; index.indexCountVertical++)
             {
                 index.indexCountLeft++;
+                index.indexCountRight++;
                 if (stop == -1)
                 {
                     bool blocked = false;
@@ -91,6 +93,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             index.indexCountVertical = 2;
+                            index.indexCountRight = 2;
                             enabled = false;
                             TryDestroySelf();
                             yield break;
@@ -112,6 +115,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 index.indexCountVertical = 2;
+                                index.indexCountRight = 2;
                                 TryDestroySelf();
                                 yield break;
                             }
@@ -146,6 +150,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         index.indexCountVertical = 2;
+                        index.indexCountRight = 2;
                         enabled = false;
                         TryDestroySelf();
                     }
@@ -173,7 +178,14 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
     {
         verticalCount = 0;
         foreach (Transform child in transform)
-            if (child.position.x == 0f) { verticalCount++; verticalChildObject.Add(child.gameObject); }
+        {
+            // Tolerance-safe zero check — avoids floating-point false misses
+            if (Mathf.Abs(child.position.x) < 0.001f)
+            {
+                verticalCount++;
+                verticalChildObject.Add(child.gameObject);
+            }
+        }
     }
 
     void CheckChildrenWorldX()
@@ -181,7 +193,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
         bool verticalStarted = false;
         foreach (Transform child in transform)
         {
-            if (child.position.x == 0f && !verticalStarted)
+            if (Mathf.Abs(child.position.x) < 0.001f && !verticalStarted)
             {
                 StartCoroutine(moveVertical(child, verticalCount));
                 verticalStarted = true;

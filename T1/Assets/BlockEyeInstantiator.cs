@@ -5,12 +5,14 @@ using UnityEngine;
 public class BlockEyeInstantiator : MonoBehaviour
 {
     List<Vector3> leftDiagonalCoordinates  = new List<Vector3>();
+    List<Vector3> rightDiagonalCoordinates = new List<Vector3>();   // ← NEW: needed for Eye2 preview
     List<Vector3> verticalCoordinates      = new List<Vector3>();
 
     public GameObject motherPlatform;
     [Header("Block Prefabs")]
     public GameObject eyeBlockPrefab;
     public GameObject eye1BlockPrefab;
+    public GameObject eye2BlockPrefab;   // ← NEW
 
     [Header("Spawn Settings")]
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
@@ -36,10 +38,12 @@ public class BlockEyeInstantiator : MonoBehaviour
     private bool _tapInProgress = false;
 
     // ── cycle definition ─────────────────────────────────────────
+    // Eye → Eye1 → Eye2 → Eye  (3-way circular cycle)
     private static readonly BlockType[] _cycleOrder =
     {
         BlockType.EyeBlock,    // 0
         BlockType.Eye1Block,   // 1
+        BlockType.Eye2Block,   // 2  ← NEW
     };
 
     // ─────────────────────────────────────────────────────────────
@@ -48,12 +52,17 @@ public class BlockEyeInstantiator : MonoBehaviour
 
     void Awake()
     {
-         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
-        // Eye1 falls along left-diagonal
+        if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+
+        // Eye1 / Eye2-left  fall along left-diagonal
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
 
-        // Eye falls along vertical
+        // Eye2-right  falls along right-diagonal  ← NEW
+        for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
+            rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
+
+        // Eye / Eye2-vertical  fall along the Y axis
         for (float v = 18.5f; v >= 2.5f; v -= 1f)
             verticalCoordinates.Add(new Vector3(0f, v, 0f));
     }
@@ -240,19 +249,23 @@ public class BlockEyeInstantiator : MonoBehaviour
     // ─────────────────────────────────────────────────────────────
     //  PREVIEW SYSTEM
     //
-    //  Eye  falls along vertical:       verticalCoordinates[i], [i-1], [i-2]
-    //  Eye1 falls along left-diagonal:  leftDiagonalCoordinates[i], [i-1], [i-2]
+    //  Eye  — 3 blocks on vertical axis:        verticalCoordinates[iV], [iV-1], [iV-2]
+    //  Eye1 — 3 blocks on left diagonal:         leftDiagonalCoordinates[iL], [iL-1], [iL-2]
+    //  Eye2 — 1 block on each axis (independent): left[iL], right[iR], vertical[iV]
     //
-    //  Both movement scripts keep indexCountVertical and indexCountLeft
-    //  synchronised in lockstep.  So whichever block is currently
-    //  falling, the *other* index already tells us where the
-    //  alternate block's children would be.
+    //  Eye and Eye1 keep all three IndexManager counters in lockstep,
+    //  so whichever of them is currently falling, any index already
+    //  tells us where the alternate block's children would appear.
+    //
+    //  Eye2 advances each index independently, but the initial values
+    //  are always the same (reset to 2 on landing) so the prediction
+    //  is still valid while the block has not yet started drifting.
     // ─────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the 3 world positions the given block type would
+    /// Returns the world positions the given block type would
     /// occupy right now, based on the current IndexManager state.
-    /// Returns null if indices are out of range (block can't exist).
+    /// Returns null if indices are out of range (block cannot exist here).
     /// </summary>
     private Vector3[] GetPreviewPositions(BlockType type)
     {
@@ -260,19 +273,20 @@ public class BlockEyeInstantiator : MonoBehaviour
 
         if (type == BlockType.EyeBlock)
             return BuildEyePreview();
-        else
+        else if (type == BlockType.Eye1Block)
             return BuildEye1Preview();
+        else
+            return BuildEye2Preview();
     }
 
     /// <summary>
-    /// Predict where Eye (vertical) children would be right now.
-    /// Eye uses verticalCoordinates at indices [iV], [iV-1], [iV-2].
+    /// Predict where Eye (vertical, 3 children) would be right now.
+    /// Uses verticalCoordinates at indices [iV], [iV-1], [iV-2].
     /// </summary>
     private Vector3[] BuildEyePreview()
     {
         int iV = _index.indexCountVertical;
 
-        // Need indices iV, iV-1, iV-2 — so iV must be >= 2
         if (iV < 2 || iV >= verticalCoordinates.Count) return null;
 
         return new Vector3[]
@@ -284,14 +298,13 @@ public class BlockEyeInstantiator : MonoBehaviour
     }
 
     /// <summary>
-    /// Predict where Eye1 (left-diagonal) children would be right now.
-    /// Eye1 uses leftDiagonalCoordinates at indices [iL], [iL-1], [iL-2].
+    /// Predict where Eye1 (left-diagonal, 3 children) would be right now.
+    /// Uses leftDiagonalCoordinates at indices [iL], [iL-1], [iL-2].
     /// </summary>
     private Vector3[] BuildEye1Preview()
     {
         int iL = _index.indexCountLeft;
 
-        // Need indices iL, iL-1, iL-2 — so iL must be >= 2
         if (iL < 2 || iL >= leftDiagonalCoordinates.Count) return null;
 
         return new Vector3[]
@@ -303,8 +316,32 @@ public class BlockEyeInstantiator : MonoBehaviour
     }
 
     /// <summary>
-    /// Public accessor so external systems can query the alternate
-    /// block's predicted positions (mirrors BlockSInstantiator.GetAlternatePreview).
+    /// Predict where Eye2's 3 independent children would be right now.
+    /// One child on each axis: left diagonal, right diagonal, vertical.
+    /// Each uses the current value of its own IndexManager counter.
+    /// </summary>
+    private Vector3[] BuildEye2Preview()   // ← NEW
+    {
+        int iL = _index.indexCountLeft;
+        int iR = _index.indexCountRight;
+        int iV = _index.indexCountVertical;
+
+        if (iL >= leftDiagonalCoordinates.Count  ||
+            iR >= rightDiagonalCoordinates.Count  ||
+            iV >= verticalCoordinates.Count) return null;
+
+        return new Vector3[]
+        {
+            leftDiagonalCoordinates[iL],
+            rightDiagonalCoordinates[iR],
+            verticalCoordinates[iV],
+        };
+    }
+
+    /// <summary>
+    /// Public accessor so external systems can query the NEXT block's
+    /// predicted positions (mirrors BlockSInstantiator.GetAlternatePreview).
+    /// Follows the 3-way cycle: Eye → Eye1 → Eye2 → Eye.
     /// </summary>
     public Vector3[] GetAlternatePreviewPositions()
     {
@@ -312,7 +349,9 @@ public class BlockEyeInstantiator : MonoBehaviour
 
         if (_activeType == BlockType.EyeBlock)
             return BuildEye1Preview();
-        else
+        else if (_activeType == BlockType.Eye1Block)
+            return BuildEye2Preview();
+        else                                           // Eye2Block → Eye
             return BuildEyePreview();
     }
 
@@ -326,6 +365,7 @@ public class BlockEyeInstantiator : MonoBehaviour
         {
             case BlockType.EyeBlock:  return eyeBlockPrefab;
             case BlockType.Eye1Block: return eye1BlockPrefab;
+            case BlockType.Eye2Block: return eye2BlockPrefab;   // ← NEW
             default:
                 Debug.LogWarning($"[BlockEyeInstantiator] Unhandled BlockType: {type}");
                 return null;
@@ -336,5 +376,6 @@ public class BlockEyeInstantiator : MonoBehaviour
     {
         EyeBlock  = 0,
         Eye1Block = 1,
+        Eye2Block = 2,   // ← NEW
     }
 }
