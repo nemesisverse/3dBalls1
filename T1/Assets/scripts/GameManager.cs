@@ -130,6 +130,8 @@ public class GameManager : MonoBehaviour
                     Debug.Log($"[GameManager]   '{block.name}' → DeletedRing");
                 }
 
+                ScoreManager.Instance.AddRingScore();
+
                 if (ringTraversalContainer != null)
                 {
                     foreach (Transform t in outerCoplanar)
