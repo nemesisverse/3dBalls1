@@ -56,6 +56,16 @@ public class LMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockLInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (lInstantiator != null)
+            Destroy(lInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL — 3 blocks, 3 landing spots
     // ================================================================
 
@@ -89,6 +99,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             index.indexCountRight = 2;
@@ -109,6 +120,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 index.indexCountRight = 2;
@@ -142,6 +154,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         index.indexCountRight = 2;
@@ -193,6 +206,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                             // LANDING SPOT 7
                             verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             enabled = false;
@@ -210,6 +224,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                                 // LANDING SPOT 8
                                 verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 TryDestroySelf();
@@ -236,6 +251,7 @@ public class LMovement : MonoBehaviour, IFallingBlock
                         // LANDING SPOT 9
                         verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         enabled = false;

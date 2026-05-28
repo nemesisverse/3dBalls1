@@ -56,6 +56,16 @@ public class L2Movement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockLInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (lInstantiator != null)
+            Destroy(lInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL  —  2 blocks  (standard pattern, block at i and i-1)
     // ================================================================
 
@@ -86,6 +96,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                             leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             //gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             enabled = false;
@@ -104,6 +115,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                                 leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 //gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 //TryDestroySelf();
@@ -133,6 +145,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                         leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         //gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
@@ -183,6 +196,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                         {
                             rightflagRadius(index.indexCountRight - 2);   //not i-1
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountRight = 2;
                             enabled = false;
@@ -199,6 +213,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                             {
                                 rightflagRadius(index.indexCountRight - 2);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountRight = 2;
                                 TryDestroySelf();
@@ -224,6 +239,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                     {
                         rightflagRadius(index.indexCountRight - 1);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountRight = 2;
                         enabled = false;
@@ -274,6 +290,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                         {
                             verticalflagRadius(index.indexCountVertical - 2);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             enabled = false;
@@ -290,6 +307,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                             {
                                 verticalflagRadius(index.indexCountVertical - 2);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 TryDestroySelf();
@@ -315,6 +333,7 @@ public class L2Movement : MonoBehaviour, IFallingBlock
                     {
                         verticalflagRadius(index.indexCountVertical - 1);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         enabled = false;

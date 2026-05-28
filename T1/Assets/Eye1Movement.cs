@@ -44,6 +44,16 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockEyeInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (eyeInstantiator != null)
+            Destroy(eyeInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL — 3 blocks falling together
     // ================================================================
 
@@ -77,6 +87,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             index.indexCountVertical = 2;
@@ -97,6 +108,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 index.indexCountVertical = 2;
@@ -130,6 +142,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         index.indexCountVertical = 2;

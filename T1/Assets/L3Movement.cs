@@ -55,6 +55,20 @@ public class L3Movement : MonoBehaviour , IFallingBlock
             Destroy(gameObject);
     }
 
+    // ================================================================
+    //  Destroys the BlockLInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (lInstantiator != null)
+            Destroy(lInstantiator.gameObject);
+    }
+
+    // ================================================================
+    //  LEFT DIAGONAL — 1 block
+    // ================================================================
+
     IEnumerator moveLeftDiagonal(Transform child, int childCount)
     {
         if (leftChildObject == null || leftChildObject.Count == 0) yield break;
@@ -84,6 +98,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 2);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             enabled = false;
@@ -101,6 +116,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                                 // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 2);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 TryDestroySelf();
@@ -128,6 +144,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft - 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
@@ -147,6 +164,10 @@ public class L3Movement : MonoBehaviour , IFallingBlock
             }
         }
     }
+
+    // ================================================================
+    //  VERTICAL — 3 blocks
+    // ================================================================
 
     IEnumerator moveVertical(Transform child, int childCount)
     {
@@ -178,6 +199,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             index.indexCountVertical = 2;
                             index.indexCountRight = 2;
                             enabled = false;
@@ -196,6 +218,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 index.indexCountVertical = 2;
                                 index.indexCountRight = 2;
                                 yield break;
@@ -227,6 +250,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         index.indexCountVertical = 2;
                         index.indexCountRight = 2;
                         enabled = false;
@@ -245,6 +269,10 @@ public class L3Movement : MonoBehaviour , IFallingBlock
             }
         }
     }
+
+    // ================================================================
+    //  CHILD CLASSIFICATION
+    // ================================================================
 
     void countChildren()
     {
@@ -273,6 +301,10 @@ public class L3Movement : MonoBehaviour , IFallingBlock
             else if (worldX == 0f && !verticalStarted) { StartCoroutine(moveVertical(child,     verticalCount));      verticalStarted = true; }
         }
     }
+
+    // ================================================================
+    //  GRID REGISTRATION
+    // ================================================================
 
     void leftflagRadius(int i)
     {

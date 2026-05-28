@@ -56,6 +56,16 @@ public class TMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockTInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (blockTInstantiator != null)
+            Destroy(blockTInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL — uses index.indexCountLeft throughout
     // ================================================================
 
@@ -85,6 +95,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             enabled = false;
                             index.indexCountLeft = 2;
@@ -102,6 +113,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 TryDestroySelf();
@@ -128,6 +140,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
@@ -178,6 +191,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             // LANDING SPOT 4
                             rightflagRadius(index.indexCountRight - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountRight = 2;
                             enabled = false;
@@ -195,6 +209,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 // LANDING SPOT 5
                                 rightflagRadius(index.indexCountRight - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountRight = 2;
                                 TryDestroySelf();
@@ -221,6 +236,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         // LANDING SPOT 6
                         rightflagRadius(index.indexCountRight);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountRight = 2;
                         enabled = false;
@@ -272,6 +288,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             enabled = false;
@@ -290,6 +307,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 TryDestroySelf();
@@ -319,6 +337,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         enabled = false;

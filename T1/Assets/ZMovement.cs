@@ -60,6 +60,16 @@ public class ZMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockZInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (zInstantiator != null)
+            Destroy(zInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL
     //  Z orientation: block lives at index (i-1) — one unit higher than T.
     //  Everything else mirrors TMovement exactly.
@@ -94,6 +104,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             // Block is at [i-2] — land there.
                             leftflagRadius(index.indexCountLeft - 2);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             enabled = false;
@@ -110,6 +121,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             {
                                 leftflagRadius(index.indexCountLeft - 2);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 TryDestroySelf();
@@ -138,6 +150,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     {
                         leftflagRadius(index.indexCountLeft - 1);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
@@ -189,6 +202,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             rightflagRadius(index.indexCountRight - 1);
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             //gameManager.CheckAndDestroyRings();
                             enabled = false;
                             index.indexCountRight = 2;
@@ -205,6 +219,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             {
                                 rightflagRadius(index.indexCountRight - 1);
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 //gameManager.CheckAndDestroyRings();
                                 //TryDestroySelf();
                                 index.indexCountRight = 2;
@@ -230,6 +245,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     {
                         rightflagRadius(index.indexCountRight);
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         //gameManager.CheckAndDestroyRings();
                         enabled = false;
                         index.indexCountRight = 2;
@@ -282,6 +298,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             //gameManager.CheckAndDestroyRings();
                             enabled = false;
                             index.indexCountVertical = 2;
@@ -299,6 +316,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                                 verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 //gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 //TryDestroySelf();
@@ -327,6 +345,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         //gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         enabled = false;

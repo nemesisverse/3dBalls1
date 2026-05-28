@@ -55,6 +55,16 @@ public class SMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  Destroys the BlockSInstantiator whenever a block lands
+    // ================================================================
+
+    void DestroyInstantiator()
+    {
+        if (blockSInstantiator != null)
+            Destroy(blockSInstantiator.gameObject);
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL — uses index.indexCountLeft throughout
     // ================================================================
 
@@ -84,6 +94,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                             leftflagRadius(index.indexCountLeft - 1);
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             enabled = false;
@@ -101,6 +112,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                                 leftflagRadius(index.indexCountLeft - 1);
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 TryDestroySelf();
@@ -129,6 +141,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         leftflagRadius(index.indexCountLeft);
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
@@ -179,6 +192,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                             verticalflagRadius(index.indexCountVertical - 1);
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             index.indexCountRight = 2;
@@ -197,6 +211,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                                 verticalflagRadius(index.indexCountVertical - 1);
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 index.indexCountRight = 2;
@@ -226,6 +241,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                         verticalflagRadius(index.indexCountVertical);
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         index.indexCountRight = 2;
