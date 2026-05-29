@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 //    • gameplayCanvas → drag the main gameplay Canvas here
 //                       (the one that holds Fixed Joystick, Slider,
 //                        Player Score, etc.)
+//    • blockSpawner   → drag the Block Spawner GameObject here
 //
 //  Button wiring (GameOver panel):
 //    Retry button  OnClick → GameOverController.OnRetry()
@@ -30,6 +31,9 @@ public class GameOverController : MonoBehaviour
     [Header("UI References")]
     public GameObject gameOverPanel;    // The GameOver UI panel / canvas
     public Canvas     gameplayCanvas;   // Main gameplay canvas (joystick, score, etc.)
+
+    [Header("Scene References")]
+    public GameObject blockSpawner;     // The Block Spawner GameObject
 
     // ── State ─────────────────────────────────────────────────────
     public bool IsGameOver { get; private set; }
@@ -73,6 +77,10 @@ public class GameOverController : MonoBehaviour
         // ── Kill swipe / touch rotation input ─────────────────────
         if (swipeInput != null)
             swipeInput.enabled = false;
+
+        // ── Stop the spawner so no new blocks are queued ──────────
+        if (blockSpawner != null)
+            blockSpawner.SetActive(false);
 
         // ── Hide gameplay HUD (joystick, slider, score…) ──────────
         //  Disabling the Canvas component also blocks all raycasting
