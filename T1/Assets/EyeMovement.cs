@@ -7,6 +7,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
     public IndexManager index;
     int verticalCount = 0;
     float moveSpeed = 1f;
+    public float fastMoveSpeed = 0.25f;
 
     List<Vector3> verticalCoordinates = new List<Vector3>();
     List<GameObject> verticalChildObject = new List<GameObject>();
@@ -243,7 +244,7 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }

@@ -8,7 +8,8 @@ public class TMovement : MonoBehaviour, IFallingBlock
     int leftDiagonalCount = 0;
     int rightDiagonalCount = 0;
     int verticalCount = 0;
-    float moveSpeed = 1f;
+    float moveSpeed     = 1.5f;   // ← was 1f
+    float fastMoveSpeed = 0.25f;   // ← NEW: hold-to-fast-fall speed
 
     List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
@@ -234,7 +235,8 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                // ← Hold-to-fast-fall: use fastMoveSpeed while finger is held down
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -339,7 +341,8 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                // ← Hold-to-fast-fall: use fastMoveSpeed while finger is held down
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -449,7 +452,8 @@ public class TMovement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                // ← Hold-to-fast-fall: use fastMoveSpeed while finger is held down
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }

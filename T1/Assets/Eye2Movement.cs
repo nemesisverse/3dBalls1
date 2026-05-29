@@ -9,6 +9,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
     int rightDiagonalCount = 0;
     int verticalCount = 0;
     float moveSpeed = 1f;
+    public float fastMoveSpeed = 0.25f;
 
     List<Vector3> leftDiagonalCoordinates = new List<Vector3>();
     List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
@@ -232,7 +233,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -338,7 +339,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+               yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -444,7 +445,7 @@ public class Eye2Movement : MonoBehaviour, IFallingBlock
                     while (eyeInstantiator.isCheckingSwap)
                         yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }

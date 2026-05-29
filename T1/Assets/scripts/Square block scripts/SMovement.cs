@@ -22,6 +22,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
     public SwipeInput swipeInput;
     private SphericalGrid sphericalGrid;
     private BlockSInstantiator blockSInstantiator;
+    public float fastMoveSpeed = 0.25f;
 
     // ================================================================
     //  Block Guide / Indicator system
@@ -238,7 +239,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                 while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -351,7 +352,7 @@ public class SMovement : MonoBehaviour, IFallingBlock
                 while (blockSInstantiator != null && blockSInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+               yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }

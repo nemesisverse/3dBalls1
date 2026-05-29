@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using System;
+using System.Collections.Generic;
 
 public class SwipeInput : MonoBehaviour
 {
     private TouchControl touchControl;
     private Vector2 startPos;
     private Vector2 endPos;
+
+    private bool isUITouch = false; // true when the touch BEGAN on a UI element
 
     // REMOVED: public bool canSwipeDown, canSwipeUp, etc. 
     // We no longer limit these; we try to rotate and revert if it fails.
@@ -40,13 +44,42 @@ public class SwipeInput : MonoBehaviour
         touchControl.Disable();
     }
 
+    // Shoots a UI raycast from screen position. Returns true if any UI element is hit.
+    // Uses EventSystem.RaycastAll — works with both old StandaloneInputModule
+    // and new InputSystemUIInputModule, so it won't break if you swap UI backends.
+    private bool IsTouchOverUI(Vector2 screenPosition)
+    {
+        if (EventSystem.current == null) return false;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = screenPosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results.Count > 0;
+    }
+
     private void StartTouch(InputAction.CallbackContext context)
     {
         startPos = touchControl.Touch.Position.ReadValue<Vector2>();
+
+        // Tag this touch at the moment it begins.
+        // If it started on UI (button, joystick, panel, etc.), we ignore the
+        // entire gesture — even the EndTouch — so nothing leaks into game input.
+        isUITouch = IsTouchOverUI(startPos);
     }
 
     private void EndTouch(InputAction.CallbackContext context)
     {
+        // Touch started on UI — owned by UI system, not ours
+        if (isUITouch)
+        {
+            isUITouch = false;
+            return;
+        }
+
         endPos = touchControl.Touch.Position.ReadValue<Vector2>();
         DetectSwipe();
     }

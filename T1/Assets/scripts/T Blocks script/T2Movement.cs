@@ -24,7 +24,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
     //I added this code
     private SphericalGrid sphericalGrid;
     private BlockTInstantiator blockTInstantiator;
-
+    public float fastMoveSpeed = 0.25f;
     // ================================================================
     //  Block Guide / Indicator system
     //  blockGuide is resolved at runtime via Find because T2Movement is a
@@ -243,7 +243,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -349,7 +349,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -460,7 +460,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+               yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }

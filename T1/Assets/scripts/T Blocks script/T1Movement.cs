@@ -24,6 +24,8 @@ public class T1Movement : MonoBehaviour, IFallingBlock
     private SphericalGrid sphericalGrid;
     private BlockTInstantiator blockTInstantiator;
 
+    public float fastMoveSpeed = 0.25f;
+
     // ================================================================
     //  Block Guide / Indicator system
     //  blockGuide is resolved at runtime via Find because T1Movement is a
@@ -249,7 +251,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+               yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
@@ -365,7 +367,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                 while (blockTInstantiator != null && blockTInstantiator.isCheckingSwap)
                     yield return null;
 
-                yield return new WaitForSeconds(moveSpeed);
+                yield return new WaitForSeconds(HoldDetector.Instance != null && HoldDetector.Instance.isHolding ? fastMoveSpeed : moveSpeed);
             }
         }
     }
