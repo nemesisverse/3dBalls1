@@ -110,6 +110,34 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  GAME OVER CHECK
+    //  ---------------------------------------------------------------
+    //  If the block lands at coordinate list index ≤ 3, the outermost
+    //  zone has been reached — the stack has overflowed and the game
+    //  is over.
+    //
+    //  Returns true when game over is triggered so the caller can
+    //  skip ring-detection entirely.
+    //
+    //  Left diagonal (spots 1-3): active ring checks → if (!Check...) wrapper.
+    //  Vertical (spots 4-6): both CheckAndDestroyRings and TryDestroySelf
+    //  are already commented out, so CheckGameOverOnLanding is called
+    //  standalone — return value ignored.
+    //
+    //  Left diagonal uses the Z -2/-1 offset (same as ZMovement).
+    // ================================================================
+
+    bool CheckGameOverOnLanding(int landingIndex)
+    {
+        if (landingIndex <= 3)
+        {
+            GameOverController.Instance?.TriggerGameOver();
+            return true;
+        }
+        return false;
+    }
+
+    // ================================================================
     //  LEFT DIAGONAL
     //  2 blocks: block[0] leads at [i-1], block[1] trails at [i-2].
     //  Mirrors ZMovement's left diagonal exactly — only difference is
@@ -144,12 +172,14 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1 — block[0] rests at [i-2], block[1] at [i-3]
-                            leftflagRadius(index.indexCountLeft - 2);
+                            int landingIdx = index.indexCountLeft - 2;
+                            leftflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
-                            gameManager.CheckAndDestroyRings();
+                            if (!CheckGameOverOnLanding(landingIdx))
+                                gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             enabled = false;
                             TryDestroySelf();
@@ -164,12 +194,14 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                leftflagRadius(index.indexCountLeft - 2);
+                                int landingIdx = index.indexCountLeft - 2;
+                                leftflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
-                                gameManager.CheckAndDestroyRings();
+                                if (!CheckGameOverOnLanding(landingIdx))
+                                    gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 TryDestroySelf();
                                 yield break;
@@ -199,12 +231,14 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                         leftChildObject[1].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 3
-                        leftflagRadius(index.indexCountLeft - 1);
+                        int landingIdx = index.indexCountLeft - 1;
+                        leftflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
-                        gameManager.CheckAndDestroyRings();
+                        if (!CheckGameOverOnLanding(landingIdx))
+                            gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         enabled = false;
                         TryDestroySelf();
@@ -256,11 +290,13 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             // LANDING SPOT 4
-                            verticalflagRadius(index.indexCountVertical - 1);
+                            int landingIdx = index.indexCountVertical - 1;
+                            verticalflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
+                            CheckGameOverOnLanding(landingIdx);
                             //gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             index.indexCountRight    = 2;
@@ -277,11 +313,13 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 5
-                                verticalflagRadius(index.indexCountVertical - 1);
+                                int landingIdx = index.indexCountVertical - 1;
+                                verticalflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
+                                CheckGameOverOnLanding(landingIdx);
                                 //gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 index.indexCountRight    = 2;
@@ -309,11 +347,13 @@ public class Z1Movement : MonoBehaviour, IFallingBlock
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
                         // LANDING SPOT 6
-                        verticalflagRadius(index.indexCountVertical);
+                        int landingIdx = index.indexCountVertical;
+                        verticalflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
+                        CheckGameOverOnLanding(landingIdx);
                         //gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         index.indexCountRight    = 2;

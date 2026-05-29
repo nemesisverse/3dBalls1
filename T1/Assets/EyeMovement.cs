@@ -99,6 +99,30 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  GAME OVER CHECK
+    //  ---------------------------------------------------------------
+    //  If the block lands at coordinate list index ≤ 3, the outermost
+    //  zone has been reached — the stack has overflowed and the game
+    //  is over.
+    //
+    //  Returns true when game over is triggered so the caller can
+    //  skip ring-detection entirely.
+    //
+    //  All 3 landing spots have active ring checks, so the
+    //  if (!Check...) wrapper is used consistently throughout.
+    // ================================================================
+
+    bool CheckGameOverOnLanding(int landingIndex)
+    {
+        if (landingIndex <= 3)
+        {
+            GameOverController.Instance?.TriggerGameOver();
+            return true;
+        }
+        return false;
+    }
+
+    // ================================================================
     //  VERTICAL — 3 blocks falling together
     // ================================================================
 
@@ -130,13 +154,15 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
-                            verticalflagRadius(index.indexCountVertical - 1);
+                            int landingIdx = index.indexCountVertical - 1;
+                            verticalflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
-                            gameManager.CheckAndDestroyRings();
+                            if (!CheckGameOverOnLanding(landingIdx))
+                                gameManager.CheckAndDestroyRings();
                             index.indexCountLeft = 2;
                             index.indexCountVertical = 2;
                             index.indexCountRight = 2;
@@ -153,13 +179,15 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                verticalflagRadius(index.indexCountVertical - 1);
+                                int landingIdx = index.indexCountVertical - 1;
+                                verticalflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
-                                gameManager.CheckAndDestroyRings();
+                                if (!CheckGameOverOnLanding(landingIdx))
+                                    gameManager.CheckAndDestroyRings();
                                 index.indexCountLeft = 2;
                                 index.indexCountVertical = 2;
                                 index.indexCountRight = 2;
@@ -189,13 +217,15 @@ public class EyeMovement : MonoBehaviour, IFallingBlock
                         verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 3
-                        verticalflagRadius(index.indexCountVertical);
+                        int landingIdx = index.indexCountVertical;
+                        verticalflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
-                        gameManager.CheckAndDestroyRings();
+                        if (!CheckGameOverOnLanding(landingIdx))
+                            gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
                         index.indexCountVertical = 2;
                         index.indexCountRight = 2;
