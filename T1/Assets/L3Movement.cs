@@ -24,6 +24,16 @@ public class L3Movement : MonoBehaviour , IFallingBlock
     private SphericalGrid sphericalGrid;
     private BlockLInstantiator lInstantiator;
 
+    // ================================================================
+    //  Block Guide / Indicator system
+    //  blockGuide is resolved at runtime via Find because L3Movement is a
+    //  prefab instantiated during gameplay — a scene object cannot be
+    //  pre-assigned in the prefab's Inspector field.
+    //  l3MovementIndicators — the child names that belong to this block shape.
+    // ================================================================
+    private GameObject blockGuide;
+    private static readonly string[] l3MovementIndicators = { "(1,2)", "(2,2)", "(3,2)", "(1,1)" };
+
     int stop = -1;
     int stopperID = 0;
 
@@ -34,6 +44,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
         if (lInstantiator == null) lInstantiator = FindFirstObjectByType<BlockLInstantiator>();
+        blockGuide = GameObject.Find("Block Guide");
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -47,6 +58,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
     {
         countChildren();
         CheckChildrenWorldX();
+        SetIndicators();
     }
 
     void TryDestroySelf()
@@ -63,6 +75,39 @@ public class L3Movement : MonoBehaviour , IFallingBlock
     {
         if (lInstantiator != null)
             Destroy(lInstantiator.gameObject);
+    }
+
+    // ================================================================
+    //  INDICATOR HELPERS
+    //  SetIndicators        — called once on Start; activates only the
+    //                         cells that match this block's shape and
+    //                         deactivates every other cell.
+    //  DeactivateAllIndicators — called at every landing spot so the
+    //                         guide goes dark the moment a block lands.
+    // ================================================================
+
+    void SetIndicators()
+    {
+        if (blockGuide == null) return;
+
+        // Deactivate every child first
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
+
+        // Activate only the cells that belong to L3Movement
+        foreach (string indicatorName in l3MovementIndicators)
+        {
+            Transform indicator = blockGuide.transform.Find(indicatorName);
+            if (indicator != null)
+                indicator.gameObject.SetActive(true);
+        }
+    }
+
+    void DeactivateAllIndicators()
+    {
+        if (blockGuide == null) return;
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
     }
 
     // ================================================================
@@ -97,6 +142,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         {
                             // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 2);
+                            DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
@@ -115,6 +161,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             {
                                 // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 2);
+                                DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
@@ -143,6 +190,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                     {
                         // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft - 1);
+                        DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
@@ -196,6 +244,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         {
                             // LANDING SPOT 1
                             verticalflagRadius(index.indexCountVertical - 1);
+                            DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -215,6 +264,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             {
                                 // LANDING SPOT 2
                                 verticalflagRadius(index.indexCountVertical - 1);
+                                DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -247,6 +297,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                     {
                         // LANDING SPOT 3
                         verticalflagRadius(index.indexCountVertical);
+                        DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);

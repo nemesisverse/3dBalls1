@@ -16,6 +16,16 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
     private SphericalGrid sphericalGrid;
     private BlockEyeInstantiator eyeInstantiator;
 
+    // ================================================================
+    //  Block Guide / Indicator system
+    //  blockGuide is resolved at runtime via Find because Eye1Movement is a
+    //  prefab instantiated during gameplay — a scene object cannot be
+    //  pre-assigned in the prefab's Inspector field.
+    //  eye1MovementIndicators — the child names that belong to this block shape.
+    // ================================================================
+    private GameObject blockGuide;
+    private static readonly string[] eye1MovementIndicators = { "(1,1)", "(2,1)", "(3,1)" };
+
     int stop = -1;
     int stopperID = 0;
 
@@ -26,6 +36,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>();
         if (eyeInstantiator == null) eyeInstantiator = FindFirstObjectByType<BlockEyeInstantiator>();
+        blockGuide = GameObject.Find("Block Guide");
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -35,6 +46,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
     {
         countChildren();
         CheckChildrenWorldX();
+        SetIndicators();
     }
 
     void TryDestroySelf()
@@ -51,6 +63,39 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
     {
         if (eyeInstantiator != null)
             Destroy(eyeInstantiator.gameObject);
+    }
+
+    // ================================================================
+    //  INDICATOR HELPERS
+    //  SetIndicators        — called once on Start; activates only the
+    //                         cells that match this block's shape and
+    //                         deactivates every other cell.
+    //  DeactivateAllIndicators — called at every landing spot so the
+    //                         guide goes dark the moment a block lands.
+    // ================================================================
+
+    void SetIndicators()
+    {
+        if (blockGuide == null) return;
+
+        // Deactivate every child first
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
+
+        // Activate only the cells that belong to Eye1Movement
+        foreach (string indicatorName in eye1MovementIndicators)
+        {
+            Transform indicator = blockGuide.transform.Find(indicatorName);
+            if (indicator != null)
+                indicator.gameObject.SetActive(true);
+        }
+    }
+
+    void DeactivateAllIndicators()
+    {
+        if (blockGuide == null) return;
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
     }
 
     // ================================================================
@@ -86,6 +131,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                         {
                             // LANDING SPOT 1
                             leftflagRadius(index.indexCountLeft - 1);
+                            DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -108,6 +154,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                             {
                                 // LANDING SPOT 2
                                 leftflagRadius(index.indexCountLeft - 1);
+                                DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -143,6 +190,7 @@ public class Eye1Movement : MonoBehaviour, IFallingBlock
                     {
                         // LANDING SPOT 3
                         leftflagRadius(index.indexCountLeft);
+                        DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         leftChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);

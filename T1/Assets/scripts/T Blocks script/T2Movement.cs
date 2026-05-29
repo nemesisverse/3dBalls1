@@ -25,6 +25,16 @@ public class T2Movement : MonoBehaviour, IFallingBlock
     private SphericalGrid sphericalGrid;
     private BlockTInstantiator blockTInstantiator;
 
+    // ================================================================
+    //  Block Guide / Indicator system
+    //  blockGuide is resolved at runtime via Find because T2Movement is a
+    //  prefab instantiated during gameplay — a scene object cannot be
+    //  pre-assigned in the prefab's Inspector field.
+    //  t2MovementIndicators — the child names that belong to this block shape.
+    // ================================================================
+    private GameObject blockGuide;
+    private static readonly string[] t2MovementIndicators = { "(2,1)", "(2,2)", "(2,3)", "(3,2)" };
+
     int stop = -1;
     int stopperID = 0;
 
@@ -35,6 +45,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
         if (sphericalGrid == null) sphericalGrid = FindFirstObjectByType<SphericalGrid>();
         if (index == null) index = FindFirstObjectByType<IndexManager>(); // ← ADD THIS
         if (blockTInstantiator == null) blockTInstantiator = FindFirstObjectByType<BlockTInstantiator>();
+        blockGuide = GameObject.Find("Block Guide");
 
         // Populate Coordinates
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f) leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -46,6 +57,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
     {
         countChildren();
         CheckChildrenWorldX();
+        SetIndicators();
     }
 
     void TryDestroySelf()
@@ -62,6 +74,39 @@ public class T2Movement : MonoBehaviour, IFallingBlock
     {
         if (blockTInstantiator != null)
             Destroy(blockTInstantiator.gameObject);
+    }
+
+    // ================================================================
+    //  INDICATOR HELPERS
+    //  SetIndicators        — called once on Start; activates only the
+    //                         cells that match this block's shape and
+    //                         deactivates every other cell.
+    //  DeactivateAllIndicators — called at every landing spot so the
+    //                         guide goes dark the moment a block lands.
+    // ================================================================
+
+    void SetIndicators()
+    {
+        if (blockGuide == null) return;
+
+        // Deactivate every child first
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
+
+        // Activate only the cells that belong to T2Movement
+        foreach (string indicatorName in t2MovementIndicators)
+        {
+            Transform indicator = blockGuide.transform.Find(indicatorName);
+            if (indicator != null)
+                indicator.gameObject.SetActive(true);
+        }
+    }
+
+    void DeactivateAllIndicators()
+    {
+        if (blockGuide == null) return;
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
     }
 
     // ================================================================
@@ -92,6 +137,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             leftflagRadius(index.indexCountLeft - 2);
+                            DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
@@ -109,6 +155,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 leftflagRadius(index.indexCountLeft - 2);
+                                DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();  // ← ADDED
@@ -139,6 +186,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                     {
                         //not i
                         leftflagRadius(index.indexCountLeft - 1);
+                        DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();  // ← ADDED
@@ -190,6 +238,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                         {
                             //not i-1
                             rightflagRadius(index.indexCountRight - 2);
+                            DeactivateAllIndicators();
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
@@ -207,6 +256,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 rightflagRadius(index.indexCountRight - 2);
+                                DeactivateAllIndicators();
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();  // ← ADDED
@@ -233,6 +283,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 2])
                     {
                         rightflagRadius(index.indexCountRight - 1);
+                        DeactivateAllIndicators();
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();  // ← ADDED
@@ -284,6 +335,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             verticalflagRadius(index.indexCountVertical - 1);
+                            DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
@@ -302,6 +354,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 verticalflagRadius(index.indexCountVertical - 1);
+                                DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
@@ -331,6 +384,7 @@ public class T2Movement : MonoBehaviour, IFallingBlock
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
                         verticalflagRadius(index.indexCountVertical);
+                        DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();

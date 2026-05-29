@@ -24,6 +24,16 @@ public class ZMovement : MonoBehaviour, IFallingBlock
     private SphericalGrid sphericalGrid;
     private BlockZInstantiator zInstantiator;
 
+    // ================================================================
+    //  Block Guide / Indicator system
+    //  blockGuide is resolved at runtime via Find because ZMovement is a
+    //  prefab instantiated during gameplay — a scene object cannot be
+    //  pre-assigned in the prefab's Inspector field.
+    //  zMovementIndicators — the child names that belong to this block shape.
+    // ================================================================
+    private GameObject blockGuide;
+    private static readonly string[] zMovementIndicators = { "(2,1)", "(2,2)", "(3,2)", "(3,3)" };
+
     int stop      = -1;
     int stopperID =  0;
 
@@ -38,6 +48,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
         if (sphericalGrid  == null) sphericalGrid  = FindFirstObjectByType<SphericalGrid>();
         if (index          == null) index          = FindFirstObjectByType<IndexManager>();
         if (zInstantiator  == null) zInstantiator  = FindFirstObjectByType<BlockZInstantiator>();
+        blockGuide = GameObject.Find("Block Guide");
 
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
@@ -51,6 +62,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
     {
         countChildren();
         CheckChildrenWorldX();
+        SetIndicators();
     }
 
     void TryDestroySelf()
@@ -67,6 +79,39 @@ public class ZMovement : MonoBehaviour, IFallingBlock
     {
         if (zInstantiator != null)
             Destroy(zInstantiator.gameObject);
+    }
+
+    // ================================================================
+    //  INDICATOR HELPERS
+    //  SetIndicators        — called once on Start; activates only the
+    //                         cells that match this block's shape and
+    //                         deactivates every other cell.
+    //  DeactivateAllIndicators — called at every landing spot so the
+    //                         guide goes dark the moment a block lands.
+    // ================================================================
+
+    void SetIndicators()
+    {
+        if (blockGuide == null) return;
+
+        // Deactivate every child first
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
+
+        // Activate only the cells that belong to ZMovement
+        foreach (string indicatorName in zMovementIndicators)
+        {
+            Transform indicator = blockGuide.transform.Find(indicatorName);
+            if (indicator != null)
+                indicator.gameObject.SetActive(true);
+        }
+    }
+
+    void DeactivateAllIndicators()
+    {
+        if (blockGuide == null) return;
+        foreach (Transform child in blockGuide.transform)
+            child.gameObject.SetActive(false);
     }
 
     // ================================================================
@@ -103,6 +148,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         {
                             // Block is at [i-2] — land there.
                             leftflagRadius(index.indexCountLeft - 2);
+                            DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             gameManager.CheckAndDestroyRings();
@@ -120,6 +166,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 leftflagRadius(index.indexCountLeft - 2);
+                                DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 gameManager.CheckAndDestroyRings();
@@ -149,6 +196,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 2])
                     {
                         leftflagRadius(index.indexCountLeft - 1);
+                        DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         gameManager.CheckAndDestroyRings();
@@ -201,6 +249,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             rightflagRadius(index.indexCountRight - 1);
+                            DeactivateAllIndicators();
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             //gameManager.CheckAndDestroyRings();
@@ -218,6 +267,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 rightflagRadius(index.indexCountRight - 1);
+                                DeactivateAllIndicators();
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 //gameManager.CheckAndDestroyRings();
@@ -244,6 +294,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                     if (rightChildObject[0].transform.position == rightDiagonalCoordinates[rightDiagonalCoordinates.Count - 1])
                     {
                         rightflagRadius(index.indexCountRight);
+                        DeactivateAllIndicators();
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         //gameManager.CheckAndDestroyRings();
@@ -296,6 +347,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         if (stillBlocked)
                         {
                             verticalflagRadius(index.indexCountVertical - 1);
+                            DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
@@ -314,6 +366,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                             if (!enabled)
                             {
                                 verticalflagRadius(index.indexCountVertical - 1);
+                                DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
@@ -343,6 +396,7 @@ public class ZMovement : MonoBehaviour, IFallingBlock
                         verticalChildObject[1].transform.position == verticalCoordinates[verticalCoordinates.Count - 2])
                     {
                         verticalflagRadius(index.indexCountVertical);
+                        DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
