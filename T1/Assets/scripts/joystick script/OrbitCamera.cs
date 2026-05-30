@@ -1,5 +1,4 @@
-﻿//OrbitCamera
-// OrbitCamera.cs
+﻿// OrbitCamera.cs
 using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM
@@ -30,7 +29,6 @@ public class OrbitCamera : MonoBehaviour
 
     void Start()
     {
-
         if (target == null)
         {
             Debug.LogError("Target not assigned!");
@@ -89,14 +87,12 @@ public class OrbitCamera : MonoBehaviour
             transform.RotateAround(target.position, transform.right, -vertical * rotationSpeed * Time.deltaTime);
         }
 
-        // Smoothly return when released (pointer up and centered)
+        // Instantly snap back to original position/rotation when released
         if (isReturning)
         {
-            transform.position = Vector3.Lerp(transform.position, target.position + originalPositionOffset, Time.deltaTime * smoothReturnSpeed);
-            transform.rotation = Quaternion.Slerp(transform.rotation, originalRotation, Time.deltaTime * smoothReturnSpeed);
-
-            if (pointerDown)
-                isReturning = false;
+            transform.position = target.position + originalPositionOffset;
+            transform.rotation = originalRotation;
+            isReturning = false;
         }
     }
 
