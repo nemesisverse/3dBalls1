@@ -37,6 +37,9 @@ public class BlockZInstantiator : MonoBehaviour
     // Prevents double-tap while coroutine is in flight
     private bool _tapInProgress = false;
 
+    // ★ Camera reference ──────────────────────────────────────────
+    private CameraController _cam;
+
     // ── cycle definition ─────────────────────────────────────────
     // Tap walks forward through this array and wraps around.
     // Change the order here to change the tap-cycle order globally.
@@ -65,6 +68,10 @@ public class BlockZInstantiator : MonoBehaviour
     {
         _index = FindFirstObjectByType<IndexManager>();
         _timer = spawnInterval;
+
+        // ★ Cache the camera controller once
+        _cam = Camera.main.GetComponent<CameraController>();
+
         SpawnNextBlock();                       // spawn one immediately on Start
     }
 
@@ -230,6 +237,9 @@ public class BlockZInstantiator : MonoBehaviour
             ? _currentBlock.transform.position
             : spawnPosition;
 
+        // ★ Unregister old block from camera before destroying it
+        _cam?.ClearFallingBlock();
+
         // SetActive(false) stops the old block's scripts + renderer IMMEDIATELY
         // Destroy() then cleans up the GameObject at end-of-frame
         _currentBlock.SetActive(false);
@@ -254,6 +264,9 @@ public class BlockZInstantiator : MonoBehaviour
 
         _currentBlock = Instantiate(prefab, pos, Quaternion.identity);
         _activeType   = type;
+
+        // ★ Tell the camera to track the new block
+        _cam?.SetFallingBlock(_currentBlock.transform);
 
         if (logSpawnInfo)
             Debug.Log($"[BlockZInstantiator] Instantiated {type} at {pos}");

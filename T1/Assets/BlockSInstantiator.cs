@@ -37,6 +37,9 @@ public class BlockSInstantiator : MonoBehaviour
     // Prevents double-tap while coroutine is in flight
     private bool _tapInProgress = false;
 
+    // ★ Camera reference ──────────────────────────────────────────
+    private CameraController _cam;
+
     // ── cycle definition ─────────────────────────────────────────
     private static readonly BlockType[] _cycleOrder =
     {
@@ -63,6 +66,10 @@ public class BlockSInstantiator : MonoBehaviour
     {
         _index = FindFirstObjectByType<IndexManager>();
         _timer = spawnInterval;
+
+        // ★ Cache the camera controller once
+        _cam = Camera.main.GetComponent<CameraController>();
+
         SpawnNextBlock();
     }
 
@@ -216,6 +223,9 @@ public class BlockSInstantiator : MonoBehaviour
             ? _currentBlock.transform.position
             : spawnPosition;
 
+        // ★ Unregister old block from camera before destroying it
+        _cam?.ClearFallingBlock();
+
         _currentBlock.SetActive(false);
         Destroy(_currentBlock);
 
@@ -234,6 +244,9 @@ public class BlockSInstantiator : MonoBehaviour
 
         _currentBlock = Instantiate(prefab, pos, Quaternion.identity);
         _activeType   = type;
+
+        // ★ Tell the camera to track the new block
+        _cam?.SetFallingBlock(_currentBlock.transform);
 
         if (logSpawnInfo)
             Debug.Log($"[BlockSInstantiator] Instantiated {type} at {pos}");
