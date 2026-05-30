@@ -171,7 +171,12 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
+                            // Snap to the correct a-2 landing coordinate before registering
+                            // and reparenting: landing fires at step 3 (before the normal
+                            // position-update in step 4), so the block is still one step
+                            // behind its intended resting slot without this line.
                             int landingIdx = index.indexCountLeft - 2;
+                            leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 2];
                             leftflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -192,7 +197,9 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
+                                // Same snap as landing spot 1: step 3 fires before step 4.
                                 int landingIdx = index.indexCountLeft - 2;
+                                leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 2];
                                 leftflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -220,6 +227,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                 else
                 {
                     // End of track
+                    // Landing spot 3 fires after step 4, so position is already correct.
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 3
@@ -301,7 +309,14 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                int landingIdx = index.indexCountVertical - 1;
+                                // moveLeftDiagonal stopped the piece and set enabled = false.
+                                // This landing fires at step 3 (before step 4's position update),
+                                // so snap all three vertical blocks one step further down to match
+                                // where the piece should rest as a unit.
+                                int landingIdx = index.indexCountVertical;
+                                verticalChildObject[0].transform.position = verticalCoordinates[index.indexCountVertical];
+                                verticalChildObject[1].transform.position = verticalCoordinates[index.indexCountVertical - 1];
+                                verticalChildObject[2].transform.position = verticalCoordinates[index.indexCountVertical - 2];
                                 verticalflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
