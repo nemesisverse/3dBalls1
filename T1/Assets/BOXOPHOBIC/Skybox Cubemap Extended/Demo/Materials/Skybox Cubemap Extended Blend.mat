@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Skybox Cubemap Extended Blend
+  m_Shader: {fileID: 4800000, guid: 7705790d9e8e16344ad5d7960c568904, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _ENABLEROTATION_ON
+  m_LightmapFlags: 0
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Cube:
+        m_Texture: {fileID: 8900000, guid: 3ce67fee0f260ee47b4d820421fe6ff9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CubemapHDR:
+        m_Texture: {fileID: 8900000, guid: beb1457d375110e468b8d8e1f29fccea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tex:
+        m_Texture: {fileID: 8900000, guid: beb1457d375110e468b8d8e1f29fccea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tex_Blend:
+        m_Texture: {fileID: 8900000, guid: fa41734a337674542975482c8fe96ea1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture0:
+        m_Texture: {fileID: 8900000, guid: 3ce67fee0f260ee47b4d820421fe6ff9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _tex:
+        m_Texture: {fileID: 8900000, guid: 3ce67fee0f260ee47b4d820421fe6ff9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Advancedd: 1
+    - _BandTilt: 0.27
+    - _BandWidth: 0.76
+    - _BrightnessThreshold: 0.3
+    - _BumpScale: 1
+    - _CUBEMAPP: 1
+    - _CubemapPosition: 0
+    - _CubemapTransition: 1
+    - _Cubemapp: 1
+    - _Cutoff: 0.5
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EnableFog: 0
+    - _EnableRotation: 1
+    - _Exposure: 0.7
+    - _Float0: -0.21
+    - _FogFill: 1
+    - _FogHeight: 1
+    - _FogIntensity: 1
+    - _FogMessage: 0
+    - _FogPosition: 6
+    - _FogSmoothness: 1
+    - _Fogg: 1
+    - _GalStrength: 0.28
+    - _GalTilt: 0.38
+    - _GalWidth: 0.32
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _IsStandardPipeline: 1
+    - _IsStandardRP: 1
+    - _Metallic: 0
+    - _Mode: 0
+    - _NebIntensity: 0.16
+    - _NebScale: 3
+    - _NebulaScale: 3.05
+    - _NebulaStrength: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _Rotation: 360
+    - _RotationSpeed: 2
+    - _Rotationn: 1
+    - _SkyboxExtended: 1
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _StarBlueTint: 0.38
+    - _StarBrightness: 0.85
+    - _StarDensity: 419
+    - _StarSize: 0.07
+    - _StarSizeA: 0.0095
+    - _StarSizeB: 0.0328
+    - _StarSizeC: 0.016
+    - _StarThreshold: 0.25
+    - _TwinkleAmount: 1
+    - _TwinkleSpeed: 8
+    - _UVSec: 0
+    - _ZWrite: 1
+    - __dirty: 0
+    m_Colors:
+    - _BotColor: {r: 0, g: 0, b: 0.049999982, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _GalColor: {r: 0.19999996, g: 0.39999998, b: 0.8, a: 1}
+    - _MidColor: {r: 0, g: 0, b: 0.02, a: 1}
+    - _NebBlue: {r: 0, g: 0.049999982, b: 0.27999997, a: 1}
+    - _NebMagenta: {r: 0.13999996, g: 0, b: 0.09999997, a: 1}
+    - _NebPink: {r: 0.9, g: 0.09999997, b: 0.54999995, a: 1}
+    - _NebPurple: {r: 0.059999965, g: 0, b: 0.21999997, a: 1}
+    - _NebTeal: {r: 0, g: 0.54999995, b: 0.85, a: 1}
+    - _NebulaColorInner: {r: 0.8962264, g: 0.69243854, b: 0.6806248, a: 1}
+    - _NebulaColorOuter: {r: 0, g: 0, b: 0, a: 1}
+    - _SkyBand: {r: 0, g: 0.04, b: 0.19999996, a: 1}
+    - _SkyColor: {r: 0, g: 0, b: 0.015, a: 1}
+    - _SkyDeep: {r: 0, g: 0, b: 0, a: 1}
+    - _SkyMid: {r: 0.0068610553, g: 0, b: 0.11320752, a: 1}
+    - _Tex_HDR: {r: 1, g: 1, b: 0, a: 0}
+    - _TintColor: {r: 0, g: 0, b: 0, a: 1}
+    - _TopColor: {r: 0, g: 0, b: 0.03, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
