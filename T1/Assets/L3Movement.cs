@@ -197,9 +197,13 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             if (!enabled)
                             {
                                 // LANDING SPOT 2
-                                // Same snap as landing spot 1: step 3 fires before step 4.
-                                int landingIdx = index.indexCountLeft - 2;
-                                leftChildObject[0].transform.position = leftDiagonalCoordinates[index.indexCountLeft - 2];
+                                // The vertical column stopped the piece (set enabled = false).
+                                // Unlike landing spot 1, there is no blocker on the LEFT'S own
+                                // path here — the piece must freeze together with the vertical.
+                                // The block is still at its previous step-4 position
+                                // [indexCountLeft - 3], so do NOT snap forward; register at the
+                                // matching radius so position and grid agree.
+                                int landingIdx = index.indexCountLeft - 3;
                                 leftflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -287,6 +291,9 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         if (stillBlocked)
                         {
                             // LANDING SPOT 1
+                            // Override stop to indexCountLeft - 1 so moveLeftDiagonal's
+                            // else-branch condition (indexCountLeft > stop) becomes true
+                            // immediately, letting it detect !enabled and co-land.
                             int landingIdx = index.indexCountVertical - 1;
                             verticalflagRadius(landingIdx);
                             DeactivateAllIndicators();
@@ -297,6 +304,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             CheckGameOverOnLanding(landingIdx);
                             index.indexCountVertical = 2;
                             index.indexCountRight = 2;
+                            stop = index.indexCountLeft - 1;
                             enabled = false;
                             yield break;
                         }
@@ -351,6 +359,8 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         verticalChildObject[2].transform.position == verticalCoordinates[verticalCoordinates.Count - 3])
                     {
                         // LANDING SPOT 3
+                        // Same stop override as landing spot 1: ensure moveLeftDiagonal
+                        // detects !enabled at its next step-3 check.
                         int landingIdx = index.indexCountVertical;
                         verticalflagRadius(landingIdx);
                         DeactivateAllIndicators();
@@ -361,6 +371,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         CheckGameOverOnLanding(landingIdx);
                         index.indexCountVertical = 2;
                         index.indexCountRight = 2;
+                        stop = index.indexCountLeft - 1;
                         enabled = false;
                     }
                     yield break;
