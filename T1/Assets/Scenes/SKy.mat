@@ -118,7 +118,7 @@ Material:
     - _GlossyReflections: 0
     - _Metallic: 0
     - _NebulaScale: 2
-    - _NebulaStrength: 0
+    - _NebulaStrength: 0.62
     - _OcclusionStrength: 1
     - _Offset: 0.01
     - _Parallax: 0.005
