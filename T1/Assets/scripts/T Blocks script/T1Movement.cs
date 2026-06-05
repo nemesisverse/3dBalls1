@@ -36,6 +36,16 @@ public class T1Movement : MonoBehaviour, IFallingBlock
     private GameObject blockGuide;
     private static readonly string[] t1MovementIndicators = { "(1,2)", "(2,2)", "(3,2)", "(2,3)" };
 
+    // ================================================================
+    //  LANDING SOUND
+    //  Assign an AudioClip in the prefab Inspector.
+    //  hasPlayedLandingSound ensures the clip fires at most once per block
+    //  instance, even though moveRightDiognal and moveVertical both reach
+    //  their own landing spots and would otherwise each trigger the sound.
+    // ================================================================
+    public AudioClip landingSound;
+    private bool hasPlayedLandingSound = false;
+
     int stop = -1;
     int stopperID = 0;
 
@@ -113,6 +123,31 @@ public class T1Movement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  LANDING SOUND HELPER
+    //  Creates a temporary GameObject with a fully 2D AudioSource
+    //  (spatialBlend = 0) so Unity's distance-based attenuation model
+    //  is completely bypassed — volume is identical regardless of where
+    //  the block landed relative to the camera/listener.
+    //
+    //  The hasPlayedLandingSound flag is checked first so that only the
+    //  very first SetParent call (whichever coroutine reaches its landing
+    //  spot first) triggers the sound. All subsequent landing spots in
+    //  this block instance are silently skipped.
+    // ================================================================
+    void PlayLandingSound()
+    {
+        if (hasPlayedLandingSound || landingSound == null) return;
+        hasPlayedLandingSound = true;
+
+        GameObject tempAudio = new GameObject("LandingSoundTemp");
+        AudioSource src = tempAudio.AddComponent<AudioSource>();
+        src.clip = landingSound;
+        src.spatialBlend = 0f;   // 0 = fully 2D, no distance attenuation
+        src.Play();
+        Destroy(tempAudio, landingSound.length + 0.1f);
+    }
+
+    // ================================================================
     //  GAME OVER CHECK
     //  ---------------------------------------------------------------
     //  If the block lands at coordinate list index ≤ 3, the outermost
@@ -178,6 +213,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             int landingIdx = index.indexCountRight - 2;
                             rightflagRadius(landingIdx);
                             DeactivateAllIndicators();
+                            PlayLandingSound();
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
                             if (!CheckGameOverOnLanding(landingIdx))
@@ -200,6 +236,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                                 int landingIdx = index.indexCountRight - 2;
                                 rightflagRadius(landingIdx);
                                 DeactivateAllIndicators();
+                                PlayLandingSound();
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
                                 if (!CheckGameOverOnLanding(landingIdx))
@@ -232,6 +269,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         int landingIdx = index.indexCountRight - 1;
                         rightflagRadius(landingIdx);
                         DeactivateAllIndicators();
+                        PlayLandingSound();
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
                         if (!CheckGameOverOnLanding(landingIdx))
@@ -288,6 +326,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                             int landingIdx = index.indexCountVertical - 1;
                             verticalflagRadius(landingIdx);
                             DeactivateAllIndicators();
+                            PlayLandingSound();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -311,6 +350,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                                 int landingIdx = index.indexCountVertical - 1;
                                 verticalflagRadius(landingIdx);
                                 DeactivateAllIndicators();
+                                PlayLandingSound();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -347,6 +387,7 @@ public class T1Movement : MonoBehaviour, IFallingBlock
                         int landingIdx = index.indexCountVertical;
                         verticalflagRadius(landingIdx);
                         DeactivateAllIndicators();
+                        PlayLandingSound();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);

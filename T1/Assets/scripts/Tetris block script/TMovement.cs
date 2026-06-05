@@ -35,6 +35,16 @@ public class TMovement : MonoBehaviour, IFallingBlock
     private GameObject blockGuide;
     private static readonly string[] tMovementIndicators = { "(3,1)", "(3,2)", "(3,3)", "(2,2)" };
 
+    // ================================================================
+    //  LANDING SOUND
+    //  landingClip        — assign the clip in the prefab Inspector.
+    //  hasPlayedLandSound — flips true on the first landing spot that
+    //                       triggers reparenting; every subsequent spot
+    //                       (same block, same fall) is silenced.
+    // ================================================================
+    [SerializeField] private AudioClip landingClip;
+    private bool hasPlayedLandSound = false;
+
     int stop = -1;
     int stopperID = 0;
 
@@ -112,6 +122,29 @@ public class TMovement : MonoBehaviour, IFallingBlock
     }
 
     // ================================================================
+    //  LANDING SOUND HELPER
+    //  Plays landingClip once per block instance using a fully 2D
+    //  AudioSource (spatialBlend = 0) so volume is never attenuated
+    //  by distance from the camera. hasPlayedLandSound ensures that
+    //  even if multiple coroutine paths hit a landing spot in the same
+    //  frame, the clip is only triggered on the first call.
+    // ================================================================
+
+    void PlayLandingSound()
+    {
+        if (hasPlayedLandSound) return;
+        hasPlayedLandSound = true;
+        if (landingClip == null) return;
+
+        GameObject tempAudio = new GameObject("LandingSound");
+        AudioSource src = tempAudio.AddComponent<AudioSource>();
+        src.clip         = landingClip;
+        src.spatialBlend = 0f;   // ← 0 = fully 2D, volume never affected by distance
+        src.Play();
+        Destroy(tempAudio, landingClip.length);
+    }
+
+    // ================================================================
     //  GAME OVER CHECK
     //  ---------------------------------------------------------------
     //  If the block lands at coordinate list index ≤ 3, the outermost
@@ -167,6 +200,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             leftflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            PlayLandingSound();
                             DestroyInstantiator();
                             if (!CheckGameOverOnLanding(landingIdx))
                                 gameManager.CheckAndDestroyRings();
@@ -188,6 +222,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 leftflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                PlayLandingSound();
                                 DestroyInstantiator();
                                 if (!CheckGameOverOnLanding(landingIdx))
                                     gameManager.CheckAndDestroyRings();
@@ -218,6 +253,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         leftflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        PlayLandingSound();
                         DestroyInstantiator();
                         if (!CheckGameOverOnLanding(landingIdx))
                             gameManager.CheckAndDestroyRings();
@@ -273,6 +309,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             rightflagRadius(landingIdx);
                             DeactivateAllIndicators();
                             rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            PlayLandingSound();
                             DestroyInstantiator();
                             if (!CheckGameOverOnLanding(landingIdx))
                                 gameManager.CheckAndDestroyRings();
@@ -294,6 +331,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 rightflagRadius(landingIdx);
                                 DeactivateAllIndicators();
                                 rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                PlayLandingSound();
                                 DestroyInstantiator();
                                 if (!CheckGameOverOnLanding(landingIdx))
                                     gameManager.CheckAndDestroyRings();
@@ -324,6 +362,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         rightflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         rightChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        PlayLandingSound();
                         DestroyInstantiator();
                         if (!CheckGameOverOnLanding(landingIdx))
                             gameManager.CheckAndDestroyRings();
@@ -380,6 +419,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                             DeactivateAllIndicators();
                             verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                            PlayLandingSound();
                             DestroyInstantiator();
                             if (!CheckGameOverOnLanding(landingIdx))
                                 gameManager.CheckAndDestroyRings();
@@ -402,6 +442,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                                 DeactivateAllIndicators();
                                 verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                                PlayLandingSound();
                                 DestroyInstantiator();
                                 if (!CheckGameOverOnLanding(landingIdx))
                                     gameManager.CheckAndDestroyRings();
@@ -435,6 +476,7 @@ public class TMovement : MonoBehaviour, IFallingBlock
                         DeactivateAllIndicators();
                         verticalChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
+                        PlayLandingSound();
                         DestroyInstantiator();
                         if (!CheckGameOverOnLanding(landingIdx))
                             gameManager.CheckAndDestroyRings();
