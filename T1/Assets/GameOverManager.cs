@@ -27,7 +27,7 @@ public class GameOverManager : MonoBehaviour
 
     [Header("Scene Settings")]
     [Tooltip("Build index of the main-menu scene. Set to 0 if your menu is scene 0.")]
-    public int mainMenuSceneIndex = 0;
+    public int mainMenuSceneIndex = 1;
 
     [Tooltip("If true, Home loads the main-menu scene. If false, it quits the application.")]
     public bool homeLoadsMenu = true;
@@ -104,22 +104,11 @@ public class GameOverManager : MonoBehaviour
     }
 
     private void OnHomeClicked()
-    {
-        Debug.Log("[GameOverManager] Home clicked.");
+{
+    Debug.Log("[GameOverManager] Home clicked — loading scene 1.");
 
-        Time.timeScale = 1f;
+    Time.timeScale = 1f;
 
-        if (homeLoadsMenu)
-        {
-            SceneManager.LoadScene(mainMenuSceneIndex);
-        }
-        else
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
-        }
-    }
+    SceneManager.LoadScene(1);
+}
 }
