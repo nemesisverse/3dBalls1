@@ -9,19 +9,30 @@ public class TapInput : MonoBehaviour
 
     public static event Action<Vector2> OnTap;
 
+    // deferred tap state
+    private bool    _tapPending   = false;
+    private Vector2 _tapScreenPos = Vector2.zero;
+
     void Awake()
     {
         _controls = new TouchControl();
 
         _controls.Touch.Tap.performed += ctx =>
         {
-            Vector2 tapPosition = _controls.Touch.Position.ReadValue<Vector2>();
-
-            if (EventSystem.current.IsPointerOverGameObject()) return;
-
-            OnTap?.Invoke(tapPosition);
-            Debug.Log($"Tap detected at: {tapPosition}");
+            _tapScreenPos = _controls.Touch.Position.ReadValue<Vector2>();
+            _tapPending   = true;
         };
+    }
+
+    void Update()
+    {
+        if (!_tapPending) return;
+        _tapPending = false;
+
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        OnTap?.Invoke(_tapScreenPos);
+        Debug.Log($"Tap detected at: {_tapScreenPos}");
     }
 
     void OnEnable()  => _controls.Enable();

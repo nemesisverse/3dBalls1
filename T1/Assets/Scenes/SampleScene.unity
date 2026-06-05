@@ -2209,7 +2209,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 357278575}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1989471334}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
+        m_MethodName: CloseOption
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &357278575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2900,7 +2912,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 527122900}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1989471334}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
+        m_MethodName: Home
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &527122900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7020,7 +7044,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1810939757}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1989471334}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
+        m_MethodName: option
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1810939757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7447,6 +7483,8 @@ MonoBehaviour:
   pauseMenu: {fileID: 32387049}
   mother: {fileID: 1227501322}
   musicSlider: {fileID: 165412753}
+  gameOver: {fileID: 712918579}
+  optionMenu: {fileID: 1351724684}
 --- !u!4 &1989471335
 Transform:
   m_ObjectHideFlags: 0

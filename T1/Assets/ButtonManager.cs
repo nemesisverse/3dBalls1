@@ -8,6 +8,9 @@ public class ButtonManager : MonoBehaviour
     public GameObject mother;
     public Slider musicSlider;
 
+    public GameObject gameOver;
+    public GameObject optionMenu;
+
     void Start()
     {
         pauseMenu.SetActive(false);
@@ -17,8 +20,20 @@ public class ButtonManager : MonoBehaviour
         AudioListener.volume = saved;   // apply on load
 
         musicSlider.onValueChanged.AddListener(SetMusicVolume);
+
+        optionMenu.SetActive(false);
+    }
+    public void option()
+    {
+        gameOver.SetActive(false);
+        optionMenu.SetActive(true);
     }
 
+    public void CloseOption()
+    {
+        optionMenu.SetActive(false);
+        gameOver.SetActive(true);
+    }
     public void SetMusicVolume(float volume)
     {
         AudioListener.volume = volume;                   // controls ALL audio globally
