@@ -301,7 +301,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                             verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                             verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                             DestroyInstantiator();
-                            CheckGameOverOnLanding(landingIdx);
+                            if (!CheckGameOverOnLanding(landingIdx)) gameManager.CheckAndDestroyRings();
                             index.indexCountVertical = 2;
                             index.indexCountRight = 2;
                             stop = index.indexCountLeft - 1;
@@ -331,7 +331,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                                 verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                                 DestroyInstantiator();
-                                CheckGameOverOnLanding(landingIdx);
+                                if (!CheckGameOverOnLanding(landingIdx)) gameManager.CheckAndDestroyRings();
                                 index.indexCountVertical = 2;
                                 index.indexCountRight = 2;
                                 yield break;
@@ -368,7 +368,7 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         verticalChildObject[1].transform.SetParent(gameManager.motherPlatform.transform, true);
                         verticalChildObject[2].transform.SetParent(gameManager.motherPlatform.transform, true);
                         DestroyInstantiator();
-                        CheckGameOverOnLanding(landingIdx);
+                        if (!CheckGameOverOnLanding(landingIdx)) gameManager.CheckAndDestroyRings();
                         index.indexCountVertical = 2;
                         index.indexCountRight = 2;
                         stop = index.indexCountLeft - 1;
