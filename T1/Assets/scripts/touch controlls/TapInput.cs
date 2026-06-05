@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using System;
 
 public class TapInput : MonoBehaviour
@@ -15,6 +16,9 @@ public class TapInput : MonoBehaviour
         _controls.Touch.Tap.performed += ctx =>
         {
             Vector2 tapPosition = _controls.Touch.Position.ReadValue<Vector2>();
+
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+
             OnTap?.Invoke(tapPosition);
             Debug.Log($"Tap detected at: {tapPosition}");
         };

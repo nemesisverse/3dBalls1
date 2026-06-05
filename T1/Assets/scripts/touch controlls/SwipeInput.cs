@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class SwipeInput : MonoBehaviour
 {
+    public GameObject pauseMenu;
     private TouchControl touchControl;
     private Vector2 startPos;
     private Vector2 endPos;
@@ -29,6 +30,8 @@ public class SwipeInput : MonoBehaviour
             gameManager = FindFirstObjectByType<GameManager>();
         }
     }
+
+
 
     private void OnEnable()
     {
