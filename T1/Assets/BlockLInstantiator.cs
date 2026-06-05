@@ -19,6 +19,9 @@ public class BlockLInstantiator : MonoBehaviour
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
     public float spawnInterval = 2f;          // 0 = manual / GameManager-driven only
 
+    [Header("Audio")]
+    public AudioClip collisionBlockedClip;    // assign in Inspector
+
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
@@ -30,6 +33,9 @@ public class BlockLInstantiator : MonoBehaviour
     // ── preview state ─────────────────────────────────────────────
     private IndexManager _index;
     private BlockType    _activeType;
+
+    // ── audio ─────────────────────────────────────────────────────
+    private AudioSource _audioSource;
 
     // ── swap-check pause flag ─────────────────────────────────────
     // Movement scripts check this to freeze while collision check runs
@@ -62,6 +68,11 @@ public class BlockLInstantiator : MonoBehaviour
             rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
         for (float v = 18.5f; v >= 2.5f; v -= 1f)
             verticalCoordinates.Add(new Vector3(0f, v, 0f));
+
+        // Grab existing AudioSource or add one automatically
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void Start()
@@ -136,6 +147,10 @@ public class BlockLInstantiator : MonoBehaviour
             if (logSpawnInfo)
                 Debug.Log($"[BlockLInstantiator] Swap to {nextType} BLOCKED — " +
                           $"preview collides with motherPlatform child.");
+
+            // Play the blocked-swap sound once per avoidance event
+            if (collisionBlockedClip != null)
+                _audioSource.PlayOneShot(collisionBlockedClip);
 
             isCheckingSwap = false;
             _tapInProgress = false;

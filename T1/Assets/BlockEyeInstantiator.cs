@@ -5,64 +5,62 @@ using UnityEngine;
 public class BlockEyeInstantiator : MonoBehaviour
 {
     List<Vector3> leftDiagonalCoordinates  = new List<Vector3>();
-    List<Vector3> rightDiagonalCoordinates = new List<Vector3>();   // ← NEW: needed for Eye2 preview
+    List<Vector3> rightDiagonalCoordinates = new List<Vector3>();
     List<Vector3> verticalCoordinates      = new List<Vector3>();
 
     public GameObject motherPlatform;
+
     [Header("Block Prefabs")]
     public GameObject eyeBlockPrefab;
     public GameObject eye1BlockPrefab;
-    public GameObject eye2BlockPrefab;   // ← NEW
+    public GameObject eye2BlockPrefab;
 
     [Header("Spawn Settings")]
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
     public float spawnInterval = 2f;
 
+    // ── ADDED ──────────────────────────────────────────────────────
+    [Header("Audio")]
+    public AudioClip swapBlockedSfx;          // assign in Inspector
+    private AudioSource _audioSource;
+    // ───────────────────────────────────────────────────────────────
+
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
-    // ── internal state ────────────────────────────────────────────
     private GameObject _currentBlock;
     private int        _currentTypeIndex;
     private float      _timer;
 
-    // ── preview state ─────────────────────────────────────────────
     private IndexManager _index;
     private BlockType    _activeType;
 
-    // ── swap-check pause flag ─────────────────────────────────────
-    // Movement scripts check this to freeze while collision check runs
     [HideInInspector] public bool isCheckingSwap = false;
 
-    // Prevents double-tap while coroutine is in flight
     private bool _tapInProgress = false;
 
-    // ── cycle definition ─────────────────────────────────────────
-    // Eye → Eye1 → Eye2 → Eye  (3-way circular cycle)
     private static readonly BlockType[] _cycleOrder =
     {
-        BlockType.EyeBlock,    // 0
-        BlockType.Eye1Block,   // 1
-        BlockType.Eye2Block,   // 2  ← NEW
+        BlockType.EyeBlock,
+        BlockType.Eye1Block,
+        BlockType.Eye2Block,
     };
-
-    // ─────────────────────────────────────────────────────────────
-    //  Unity lifecycle
-    // ─────────────────────────────────────────────────────────────
 
     void Awake()
     {
         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
 
-        // Eye1 / Eye2-left  fall along left-diagonal
+        // ── ADDED: get or add AudioSource so the clip can play ──
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+        // ─────────────────────────────────────────────────────────
+
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
 
-        // Eye2-right  falls along right-diagonal  ← NEW
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
 
-        // Eye / Eye2-vertical  fall along the Y axis
         for (float v = 18.5f; v >= 2.5f; v -= 1f)
             verticalCoordinates.Add(new Vector3(0f, v, 0f));
     }
@@ -90,10 +88,6 @@ public class BlockEyeInstantiator : MonoBehaviour
         }
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  Tap handler — kicks off the coroutine
-    // ─────────────────────────────────────────────────────────────
-
     private void HandleTap(Vector2 screenPosition)
     {
         if (_currentBlock == null) return;
@@ -102,28 +96,13 @@ public class BlockEyeInstantiator : MonoBehaviour
         StartCoroutine(HandleTapCoroutine());
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  The actual swap logic — runs across frames so the pause
-    //  flag is visible to every movement coroutine.
-    //
-    //  Frame 0:  set isCheckingSwap = true
-    //  Frame 1:  all movement coroutines have paused → safe to check
-    //  Frame 1:  collision check runs, swap or reject
-    //  Frame 1:  set isCheckingSwap = false → movement resumes
-    // ─────────────────────────────────────────────────────────────
-
     private IEnumerator HandleTapCoroutine()
     {
         _tapInProgress = true;
 
-        // ── FRAME 0: raise the flag ──
         isCheckingSwap = true;
 
-        // ── wait one frame so every movement coroutine hits
-        //    "while (isCheckingSwap) yield return null" and freezes ──
         yield return null;
-
-        // ── FRAME 1: all blocks are now frozen — safe to read indices ──
 
         int nextIndex      = (_currentTypeIndex + 1) % _cycleOrder.Length;
         BlockType nextType = _cycleOrder[nextIndex];
@@ -132,17 +111,19 @@ public class BlockEyeInstantiator : MonoBehaviour
 
         if (preview != null && IsCollidingWithPlatform(preview))
         {
-            // ── BLOCKED — keep current block, unfreeze, done ──
             if (logSpawnInfo)
                 Debug.Log($"[BlockEyeInstantiator] Swap to {nextType} BLOCKED — " +
                           $"preview collides with motherPlatform child.");
+
+            // ── ADDED: play the denied-swap sound exactly once per block event ──
+            if (swapBlockedSfx != null) _audioSource.PlayOneShot(swapBlockedSfx);
+            // ──────────────────────────────────────────────────────────────────
 
             isCheckingSwap = false;
             _tapInProgress = false;
             yield break;
         }
 
-        // ── SAFE — proceed with swap ──
         _currentTypeIndex = nextIndex;
 
         if (logSpawnInfo)
@@ -150,15 +131,9 @@ public class BlockEyeInstantiator : MonoBehaviour
 
         SwapCurrentBlock(nextType);
 
-        // ── unfreeze movement ──
         isCheckingSwap = false;
         _tapInProgress = false;
     }
-
-    // ─────────────────────────────────────────────────────────────
-    //  Collision check against motherPlatform children
-    //  Compares world positions rounded to 1 decimal place.
-    // ─────────────────────────────────────────────────────────────
 
     private bool IsCollidingWithPlatform(Vector3[] previewPositions)
     {
@@ -169,7 +144,6 @@ public class BlockEyeInstantiator : MonoBehaviour
 
         if (childCount == 0) return false;
 
-        // Build HashSet of rounded platform positions for O(1) lookup
         HashSet<Vector3> platformPositions = new HashSet<Vector3>();
         for (int c = 0; c < childCount; c++)
         {
@@ -178,7 +152,6 @@ public class BlockEyeInstantiator : MonoBehaviour
             platformPositions.Add(RoundTo1Decimal(child.position));
         }
 
-        // Check each preview position
         for (int p = 0; p < previewPositions.Length; p++)
         {
             Vector3 rounded = RoundTo1Decimal(previewPositions[p]);
@@ -201,10 +174,6 @@ public class BlockEyeInstantiator : MonoBehaviour
             Mathf.Round(v.z * 10f) / 10f
         );
     }
-
-    // ─────────────────────────────────────────────────────────────
-    //  Core spawn / swap helpers
-    // ─────────────────────────────────────────────────────────────
 
     public void SpawnNextBlock()
     {
@@ -246,27 +215,6 @@ public class BlockEyeInstantiator : MonoBehaviour
             Debug.Log($"[BlockEyeInstantiator] Instantiated {type} at {pos}");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    //  PREVIEW SYSTEM
-    //
-    //  Eye  — 3 blocks on vertical axis:        verticalCoordinates[iV], [iV-1], [iV-2]
-    //  Eye1 — 3 blocks on left diagonal:         leftDiagonalCoordinates[iL], [iL-1], [iL-2]
-    //  Eye2 — 1 block on each axis (independent): left[iL], right[iR], vertical[iV]
-    //
-    //  Eye and Eye1 keep all three IndexManager counters in lockstep,
-    //  so whichever of them is currently falling, any index already
-    //  tells us where the alternate block's children would appear.
-    //
-    //  Eye2 advances each index independently, but the initial values
-    //  are always the same (reset to 2 on landing) so the prediction
-    //  is still valid while the block has not yet started drifting.
-    // ─────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Returns the world positions the given block type would
-    /// occupy right now, based on the current IndexManager state.
-    /// Returns null if indices are out of range (block cannot exist here).
-    /// </summary>
     private Vector3[] GetPreviewPositions(BlockType type)
     {
         if (_index == null) return null;
@@ -279,10 +227,6 @@ public class BlockEyeInstantiator : MonoBehaviour
             return BuildEye2Preview();
     }
 
-    /// <summary>
-    /// Predict where Eye (vertical, 3 children) would be right now.
-    /// Uses verticalCoordinates at indices [iV], [iV-1], [iV-2].
-    /// </summary>
     private Vector3[] BuildEyePreview()
     {
         int iV = _index.indexCountVertical;
@@ -297,10 +241,6 @@ public class BlockEyeInstantiator : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Predict where Eye1 (left-diagonal, 3 children) would be right now.
-    /// Uses leftDiagonalCoordinates at indices [iL], [iL-1], [iL-2].
-    /// </summary>
     private Vector3[] BuildEye1Preview()
     {
         int iL = _index.indexCountLeft;
@@ -315,12 +255,7 @@ public class BlockEyeInstantiator : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Predict where Eye2's 3 independent children would be right now.
-    /// One child on each axis: left diagonal, right diagonal, vertical.
-    /// Each uses the current value of its own IndexManager counter.
-    /// </summary>
-    private Vector3[] BuildEye2Preview()   // ← NEW
+    private Vector3[] BuildEye2Preview()
     {
         int iL = _index.indexCountLeft;
         int iR = _index.indexCountRight;
@@ -338,11 +273,6 @@ public class BlockEyeInstantiator : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Public accessor so external systems can query the NEXT block's
-    /// predicted positions (mirrors BlockSInstantiator.GetAlternatePreview).
-    /// Follows the 3-way cycle: Eye → Eye1 → Eye2 → Eye.
-    /// </summary>
     public Vector3[] GetAlternatePreviewPositions()
     {
         if (_index == null) return null;
@@ -351,13 +281,9 @@ public class BlockEyeInstantiator : MonoBehaviour
             return BuildEye1Preview();
         else if (_activeType == BlockType.Eye1Block)
             return BuildEye2Preview();
-        else                                           // Eye2Block → Eye
+        else
             return BuildEyePreview();
     }
-
-    // ─────────────────────────────────────────────────────────────
-    //  Prefab registry
-    // ─────────────────────────────────────────────────────────────
 
     private GameObject PrefabForType(BlockType type)
     {
@@ -365,7 +291,7 @@ public class BlockEyeInstantiator : MonoBehaviour
         {
             case BlockType.EyeBlock:  return eyeBlockPrefab;
             case BlockType.Eye1Block: return eye1BlockPrefab;
-            case BlockType.Eye2Block: return eye2BlockPrefab;   // ← NEW
+            case BlockType.Eye2Block: return eye2BlockPrefab;
             default:
                 Debug.LogWarning($"[BlockEyeInstantiator] Unhandled BlockType: {type}");
                 return null;
@@ -376,6 +302,6 @@ public class BlockEyeInstantiator : MonoBehaviour
     {
         EyeBlock  = 0,
         Eye1Block = 1,
-        Eye2Block = 2,   // ← NEW
+        Eye2Block = 2,
     }
 }

@@ -51,5 +51,6 @@ MonoBehaviour:
   l3BlockPrefab: {fileID: 952813889071923715, guid: 8b72149d76912481fbc456e296bca74a, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
+  collisionBlockedClip: {fileID: 8300000, guid: d04bc7bbd8a204b6b84ec744d85d666f, type: 3}
   logSpawnInfo: 1
   isCheckingSwap: 0

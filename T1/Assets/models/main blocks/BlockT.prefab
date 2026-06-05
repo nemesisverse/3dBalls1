@@ -50,5 +50,6 @@ MonoBehaviour:
   t2BlockPrefab: {fileID: 486865378013806613, guid: 8117b6d13aa724907acf6fb609204808, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
+  blockadeSound: {fileID: 8300000, guid: d04bc7bbd8a204b6b84ec744d85d666f, type: 3}
   logSpawnInfo: 1
   isCheckingSwap: 0

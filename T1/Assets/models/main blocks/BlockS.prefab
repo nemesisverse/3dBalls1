@@ -49,5 +49,6 @@ MonoBehaviour:
   s1BlockPrefab: {fileID: 3097592215980526535, guid: 145681bfd3d064b44b65f512001833bd, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
+  collisionBlockedClip: {fileID: 8300000, guid: d04bc7bbd8a204b6b84ec744d85d666f, type: 3}
   logSpawnInfo: 1
   isCheckingSwap: 0

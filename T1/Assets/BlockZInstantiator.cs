@@ -18,13 +18,17 @@ public class BlockZInstantiator : MonoBehaviour
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
     public float spawnInterval = 2f;          // 0 = manual / GameManager-driven only
 
+    [Header("Audio")]
+    public AudioClip blockSound;
+
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
     // ── internal state ────────────────────────────────────────────
-    private GameObject _currentBlock;         // the block currently falling
-    private int        _currentTypeIndex;     // index into _cycleOrder[]
-    private float      _timer;
+    private GameObject  _currentBlock;        // the block currently falling
+    private int         _currentTypeIndex;    // index into _cycleOrder[]
+    private float       _timer;
+    private AudioSource _audioSource;
 
     // ── preview state ─────────────────────────────────────────────
     private IndexManager _index;
@@ -52,13 +56,19 @@ public class BlockZInstantiator : MonoBehaviour
 
     void Awake()
     {
-         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+        if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             rightDiagonalCoordinates.Add(new Vector3(v, v, 0f));
         for (float v = 18.5f; v >= 2.5f; v -= 1f)
             verticalCoordinates.Add(new Vector3(0f, v, 0f));
+
+        // Ensure there is an AudioSource on this GameObject
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     private void Start()
@@ -133,6 +143,11 @@ public class BlockZInstantiator : MonoBehaviour
             if (logSpawnInfo)
                 Debug.Log($"[BlockZInstantiator] Swap to {nextType} BLOCKED — " +
                           $"preview collides with motherPlatform child.");
+
+            // Play once per avoidance event — coroutine re-entry is already
+            // gated by _tapInProgress so this can never fire twice per tap.
+            if (blockSound != null)
+                _audioSource.PlayOneShot(blockSound);
 
             isCheckingSwap = false;
             _tapInProgress = false;
@@ -307,12 +322,10 @@ public class BlockZInstantiator : MonoBehaviour
         int iV = _index.indexCountVertical;
 
         // Bounds safety — any arm out of range → cannot build preview
-        if (iL < 1 || iL - 1 >= leftDiagonalCoordinates.Count)   return null;
-        if (iR < 0 || iR >= rightDiagonalCoordinates.Count)      return null;
-        if (iV < 1 || iV >= verticalCoordinates.Count)           return null;
+        if (iL < 1 || iL - 1 >= leftDiagonalCoordinates.Count)  return null;
+        if (iR < 0 || iR >= rightDiagonalCoordinates.Count)     return null;
+        if (iV < 1 || iV >= verticalCoordinates.Count)          return null;
 
-        // arm1 = left diagonal (1 child) + right diagonal (1 child)
-        // arm2 = vertical (2 children)
         return new PreviewData
         {
             previewBlockName = "Z",
@@ -337,11 +350,9 @@ public class BlockZInstantiator : MonoBehaviour
         int iV = _index.indexCountVertical;
 
         // Bounds safety — Z1 left arm needs [iL-1] and [iL-2]
-        if (iL < 2 || iL - 1 >= leftDiagonalCoordinates.Count)  return null;
-        if (iV < 1 || iV >= verticalCoordinates.Count)          return null;
+        if (iL < 2 || iL - 1 >= leftDiagonalCoordinates.Count) return null;
+        if (iV < 1 || iV >= verticalCoordinates.Count)         return null;
 
-        // arm1 = left diagonal (2 children)
-        // arm2 = vertical (2 children)
         return new PreviewData
         {
             previewBlockName = "Z1",

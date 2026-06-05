@@ -20,6 +20,10 @@ public class BlockTInstantiator : MonoBehaviour
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
     public float spawnInterval = 2f;
 
+    [Header("Audio")]
+    public AudioClip blockadeSound;          // assign in Inspector
+    private AudioSource _audioSource;        // fetched in Awake
+
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
@@ -53,7 +57,13 @@ public class BlockTInstantiator : MonoBehaviour
 
     void Awake()
     {
-         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+        if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+
+        // Get existing AudioSource or add one if absent
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+            _audioSource = gameObject.AddComponent<AudioSource>();
+
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
@@ -133,6 +143,10 @@ public class BlockTInstantiator : MonoBehaviour
                           (preview == null
                               ? "preview could not be built (indices out of bounds)."
                               : "preview collides with motherPlatform child."));
+
+            // Play the blockade sound once per avoidance event
+            if (blockadeSound != null)
+                _audioSource.PlayOneShot(blockadeSound);
 
             isCheckingSwap = false;
             _tapInProgress = false;

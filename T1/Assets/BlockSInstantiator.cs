@@ -18,6 +18,9 @@ public class BlockSInstantiator : MonoBehaviour
     public Vector3 spawnPosition = new Vector3(0f, 20f, 0f);
     public float spawnInterval = 2f;
 
+    [Header("Audio")]
+    public AudioClip collisionBlockedClip;          // assign in Inspector
+
     [Header("Debug")]
     public bool logSpawnInfo = true;
 
@@ -29,6 +32,9 @@ public class BlockSInstantiator : MonoBehaviour
     // ── preview state ─────────────────────────────────────────────
     private IndexManager _index;
     private BlockType    _activeType;
+
+    // ── audio ─────────────────────────────────────────────────────
+    private AudioSource _audioSource;
 
     // ── swap-check pause flag ─────────────────────────────────────
     // Movement scripts check this to freeze while collision check runs
@@ -50,7 +56,12 @@ public class BlockSInstantiator : MonoBehaviour
 
     void Awake()
     {
-         if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+        if (motherPlatform == null) motherPlatform = GameObject.Find("mother");
+
+        // Grab existing AudioSource or add one — never needs a Mixer assignment
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
             leftDiagonalCoordinates.Add(new Vector3(-v, v, 0f));
         for (float v = 13.079f; v >= 1.767f - 0.0001f; v -= 0.707f)
@@ -124,7 +135,10 @@ public class BlockSInstantiator : MonoBehaviour
 
         if (preview != null && IsCollidingWithPlatform(preview))
         {
-            // ── BLOCKED — keep current block, unfreeze, done ──
+            // ── BLOCKED — play the one-shot SFX, keep current block, unfreeze ──
+            if (collisionBlockedClip != null)
+                _audioSource.PlayOneShot(collisionBlockedClip);
+
             if (logSpawnInfo)
                 Debug.Log($"[BlockSInstantiator] Swap to {nextType} BLOCKED — " +
                           $"preview collides with motherPlatform child.");

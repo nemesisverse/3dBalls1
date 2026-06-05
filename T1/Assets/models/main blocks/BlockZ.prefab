@@ -49,5 +49,6 @@ MonoBehaviour:
   z1BlockPrefab: {fileID: 8576482779287731194, guid: eac2cae5a39ec4ebfb40d534a4e1c81d, type: 3}
   spawnPosition: {x: 0, y: 20, z: 0}
   spawnInterval: 0
+  blockSound: {fileID: 8300000, guid: d04bc7bbd8a204b6b84ec744d85d666f, type: 3}
   logSpawnInfo: 1
   isCheckingSwap: 0

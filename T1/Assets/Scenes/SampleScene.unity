@@ -3510,6 +3510,10 @@ PrefabInstance:
       propertyPath: gameManager
       value: 
       objectReference: {fileID: 197269482}
+    - target: {fileID: 6603598461293980922, guid: 1b41b89fe92e5ee45a055e8ec376fc9f, type: 3}
+      propertyPath: landingClip
+      value: 
+      objectReference: {fileID: 8300000, guid: cbd0db1d7b97e47e59b7b339e71de1c6, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7982,6 +7986,10 @@ PrefabInstance:
       propertyPath: index
       value: 
       objectReference: {fileID: 771170888}
+    - target: {fileID: 9122133318655720330, guid: 6d56a905b42734a2aad5957137033946, type: 3}
+      propertyPath: landingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: cbd0db1d7b97e47e59b7b339e71de1c6, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
