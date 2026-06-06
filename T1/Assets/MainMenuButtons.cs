@@ -13,7 +13,7 @@ public class MainMenuButtons : MonoBehaviour
     public void Play()
     {
         screenLoader.SetActive(true);
-        StartCoroutine(LoadSceneAsync(0));
+        StartCoroutine(LoadSceneAsync(1));
     }
 
     private IEnumerator LoadSceneAsync(int sceneIndex)
