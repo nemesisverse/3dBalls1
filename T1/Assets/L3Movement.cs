@@ -234,8 +234,30 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                     // Landing spot 3 fires after step 4, so position is already correct.
                     if (leftChildObject[0].transform.position == leftDiagonalCoordinates[leftDiagonalCoordinates.Count - 3])
                     {
+                        // ── HOLD UNTIL THE VERTICAL COLUMN LANDS ──
+                        // The foot has reached its deepest reachable ring (coords[14], the cell
+                        // that sits level with the vertical's TOP block). The 3-block column
+                        // still has further to travel to reach the base — and because the shared
+                        // IndexManager counters can leave this foot's index AHEAD of the
+                        // column's, the foot would otherwise reparent and freeze several frames
+                        // before the column lands. That early freeze is the "left stops early"
+                        // symptom — the resting ring is already correct, only the timing is off.
+                        //
+                        // Hold here at coords[14] until the vertical clears 'enabled' the instant
+                        // it reparents (its LANDING SPOT 1 / 3). Coroutines keep running after
+                        // enabled = false, so this releases on the same frame the column settles,
+                        // letting the column's top block catch up to the foot. The foot then
+                        // reparents one frame behind it — exactly mirroring the blocked-landing
+                        // handoff (LANDING SPOT 2) the rest of the piece already relies on.
+                        while (enabled)
+                            yield return null;
+
                         // LANDING SPOT 3
-                        int landingIdx = index.indexCountLeft - 1;
+                        // Position is at coords[indexCountLeft - 2] (matches vertical's TOP
+                        // block radius). landingIdx must equal that coord index so the grid
+                        // registers left at the same ring as vertical's top — keeping the L3
+                        // shape coherent when vertical lands at its innermost slot.
+                        int landingIdx = index.indexCountLeft - 2;
                         leftflagRadius(landingIdx);
                         DeactivateAllIndicators();
                         leftChildObject[0].transform.SetParent(gameManager.motherPlatform.transform, true);
@@ -243,7 +265,6 @@ public class L3Movement : MonoBehaviour , IFallingBlock
                         if (!CheckGameOverOnLanding(landingIdx))
                             gameManager.CheckAndDestroyRings();
                         index.indexCountLeft = 2;
-                        enabled = false;
                         TryDestroySelf();
                     }
                     yield break;
