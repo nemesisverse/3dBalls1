@@ -71,11 +71,21 @@ public class SwipeInput : MonoBehaviour
         // Tag this touch at the moment it begins.
         // If it started on UI (button, joystick, panel, etc.), we ignore the
         // entire gesture — even the EndTouch — so nothing leaks into game input.
-        isUITouch = IsTouchOverUI(startPos);
+        // JoystickTouchGate.Active also latches here so a second finger that begins
+        // while the joystick is already held gets tagged and dropped (multi-touch case).
+        isUITouch = IsTouchOverUI(startPos) || JoystickTouchGate.Active;
     }
 
     private void EndTouch(InputAction.CallbackContext context)
     {
+        // Joystick grabbed at any point during this gesture — drop the swipe.
+        // Covers the case where the joystick became active AFTER this touch began.
+        if (JoystickTouchGate.Active)
+        {
+            isUITouch = false;
+            return;
+        }
+
         // Touch started on UI — owned by UI system, not ours
         if (isUITouch)
         {

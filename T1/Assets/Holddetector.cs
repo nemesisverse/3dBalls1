@@ -73,6 +73,16 @@ public class HoldDetector : MonoBehaviour
         if (ts != null)
             isTouching = ts.primaryTouch.press.isPressed;
 
+        // Joystick owns the touch — never fast-fall while orbiting the camera.
+        // Clears any hold already in progress the instant the joystick is grabbed.
+        if (JoystickTouchGate.Active)
+        {
+            isHolding      = false;
+            pressStartTime = -1f;
+            wasTouching    = isTouching;
+            return;
+        }
+
         // ── Finger just landed ────────────────────────────────────
         if (isTouching && !wasTouching)
         {
@@ -87,6 +97,8 @@ public class HoldDetector : MonoBehaviour
         }
 
         // ── Promote to hold once threshold is exceeded ────────────
+        // Active on genuine play-area holds; suppressed while the
+        // joystick is held (handled by the early return above).
         if (isTouching && !isHolding && pressStartTime >= 0f)
         {
             if (Time.time - pressStartTime >= holdThreshold)
