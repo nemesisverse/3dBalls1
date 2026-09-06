@@ -1512,12 +1512,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 197269481}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fad33d70bc610415b9be465bf312bfbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  degreesPerSecond: 1
+  degreesPerSecond: 0.5
+  targetCamera: {fileID: 0}
 --- !u!1 &198079381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,7 +2145,7 @@ Skybox:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 51f653ed3e714bbf9a27b54e1a196e9a, type: 2}
+  m_CustomSkybox: {fileID: 2100000, guid: 29dde3ba9de44d8295bb57d2925c1425, type: 2}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5588,7 +5589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.55107546, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.6968042, b: 0.6745283, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
