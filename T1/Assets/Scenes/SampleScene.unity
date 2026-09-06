@@ -473,11 +473,11 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 2929252285020698103, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
       propertyPath: m_Color.b
-      value: 0.6745283
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2929252285020698103, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
       propertyPath: m_Color.g
-      value: 0.6745283
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2929252285020698103, guid: aaa2c939c0359ac4dbce3f49e8b90252, type: 3}
       propertyPath: m_Color.r
@@ -1291,6 +1291,7 @@ GameObject:
   - component: {fileID: 197269487}
   - component: {fileID: 197269488}
   - component: {fileID: 197269489}
+  - component: {fileID: 197269490}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1504,6 +1505,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &197269490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197269481}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad33d70bc610415b9be465bf312bfbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  degreesPerSecond: 1
 --- !u!1 &198079381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2130,7 +2144,7 @@ Skybox:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 1cf6f4c6e6e0518419839d3f5448dd99, type: 2}
+  m_CustomSkybox: {fileID: 2100000, guid: 51f653ed3e714bbf9a27b54e1a196e9a, type: 2}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8381,6 +8395,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: mother
       objectReference: {fileID: 0}
+    - target: {fileID: 5295402529110583422, guid: 9db0f22430a634ba6b8b1d8f9776f075, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4504e8364584644a6bc378f28e44ceef, type: 2}
     - target: {fileID: 8849125638314428942, guid: 9db0f22430a634ba6b8b1d8f9776f075, type: 3}
       propertyPath: gameManager
       value: 
